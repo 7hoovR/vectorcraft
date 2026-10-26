@@ -152,6 +152,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G9 Illustrator `.ai` and EPS files from real users
 
+- **Save-back update (2026-10-26):** ordinary EPS Save retains page margins and the whole editable document; source-loss confirmation remains. Import fidelity gaps and estimates below are unchanged.
+
 - **Done (2026-10-16):** EPS legacy mesh corners and vector opacity masks retained; winding-declared compound member groups keep shared paint. Raster print-page minification no longer causes a false editing-data fallback; comparison limits remain unchanged. Synthetic regressions cover damage and missing artwork. This narrows G9; scores and estimates unchanged.
 
 - **Missing:** faithful layer and group structure from the editing data in real files (#951: 109 layers instead
@@ -835,3 +837,7 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 | 2026-10-22 | minor | Merge current main and complete the Turkish tab-drag labels and validation messages requested by the maintainer; all 24 catalogs covered; scores and estimates unchanged. |
 | 2026-10-22 | minor | Tab-drag follow-up: reconcile upstream progress updates and document drag lifecycle, insertion behavior and regression contracts; behavior, scores and estimates unchanged. |
 | 2026-10-22 | minor | Artwork dragged with Selection switches visible document tabs after a 400 ms hover, then copies editable artwork on canvas release; source and clipboard stay intact; scores and hours unchanged |
+
+## EPS Save evidence (2026-10-26)
+
+Ordinary Save and Save As keep EPS as EPS, with the chosen page frame, transparent margins and the complete editable VectorCraft document. Existing import-loss confirmation and transparency warnings remain; the Save TIFF preview is capped at 1024 pixels, while Export retains 2048. See [file-format-parity.md](file-format-parity.md#eps-save-and-source-protection) for limits and regression evidence. This narrows G9 save-back workflow coverage; native Illustrator editing-data fidelity, parity scores and hour estimates are unchanged.

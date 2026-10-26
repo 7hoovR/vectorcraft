@@ -183,3 +183,30 @@ the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPri
 | 2026-10-11 | minor | `.ai` in PostScript form opens through its layers, also without its prolog (#1027) |
 | 2026-10-11 | minor | `.ai` editing data: global process colours and pattern fills read, so they no longer drop sublayers (#1025) |
 | 2026-10-10 | major | First checklist; moved the `.ai` editing-data scope from the ROADMAP's "Out of scope" here; added the user-reported `.ai` failures |
+
+## EPS Save and source protection
+
+Feature evidence updated 2026-10-26; scores and estimates unchanged.
+
+EPS is offered by Save As, and an opened EPS keeps its own path for ordinary Save. Save writes
+one artboard (the first by default, or the named artboard), retaining its page bounds and transparent
+margins rather than cropping to the drawn artwork. The whole editable VectorCraft document remains
+embedded in EPS comments, including other artboards. Save bounds the optional TIFF preview to
+1024 pixels on its longest side (about 4 MiB of RGBA pixels), avoiding the roughly 16 MiB preview a
+large artboard otherwise produces. Export keeps its existing 2048-pixel preview cap. Preview
+format choices are unchanged; no public preview-resolution option exists. The EPS PostScript appearance still flattens
+transparency; its existing warnings remain. This does not promise native Illustrator editing-data fidelity.
+
+Cropped and selected-only EPS output remains available through Export. Save refuses those options.
+An EPS opened from a preview, a partially interpreted program or damaged native editing data keeps
+its source-loss warning: writing over that original requires explicit confirmation. File › Save uses
+the same engine path and write-failure handling as other document formats.
+
+Synthetic regressions: `tests_save::opened_eps_saves_to_its_own_file_with_editable_data_and_page_margins`,
+`eps_save_keeps_all_editing_artboards_while_printing_one_page`,
+`eps_save_supports_an_empty_artboard_without_cropping_its_page`,
+`partially_read_eps_requires_confirmation_before_save_back`,
+`eps_with_damaged_editing_data_requires_confirmation_before_save_back`,
+`eps_save_bounds_large_page_preview_without_cropping_vector_or_editing_data`, and the UI regressions
+`file_save_writes_opened_eps_back_without_another_save_as_dialog` and
+`eps_save_as_keeps_page_options_and_writes_eps_without_export_only_switches`.
