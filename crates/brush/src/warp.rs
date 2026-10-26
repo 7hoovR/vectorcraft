@@ -198,19 +198,40 @@ fn affine_fit(f: &dyn Fn(Point) -> Point, b: Rect, tol: f64) -> Option<Affine> {
     Some(a)
 }
 
-/// Scale every stroke under `n`, as [`warp_node`] does on the way down.
-fn scale_strokes_deep(n: &mut Node, s: f64) {
-    n.appearance.scale_strokes(s);
-    if let NodeKind::Group { children, .. } | NodeKind::Layer { children, .. } | NodeKind::Compound { children, .. } = &mut n.kind {
-        *children = children
-            .iter()
-            .map(|c| {
-                let mut c = (**c).clone();
-                scale_strokes_deep(&mut c, s);
-                Arc::new(c)
-            })
-            .collect();
+/// [`warp_node`] for a map that is affine: the art is transformed rather than flattened, so its
+/// curves survive.
+///
+/// Everything else matches [`warp_node`] deliberately, so curves are the only difference between
+/// the two routes: the same node kinds are kept and the rest dropped, `live` is cleared on every
+/// path, an empty path or a group left with no children is dropped, and strokes are scaled by
+/// `width_scale` at every level rather than by the transform's own factor.
+fn affine_node(n: &Node, a: Affine, width_scale: f64) -> Option<Node> {
+    let mut out = prepared(n, width_scale)?;
+    out.transform(a, false);
+    Some(out)
+}
+
+/// The part of [`affine_node`] that mirrors [`warp_node`]'s walk, before the single transform.
+fn prepared(n: &Node, width_scale: f64) -> Option<Node> {
+    let mut out = n.clone();
+    out.appearance.scale_strokes(width_scale);
+    match &mut out.kind {
+        NodeKind::Path { path, live, .. } => {
+            *live = None;
+            if path.is_empty() {
+                return None;
+            }
+        }
+        NodeKind::Group { children, .. } | NodeKind::Layer { children, .. } | NodeKind::Compound { children, .. } => {
+            let kids: Vec<Arc<Node>> = children.iter().filter_map(|c| prepared(c, width_scale)).map(Arc::new).collect();
+            if kids.is_empty() {
+                return None;
+            }
+            *children = kids;
+        }
+        _ => return None,
     }
+    Some(out)
 }
 
 /// Bend `art` (already oriented, bounds `b`) along `t` using `along` and cross scale `cross`.
@@ -220,13 +241,9 @@ fn bend(t: &Track, art: &Node, b: Rect, along: AlongMap, cross: f64) -> Option<N
     let f = move |p: Point| t.map(along.at(p.x - x0), (p.y - cy) * cross);
     let scale = along.max_scale().max(cross.abs()).max(1e-6);
     let flat_tol = tolerance(b.height().max(b.width()) * scale) / scale;
-    // A straight run needs no bending: move the art and keep its curves. Strokes are scaled the
-    // way the bent path scales them, so this changes the curves and nothing else.
+    // A straight run needs no bending: move the art and keep its curves.
     if let Some(a) = affine_fit(&f, b, flat_tol.max(1e-9)) {
-        let mut out = art.clone();
-        out.transform(a, false);
-        scale_strokes_deep(&mut out, cross.abs());
-        return out.geometric_bounds().is_some().then_some(out);
+        return affine_node(art, a, cross.abs());
     }
     warp_node(art, &f, flat_tol, MAX_SEG / along.max_scale(), cross.abs())
 }

@@ -1,6 +1,6 @@
 use vectorcraft_color::{Color, Paint};
 use vectorcraft_doc::{Appearance, Document, Node, NodeId, NodeKind, StrokeLayer};
-use vectorcraft_geom::{BezPath, Point, Rect, shapes};
+use vectorcraft_geom::{Affine, BezPath, Point, Rect, shapes};
 
 use super::*;
 
@@ -1243,4 +1243,44 @@ fn a_pattern_tile_on_a_bent_path_is_still_subdivided() {
     assert!(!out.is_empty());
     let bent = out.iter().filter(|n| anchors_and_curved(n).0 > 8).count();
     assert!(bent > out.len() / 2, "tiles on a bend are still densified: {bent} of {}", out.len());
+}
+
+/// The kind of every node in a piece of brushed art, in paint order.
+fn kinds(n: &Node) -> Vec<&'static str> {
+    let mut out = vec![match &n.kind {
+        NodeKind::Path { .. } => "path",
+        NodeKind::Group { .. } => "group",
+        NodeKind::SymbolInstance { .. } => "symbol",
+        _ => "other",
+    }];
+    for c in n.children().into_iter().flatten() {
+        out.extend(kinds(c));
+    }
+    out
+}
+
+/// The straight-run route differs from the bending route in the tile's curves and in nothing else,
+/// which includes the node kinds it keeps. A tile holding a kind neither route can map (here a
+/// symbol instance, whose art lives in the symbol and not in the node) loses it on a straight run
+/// exactly as it does on a bend: an affine is not a way for unmappable art to arrive untouched.
+#[test]
+fn a_straight_run_keeps_the_same_node_kinds_as_a_bend() {
+    let circle =
+        Node::path(NodeId(0), shapes::ellipse(Rect::new(0.0, -20.0, 40.0, 20.0)), Appearance::basic(Paint::solid(Color::BLACK), Paint::None, 0.0));
+    let sym = Node::new(NodeId(1), NodeKind::SymbolInstance { symbol: "s".into(), xf: Affine::IDENTITY });
+    let tile = Node::group(NodeId(2), vec![Arc::new(circle), Arc::new(sym)]);
+    let brush = Brush {
+        name: "p".into(),
+        kind: BrushKind::Pattern(PatternBrush { side: tile, fit: PatternFit::Stretch, colorization: Colorization::None, ..Default::default() }),
+    };
+    let doc = Document::new(1.0, 1.0);
+    let straight = stroke_pieces(&doc, &brush, &line(0.0, 0.0, 480.0, 0.0), &stroke(1.0));
+    let round = shapes::ellipse(Rect::new(0.0, 0.0, 400.0, 400.0)).to_bezpath();
+    let bent = stroke_pieces(&doc, &brush, &round, &stroke(1.0));
+    assert!(!straight.is_empty() && !bent.is_empty(), "both paths drew something");
+    for (what, out) in [("a straight run", &straight), ("a bend", &bent)] {
+        for n in out {
+            assert_eq!(kinds(n), ["group", "path"], "{what} keeps the path and drops the symbol instance");
+        }
+    }
 }
