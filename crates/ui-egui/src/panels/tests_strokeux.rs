@@ -194,3 +194,31 @@ fn stroke_weight_stepper_uses_ten_point_shift_steps() {
     click_step(&mut app, r.center().y + 5.0, egui::Modifiers::COMMAND);
     assert!((app.session.shown_stroke().unwrap().width - 12.9).abs() < 1e-6);
 }
+
+/// The weight spinner in the Stroke panel, the Control bar and the Properties panel steps from a
+/// weight between the presets to the next preset: 0.52 pt went down to 0 pt.
+#[test]
+fn every_weight_spinner_steps_to_the_next_preset() {
+    use super::tests_appearance::frame_raw;
+
+    let ctx = egui::Context::default();
+    crate::theme::install_fonts(&ctx);
+    type Show = fn(&mut VectorcraftApp, &mut Ui);
+    let surfaces: [(&str, Show); 3] =
+        [("Stroke panel", stroke::show), ("Control bar", crate::chrome::control_bar), ("Properties panel", properties::show)];
+    for (surface, show) in surfaces {
+        for (up, after) in [(false, 0.5), (true, 0.75)] {
+            let mut app = app_with_rect();
+            run(&mut app, "stroke.set", json!({"weight": 0.52}));
+            let t = texts(&ctx, &mut app, show);
+            let r = text_rect(&t, "0.52 pt");
+            let pos = egui::pos2(r.left() - 14.0, r.center().y + if up { -5.0 } else { 5.0 });
+            let button =
+                |pressed| egui::Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: egui::Modifiers::NONE };
+            for event in [egui::Event::PointerMoved(pos), button(true), button(false)] {
+                frame_raw(&ctx, &mut app, egui::RawInput { events: vec![event], ..Default::default() }, show);
+            }
+            assert_eq!(app.session.shown_stroke().unwrap().width, after, "{surface}, up: {up}");
+        }
+    }
+}
