@@ -38,7 +38,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Delete Anchor Point",
             [],
             None,
-            "{id, subpath?, anchor} remove one anchor, re-fitting the curve",
+            "{id, subpath?, anchor, curvature?} remove one anchor, re-fitting the curve (with curvature: true, the curve where it was follows the remaining anchors, as the Curvature tool curves its points)",
             has_doc,
             remove_anchor
         ),
