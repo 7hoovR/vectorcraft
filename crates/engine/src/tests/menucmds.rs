@@ -646,6 +646,31 @@ fn expand_live_shape_and_text_in_one_undo_step() {
 }
 
 #[test]
+fn expand_text_outlines_its_stroke_too() {
+    let mut s = session();
+    let t = text(&mut s, "Hi");
+    sel(&mut s, &[t]);
+    s.execute("paint.setStroke", &json!({"color": "#ff0000"})).unwrap();
+    let info = s.execute("object.expand.info", &json!({})).unwrap();
+    assert_eq!(info["stroke"], json!(true), "stroked type has a stroke to expand");
+    let n = undo_len(&s);
+    s.execute("object.expand", &json!({})).unwrap();
+    assert_eq!(undo_len(&s), n + 1);
+    let d = &s.doc().unwrap().doc;
+    let (mut paths, mut stroked) = (0, 0);
+    for id in &s.doc().unwrap().selection.objects {
+        d.node(*id).unwrap().walk(&mut |c| {
+            if matches!(c.kind, NodeKind::Path { .. } | NodeKind::Compound { .. }) {
+                paths += 1;
+                stroked += usize::from(!c.appearance.stroke_paint().is_none());
+            }
+        });
+    }
+    assert!(paths > 0);
+    assert_eq!(stroked, 0, "every glyph's stroke became a filled outline ({paths} paths)");
+}
+
+#[test]
 fn expand_nothing_errors() {
     let mut s = session();
     let p = id_of(&s.execute("path.create", &json!({"anchors": [{"x": 0, "y": 0}, {"x": 10, "y": 10}]})).unwrap());
