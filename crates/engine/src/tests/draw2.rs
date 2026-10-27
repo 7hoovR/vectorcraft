@@ -1799,6 +1799,30 @@ fn remove_anchor_points_keeps_the_paths_closed() {
     assert_eq!(spec.menu, &["Object", "Path"][..]);
 }
 
+#[test]
+fn add_anchor_point_selects_the_path_it_was_added_to() {
+    // #4237: an anchor added to a path that wasn't selected selects that path, the new anchor
+    // direct-selected, so it shows at once; undo puts the old selection back. A path already
+    // selected (the Pen's Auto Add) keeps its selection.
+    let mut s = session();
+    let other = rect(&mut s, 300.0, 0.0, 50.0, 50.0);
+    let line = |s: &mut Session| {
+        NodeId(s.execute("path.create", &json!({"anchors": [{"x": 0, "y": 0}, {"x": 100, "y": 0}]})).unwrap()["id"].as_u64().unwrap())
+    };
+    let id = line(&mut s);
+    s.execute("select.set", &json!({"ids": [other.0]})).unwrap();
+    s.execute("path.insertAnchor", &json!({"id": id.0, "segment": 0, "t": 0.5})).unwrap();
+    assert_eq!(s.doc().unwrap().selection.objects, [id]);
+    assert_eq!(selected_anchors(&s, id), [(0, 1)]);
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert_eq!(s.doc().unwrap().selection.objects, [other]);
+    let kept = line(&mut s);
+    s.execute("select.set", &json!({"ids": [kept.0]})).unwrap();
+    s.execute("path.insertAnchor", &json!({"id": kept.0, "segment": 0, "t": 0.5})).unwrap();
+    assert_eq!(s.doc().unwrap().selection.objects, [kept]);
+    assert!(selected_anchors(&s, kept).is_empty(), "a path selected as a whole stays so");
+}
+
 fn selected_anchors(s: &Session, id: NodeId) -> Vec<(usize, usize)> {
     s.doc().unwrap().selection.anchors.get(&id).map(|set| set.iter().copied().collect()).unwrap_or_default()
 }
