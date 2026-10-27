@@ -187,6 +187,52 @@ fn a_clicked_mesh_point_takes_the_fill_colour() {
     assert_eq!((after[0], after[3]), (before[0], before[3]));
 }
 
+fn mesh_opacities(s: &Session, id: NodeId) -> Vec<f32> {
+    match &s.doc().unwrap().doc.node(id).unwrap().kind {
+        NodeKind::Mesh(m) => m.points.iter().map(|p| p.opacity).collect(),
+        _ => panic!("not a mesh"),
+    }
+}
+
+/// The Transparency panel's opacity on a clicked mesh point fades that point alone, not the whole
+/// object (#4206).
+#[test]
+fn a_clicked_mesh_point_takes_the_opacity() {
+    let mut s = session();
+    let m = rect(&mut s, json!("#ff0000"));
+    s.execute("object.mesh.create", &json!({"rows": 2, "cols": 2})).unwrap();
+    s.execute("select.set", &json!({"ids": [m.0]})).unwrap();
+    let v = ViewInfo::default();
+    let click = |s: &mut Session, i: usize| {
+        let NodeKind::Mesh(g) = &s.doc().unwrap().doc.node(m).unwrap().kind else { panic!("not a mesh") };
+        let q = g.points[i].p;
+        for kind in [PointerKind::Down, PointerKind::Up] {
+            s.pointer(&PointerEvent::new(kind, q.x, q.y), v).unwrap();
+        }
+    };
+    let object_opacity = |s: &Session| s.doc().unwrap().doc.node(m).unwrap().opacity;
+    for (tool, point) in [("mesh", 4), ("directSelection", 4)] {
+        s.select_tool(tool, v).unwrap();
+        click(&mut s, point);
+        let undo = s.doc().unwrap().history.undo.len();
+        s.execute("transparency.set", &json!({"opacity": 30})).unwrap();
+        let o = mesh_opacities(&s, m);
+        assert!((o[4] - 0.3).abs() < 1e-6, "{tool}: the clicked point fades: {o:?}");
+        assert!(o.iter().enumerate().all(|(i, a)| i == 4 || *a == 1.0), "{tool}: the other points stay opaque: {o:?}");
+        assert_eq!(object_opacity(&s), 1.0, "{tool}: the object stays opaque");
+        assert_eq!(s.transparency_info().opacity, Some(30.0), "{tool}: the panel shows the point's opacity");
+        assert_eq!(s.doc().unwrap().history.undo.len(), undo + 1, "one undo step");
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert!(mesh_opacities(&s, m).iter().all(|a| *a == 1.0));
+    }
+    // With no point focused the object takes the opacity.
+    s.select_tool("selection", v).unwrap();
+    s.execute("select.set", &json!({"ids": [m.0]})).unwrap();
+    s.execute("transparency.set", &json!({"opacity": 30})).unwrap();
+    assert!((object_opacity(&s) - 0.3).abs() < 1e-6);
+    assert!(mesh_opacities(&s, m).iter().all(|a| *a == 1.0));
+}
+
 #[test]
 fn blend_moves_a_mesh_to_the_blended_colour() {
     let mut s = session();
