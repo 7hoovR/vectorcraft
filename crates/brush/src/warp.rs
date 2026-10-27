@@ -155,6 +155,32 @@ impl AlongMap {
         let w = self.xs[i + 1] - self.xs[i];
         if w <= 1e-12 { 1.0 } else { (self.ss[i + 1] - self.ss[i]) / w }
     }
+    /// Whether `at` is one linear function across the art, so it adds no bend of its own.
+    ///
+    /// [`AlongMap::linear`] always is: its outer two pieces have no width and the middle one
+    /// spans everything. Between Guides is not, once its three pieces really do differ, which is
+    /// the whole point of it.
+    fn is_linear(&self) -> bool {
+        let mut slope: Option<f64> = None;
+        for i in 0..3 {
+            // A piece with no width constrains nothing: no art x lands inside it.
+            if self.xs[i + 1] - self.xs[i] <= 1e-12 {
+                continue;
+            }
+            let s = self.slope(i);
+            if slope.is_some_and(|first: f64| (first - s).abs() > 1e-9 * first.abs().max(1.0)) {
+                return false;
+            }
+            slope = Some(s);
+        }
+        slope.is_some()
+    }
+
+    /// The arc lengths the art spans, low to high.
+    fn span(&self) -> (f64, f64) {
+        (self.ss[0].min(self.ss[3]), self.ss[0].max(self.ss[3]))
+    }
+
     /// Largest along-scale (arc length per art unit) of the pieces.
     fn max_scale(&self) -> f64 {
         (0..3).map(|i| self.slope(i).abs()).fold(1e-6, f64::max)
@@ -167,9 +193,9 @@ impl AlongMap {
 /// normal offset are both linear, so the art is just moved, turned and scaled, and flattening it
 /// into chords throws its curves away for nothing (#3926).
 ///
-/// Derived from three corners and then *checked* against a grid: it is used only where it
-/// reproduces the real map at least as closely as the flattening would have, so where it does not
-/// hold the result is exactly what it was before.
+/// Derived from three corners and then checked against a grid. The check is a second opinion, not
+/// the gate: `bend` only calls this once the track and the along map have been read and found
+/// straight, because sampling can reject a bend and cannot promise there is none (#3926 review).
 fn affine_fit(f: &dyn Fn(Point) -> Point, b: Rect, tol: f64) -> Option<Affine> {
     let (w, h) = (b.width(), b.height());
     if !(w > 1e-9 && h > 1e-9 && tol.is_finite() && tol > 0.0) {
@@ -242,7 +268,17 @@ fn bend(t: &Track, art: &Node, b: Rect, along: AlongMap, cross: f64) -> Option<N
     let scale = along.max_scale().max(cross.abs()).max(1e-6);
     let flat_tol = tolerance(b.height().max(b.width()) * scale) / scale;
     // A straight run needs no bending: move the art and keep its curves.
-    if let Some(a) = affine_fit(&f, b, flat_tol.max(1e-9)) {
+    //
+    // Straightness is read off the track and the along map, not sampled. A bend anywhere in the
+    // span is two segment directions that differ, so this cannot miss one however short the bent
+    // part is; the five by five grid below could, since a wiggle narrower than its spacing passes
+    // between the samples (#3926 review). The grid now only checks the affine that structure has
+    // already said exists, so it can reject and never admit.
+    let (s_lo, s_hi) = along.span();
+    if along.is_linear()
+        && t.is_straight(s_lo, s_hi)
+        && let Some(a) = affine_fit(&f, b, flat_tol.max(1e-9))
+    {
         return affine_node(art, a, cross.abs());
     }
     warp_node(art, &f, flat_tol, MAX_SEG / along.max_scale(), cross.abs())
@@ -805,4 +841,84 @@ pub(crate) fn pattern(pb: &PatternBrush, bp: &BezPath, weight: f64) -> Vec<Node>
         }
     }
     out.out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::track::tracks;
+
+    /// #3926 review: the five by five grid cannot promise a run is straight, only that it looks
+    /// straight where it was asked. A zigzag whose vertices land on the sample positions is
+    /// invisible to it: every sample sits on a y = 0 vertex whose blended tangent is flat, so all
+    /// 25 points agree with the affine exactly, while the art between them is thrown 4 pt off.
+    ///
+    /// This is why the gate is `Track::is_straight` and the grid is only a second opinion.
+    #[test]
+    fn a_bend_shorter_than_the_sample_grid_is_still_a_bend() {
+        // Half-period 20 pt, amplitude 4 pt. The 11.3 degree turn is under `CORNER_DEG`, so the
+        // vertices are not corners and their tangents blend flat, which is what hides them.
+        let (d, a) = (20.0, 4.0);
+        let mut bp = BezPath::new();
+        bp.move_to((0.0, 0.0));
+        for i in 1..=16 {
+            bp.line_to((d * i as f64, if i % 2 == 1 { a } else { 0.0 }));
+        }
+        let t = tracks(&bp, 0.01).remove(0);
+        assert_eq!(t.corner.iter().filter(|c| **c).count(), 0, "no vertex is a corner, so every tangent is blended");
+
+        // A span over four full periods, held clear of both ends so no sample hits the
+        // extrapolation branch: the five samples land on vertices 4, 6, 8, 10 and 12, all at y = 0.
+        let seglen = (d * d + a * a).sqrt();
+        let (s0, s1) = (4.0 * seglen, 12.0 * seglen);
+        let b = Rect::new(0.0, -20.0, 40.0, 20.0);
+        let along = AlongMap::linear(b.width(), s0, s1);
+        let (cy, x0, cross) = (b.center().y, b.x0, 1.0);
+        let f = |p: Point| t.map(along.at(p.x - x0), (p.y - cy) * cross);
+        let scale = along.max_scale().max(cross.abs()).max(1e-6);
+        let flat_tol = tolerance(b.height().max(b.width()) * scale) / scale;
+
+        // The grid is satisfied, and it should not be.
+        let fit = affine_fit(&f, b, flat_tol.max(1e-9)).expect("the sampled check accepts this bend");
+
+        // How wrong it is: an art x landing on a peak of the zigzag, which no sample reaches.
+        let peak_x = x0 + (5.0 * seglen - s0) / (s1 - s0) * b.width();
+        let at_peak = Point::new(peak_x, cy);
+        let off = (f(at_peak) - fit * at_peak).hypot();
+        assert!(
+            off > 3.0 && off > flat_tol * 20.0,
+            "the affine the grid approved is {off:.3} pt out at the peak, against a {flat_tol:.4} pt tolerance"
+        );
+
+        // Reading the track instead refuses it, and still admits the straight run it is made of.
+        assert!(!t.is_straight(s0, s1), "a bend between the samples is still a bend");
+        let straight = tracks(
+            &{
+                let mut bp = BezPath::new();
+                bp.move_to((0.0, 0.0));
+                bp.line_to((320.0, 0.0));
+                bp
+            },
+            0.01,
+        )
+        .remove(0);
+        assert!(straight.is_straight(s0, s1), "and the same span of an actually straight track is straight");
+
+        // End to end through `bend`: the aliased bend is subdivided, the straight run keeps its
+        // curves. This is the gate itself, not the two predicates it is made of.
+        let anchors = |n: &Node| match &n.kind {
+            NodeKind::Path { path, .. } => path.subpaths.iter().map(|s| s.anchors.len()).sum::<usize>(),
+            _ => 0,
+        };
+        let circle = Node::path(
+            vectorcraft_doc::NodeId(0),
+            vectorcraft_geom::shapes::ellipse(b),
+            vectorcraft_doc::Appearance::basic(vectorcraft_color::Paint::solid(vectorcraft_color::Color::BLACK), vectorcraft_color::Paint::None, 0.0),
+        );
+        assert_eq!(anchors(&circle), 4, "the art is a 4-anchor circle to begin with");
+        let bent = bend(&t, &circle, b, along, cross).expect("the zigzag still draws something");
+        assert!(anchors(&bent) > 8, "the aliased bend is subdivided, not affine-mapped: {} anchors", anchors(&bent));
+        let moved = bend(&straight, &circle, b, along, cross).expect("the straight run still draws something");
+        assert_eq!(anchors(&moved), 4, "the straight run keeps the tile's curves");
+    }
 }
