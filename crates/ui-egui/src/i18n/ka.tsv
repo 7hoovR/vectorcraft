@@ -245,7 +245,7 @@
 	Insert Special Character	სპეციალური სიმბოლოს ჩასმა
 	Bullet	ბურთულა
 	Bullets	ბურთულები
-	Bullets and Numbering	ბურთულები და დანომრვა
+	Bullets and Numbering	ბურთულები და დანომვრა
 	Apply Bullets	ბურთულების გამოყენება
 	Numbered List	დანომრილი სია
 	Apply Numbers	დანომრვის გამოყენება
@@ -1538,7 +1538,7 @@ lighting	Light	სინათლე
 	Trap…	ტრეპინგი…
 	Trap	ტრეპინგი
 	Height/Width	სიმაღლე/სიგანე
-	Tint Reduction	ტონის შემცირება
+	Tint Reduction	ტონირების შემცირება
 	Traps with Process Color	ტრეპინგი პროცესული ფერებით
 	Reverse Traps	შებრუნებული ტრეპინგი
 	Precision	სიზუსტე
@@ -5466,10 +5466,10 @@ axis	Y Axis	Y ღერძი
 	Match	დამთხვევა
 	On Artboards	სამუშაო დაფებზე
 	All Artboards	ყველა სამუშაო დაფა
-	Include Objects On Canvas	ტილოზე არსებული ობიექტების ჩართვა
-	Result(s): {count}	შედეგ(ებ)ი: {count}
-@msg	select one object	აირჩიეთ ერთი ობიექტი
-@msg	Global Edit works on paths, compound paths and symbol instances	გლობალური რედაქტირება მუშაობს კონტურებზე, შედგენილ კონტურებსა და სიმბოლოს ეგზემპლარებზე
+	Include Objects On Canvas	ტილოზე არსებული ობიექტების გათვალისწინება
+	Result(s): {count}	შედეგი: {count}
+@msg	select one object	მონიშნეთ ერთი ობიექტი
+@msg	Global Edit works on paths, compound paths and symbol instances	გლობალური რედაქტირება მუშაობს ტრაექტორიებზე, შედგენილ ტრაექტორიებსა და სიმბოლოს ეგზემპლარებზე
 @msg	no similar objects found (rotated or reflected copies are not matched); change the Global Edit Options and try again	მსგავსი ობიექტები ვერ მოიძებნა (შემობრუნებული ან არეკლილი ასლები არ ემთხვევა); შეცვალეთ გლობალური რედაქტირების პარამეტრები და სცადეთ ხელახლა
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all ან დიაპაზონი, მაგალითად 1, 3-5, და არა {v}
 	Add to Symbols	სიმბოლოებში დამატება
@@ -5498,8 +5498,8 @@ axis	Y Axis	Y ღერძი
 @msg	no symbol `{n}` in `{_1}`	`{_1}`-ში სიმბოლო `{n}` არ არის
 @msg	no symbol library `{key}` (see symbol.libraries)	სიმბოლოების ბიბლიოთეკა `{key}` არ არის (იხ. symbol.libraries)
 @msg	the document has no symbols to save	დოკუმენტში შესანახი სიმბოლოები არ არის
-@msg	Trap: select two or more objects filled with solid colours	ტრეპინგი: აირჩიეთ ორი ან მეტი ობიექტი, შევსებული ერთგვაროვანი ფერით
-@msg	Trap: no edges of different colours meet among the selected objects	ტრეპინგი: არჩეულ ობიექტებს შორის განსხვავებული ფერის კიდეები არ ეხება ერთმანეთს
+@msg	Trap: select two or more objects filled with solid colours	ტრეპინგი: მონიშნეთ მყარი ფერით შევსებული ორი ან მეტი ობიექტი
+@msg	Trap: no edges of different colours meet among the selected objects	ტრეპინგი: მონიშნულ ობიექტებს შორის განსხვავებული ფერის კიდეები ერთმანეთს არ ეხება
 @msg	thickness must be from 0.01 to 5000 pt	thickness უნდა იყოს 0,01-დან 5000 pt-მდე
 @msg	heightWidth must be from 1 to 1000 %	heightWidth უნდა იყოს 1-დან 1000 %-მდე
 @msg	tintReduction must be from 0 to 100 %	tintReduction უნდა იყოს 0-დან 100 %-მდე
@@ -5540,6 +5540,6 @@ axis	Y Axis	Y ღერძი
 @msg	the document has no brushes to save	დოკუმენტში შესანახი ფუნჯები არ არის
 @msg	no empty artboards to delete	წასაშლელი ცარიელი სამუშაო დაფები არ არის
 	Scale Presets	მასშტაბის წინასწარ დაყენებული მნიშვნელობები
-@msg	a {width}×{height} screenshot's byte count overflows	{width}×{height} ეკრანის სურათის ბაიტების რაოდენობა გადაივსო
-@msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	ფანჯრის {what} ({points} პუნქტი × {scale} DPI) ეკრანის სურათის ზომას ვერ განსაზღვრავს
+@msg	a {width}×{height} screenshot's byte count overflows	{width}×{height} ეკრანის ანაბეჭდის ბაიტების რაოდენობა გადაივსო
+@msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	ფანჯრის {what} ({points} პუნქტი × {scale} DPI) ეკრანის ანაბეჭდის ზომას ვერ განსაზღვრავს
 	Live preview	ცოცხალი წინასწარი ნახვა
