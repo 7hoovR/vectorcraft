@@ -727,6 +727,37 @@ fn a_cancel_after_the_last_file_returns_nothing() {
     let _ = std::fs::remove_dir_all(dir);
 }
 
+/// A folder export without a ZIP writes each file as it goes: a cancel during the last step, a
+/// row that repeats the one before it and writes nothing, comes after every file was written, so
+/// the export returns the written files instead of the cancelled error.
+#[cfg(not(target_arch = "wasm32"))]
+#[test]
+fn a_cancel_after_the_last_file_keeps_a_finished_folder_export() {
+    let mut s = session(1);
+    let dir = std::env::temp_dir().join(format!("vc-screens-cancel-folder-{}", std::process::id()));
+    let folder = dir.to_string_lossy().replace(std::path::MAIN_SEPARATOR, "/");
+    let p = json!({ "formats": [{"format": "svg"}, {"format": "svg"}], "folder": folder });
+    let prepared = s.prepare_screen_export("document.exportForScreens", &p).unwrap();
+    let token = vectorcraft_doc::cancel::CancelToken::new();
+    let on_last = token.clone();
+    let sink: vectorcraft_doc::cancel::ProgressSink = std::rc::Rc::new(move |done, total, _| {
+        if done + 1 == total {
+            on_last.cancel();
+        }
+    });
+    let mut written = vec![];
+    let r = vectorcraft_doc::cancel::scope(&token, Some(sink), || {
+        prepared.write(&mut |path: &str, _: &[u8]| {
+            written.push(path.to_string());
+            Ok(())
+        })
+    });
+    let r = r.unwrap();
+    assert_eq!(written.len(), 1, "{written:?}");
+    assert_eq!(r["files"], json!(written));
+    let _ = std::fs::remove_dir_all(dir);
+}
+
 #[test]
 fn zip_exports_deflate_their_files() {
     let mut s = session(1);

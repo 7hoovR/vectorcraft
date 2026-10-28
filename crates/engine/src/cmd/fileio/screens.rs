@@ -818,8 +818,11 @@ fn encode_and_write(export: ScreenExport, writer: &mut dyn FnMut(&str, &[u8]) ->
             files += 1;
         }
     }
-    // A cancel that came while the last file was encoded returns no files.
-    vectorcraft_doc::cancel::check()?;
+    // A cancel that came while the last file was encoded returns no files. A folder export
+    // without a ZIP has written every file by now, so it returns them.
+    if o.zip || folder.is_none() {
+        vectorcraft_doc::cancel::check()?;
+    }
     let names: Vec<&str> = out.kept.iter().map(|(n, _)| n.as_str()).collect();
     if o.zip {
         let zip = super::zip::deflate(&out.kept, super::zip::FIXED_TIME, vectorcraft_doc::cancel::is_cancelled);
