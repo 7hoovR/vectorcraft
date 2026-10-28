@@ -1129,7 +1129,8 @@ and `radial` in `shape.polarGrid`; `size` and the `width`, `height` and `fitMinP
 `end` in `type.step`; `by` in `type.size.increase` and `type.size.decrease`; `size` in `type.ruby`; `width`, `height`
 and `fitMinPercent` in `text.areaOptions`; `x` and `y` in `symbol.place`; `radius`, `density` and `scale` in
 `symbol.spray`; `radius` and `intensity` in `symbol.adjust`; `to` in `swatch.move`; `weight` and `opacity` in
-`appearance.setItem`; `angle` in `paint.editGradient` and in the `gradient` of a command that takes a paint; `t` in
+`appearance.setItem`; `r`, `g`, `b`, `c`, `m`, `y`, `k`, `gray` and `tint` in `edit.colors.adjustBalance`; `steps`
+and `amount` in `color.harmony`; `angle` in `paint.editGradient` and in the `gradient` of a command that takes a paint; `t` in
 `paint.freeform.splitLine`; `tolerance` and `gap` in `shapeBuilder.merge`; `gap` in `shapeBuilder.regions`; and
 `width` and `tolerance` in `livePaint.strokeEdge`. A null is read as a key left out. A gradient stop that names a
 swatch refuses a `tint` that is not a number with `` stop 0: `tint` must be a number ``.
@@ -1716,7 +1717,9 @@ the scope and what differs from the public documentation.
 fills, strokes, text, gradient stops, gradient-mesh points, embedded images (a recoloured copy of the image; linked
 images are left alone) and the tiles of pattern fills and strokes (a recoloured copy saved as a new pattern swatch,
 e.g. "Dots 2"; the original pattern is untouched). `includeImages: false` / `includePatterns: false` leave images or
-patterns out. The Blend commands also grade gradient meshes, which keep their shading.
+patterns out. The Blend commands also grade gradient meshes, which keep their shading. `edit.colors.saturate` needs
+`intensity`, a number from -100 to 100 (a number outside the range counts as its nearest end). Without one, or with a
+value that is not a number, it answers `` missing number `intensity` `` and changes nothing.
 
 ```json
 {"name":"run_command","arguments":{"command":"recolor.colors","params":{}}}

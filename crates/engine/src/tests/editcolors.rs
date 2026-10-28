@@ -70,6 +70,60 @@ fn balance_previews_and_commits_one_step() {
     assert_eq!(fill_of(&s, a).to_hex(), "#808080");
 }
 
+/// Saturate needs its intensity: a call without one, or with one that is not a number, is an error
+/// that changes nothing and records no undo step. A number outside −100..100 counts as its nearest end.
+#[test]
+fn saturate_needs_a_number_intensity() {
+    let mut s = session();
+    let a = rect(&mut s, json!("#cc6666"));
+    let undo = s.doc().unwrap().history.undo.len();
+    for p in [json!({}), json!({"intensity": "40"}), json!({"intensity": null})] {
+        let e = s.execute("edit.colors.saturate", &p).unwrap_err().to_string();
+        assert!(e.contains("missing number `intensity`"), "{p}: {e}");
+    }
+    assert_eq!(fill_of(&s, a).to_hex(), "#cc6666");
+    assert_eq!(s.doc().unwrap().history.undo.len(), undo, "no undo step");
+    s.execute("edit.colors.saturate", &json!({"intensity": 100})).unwrap();
+    let full = fill_of(&s, a).to_hex();
+    assert_ne!(full, "#cc6666");
+    s.execute("edit.undo", &json!({})).unwrap();
+    s.execute("edit.colors.saturate", &json!({"intensity": 250})).unwrap();
+    assert_eq!(fill_of(&s, a).to_hex(), full, "250 counts as 100");
+}
+
+/// Saturate at 0 leaves every color as it was: a swatch-linked fill keeps its exact color and its link.
+#[test]
+fn saturate_keeps_a_color_it_does_not_change() {
+    let mut s = session();
+    s.execute("swatch.new", &json!({"name": "Sky", "color": "#3a7bd5", "global": true})).unwrap();
+    let a = rect(&mut s, json!("#3a7bd5"));
+    s.execute("paint.setFill", &json!({"ids": [a.0], "swatch": "Sky"})).unwrap();
+    let b = rect(&mut s, json!({"c": 20, "m": 40, "y": 0, "k": 10}));
+    let paint = |s: &Session, id: NodeId| s.doc().unwrap().doc.node(id).unwrap().appearance.fill_paint().clone();
+    let (sky, cmyk) = (paint(&s, a), paint(&s, b));
+    let v = s.execute("edit.colors.saturate", &json!({"ids": [a.0, b.0], "intensity": 0})).unwrap();
+    assert_eq!(v["changed"], 0);
+    assert_eq!(paint(&s, a), sky);
+    assert_eq!(paint(&s, b), cmyk);
+}
+
+/// Adjust Color Balance refuses a channel that is not a number, which it would otherwise read as 0.
+#[test]
+fn adjust_balance_refuses_a_channel_that_is_not_a_number() {
+    let mut s = session();
+    let a = rect(&mut s, json!("#808080"));
+    let undo = s.doc().unwrap().history.undo.len();
+    for p in [json!({"mode": "rgb", "r": "40"}), json!({"c": "10"}), json!({"gray": true}), json!({"tint": "5"})] {
+        let e = s.execute("edit.colors.adjustBalance", &p).unwrap_err().to_string();
+        assert!(e.contains("must be a number"), "{p}: {e}");
+    }
+    assert_eq!(fill_of(&s, a).to_hex(), "#808080");
+    assert_eq!(s.doc().unwrap().history.undo.len(), undo, "no undo step");
+    // A null is read as a channel left out.
+    s.execute("edit.colors.adjustBalance", &json!({"mode": "rgb", "r": 20, "g": null})).unwrap();
+    assert_eq!(fill_of(&s, a).to_hex(), "#b38080");
+}
+
 // ---------- meshes, images and patterns ----------
 
 fn mesh_colors(s: &Session, id: NodeId) -> Vec<Color> {
