@@ -809,6 +809,52 @@ fn eraser_removes_small_shape_entirely() {
     assert!(paths(&s).is_empty());
 }
 
+/// #4495: the Eraser cuts a compound path as one shape: its hole stays empty, the erased area is
+/// empty, and the rest stays filled, with either fill rule. A notch inside the ring keeps one
+/// compound path; a drag through the whole ring leaves compound paths whose holes stay holes.
+#[test]
+fn eraser_keeps_the_holes_of_a_compound_path() {
+    for rule in ["nonZero", "evenOdd"] {
+        for (drag, erased) in [([[200, 110], [200, 120]], (200.0, 115.0)), ([[200, 80], [200, 320]], (200.0, 120.0))] {
+            let mut s = session();
+            let outer = rect(&mut s, 100.0, 100.0, 200.0, 200.0);
+            let inner = rect(&mut s, 150.0, 150.0, 100.0, 100.0);
+            s.execute("select.set", &json!({"ids": [outer.0, inner.0]})).unwrap();
+            s.execute("object.compoundPath.make", &json!({})).unwrap();
+            s.execute("path.setFillRule", &json!({"rule": rule})).unwrap();
+            s.execute("select.none", &json!({})).unwrap();
+            s.execute("path.eraseRegion", &json!({"points": drag, "size": 10})).unwrap();
+            // Whether any top-level shape fills `p`, a compound path with all its members at once.
+            let filled = |x: f64, y: f64| {
+                let doc = &s.doc().unwrap().doc;
+                let mut hit = false;
+                for layer in &doc.layers {
+                    for n in layer.children().unwrap() {
+                        let (subs, rule) = match &n.kind {
+                            NodeKind::Path { path, rule, .. } => (path.subpaths.clone(), *rule),
+                            NodeKind::Compound { children, rule } => {
+                                (children.iter().flat_map(|c| c.path_data().unwrap().subpaths.clone()).collect(), *rule)
+                            }
+                            _ => continue,
+                        };
+                        hit |= vectorcraft_geom::hit::fill_contains(&PathData::new(subs).to_bezpath(), rule, Point::new(x, y));
+                    }
+                }
+                hit
+            };
+            assert!(!filled(170.0, 200.0), "{rule} {drag:?}: the hole stays empty");
+            assert!(!filled(erased.0, erased.1), "{rule} {drag:?}: the erased area is empty");
+            assert!(filled(120.0, 200.0) && filled(280.0, 200.0), "{rule} {drag:?}: the ring stays filled");
+            if drag[1][1] == 120 {
+                let doc = &s.doc().unwrap().doc;
+                let tops: Vec<_> = doc.layers.iter().flat_map(|l| l.children().unwrap().iter().cloned()).collect();
+                assert_eq!(tops.len(), 1, "{rule}: one object");
+                assert!(matches!(tops[0].kind, NodeKind::Compound { .. }), "{rule}: still a compound path");
+            }
+        }
+    }
+}
+
 /// The Eraser's tip is an ellipse `size` across its long axis, at `angle` counter-clockwise from
 /// horizontal, with a short axis `roundness` percent as long: a vertical drag across a square
 /// removes a band as wide as the tip is across, and a press on a horizontal line removes the
