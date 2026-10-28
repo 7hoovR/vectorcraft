@@ -409,6 +409,10 @@ fn blob_brush_alt_switches_to_the_smooth_tool() {
     assert_eq!(t.cursor(&cx, at, alt), Cursor::Smooth);
     let acts = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 50.0, 150.0).with_mods(alt));
     assert!(acts.is_empty(), "{acts:?}");
+    // A release away from the press point with no drag before it paints when Alt goes down.
+    t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 50.0, 150.0));
+    let acts = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 150.0, 150.0).with_mods(alt));
+    assert!(matches!(acts.as_slice(), [Action::Exec(c, _)] if c == "path.blob"), "{acts:?}");
     // With nothing selected an Alt drag sends nothing.
     let none = Selection::default();
     let empty = crate::testutil::cx(&d, &none, &p);
