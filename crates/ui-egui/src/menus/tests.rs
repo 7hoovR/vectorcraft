@@ -830,5 +830,19 @@ fn window_menu_panels_are_sorted_alphabetically_in_active_language() {
     assert!(type_keys.windows(2).all(|w| w[0] <= w[1]), "Type submenu must be alphabetical: {type_labels:?}");
     assert_eq!(type_labels, vec!["Caractère", "Glyphes", "OpenType", "Paragraphe", "Styles de caractère", "Styles de paragraphe", "Tabulations",]);
 
+    // 4. In Polish: Łącza (Links) folds to L and sorts before Warstwy and Zmienne.
+    let pl = Lang::from_code("pl").unwrap();
+    set_current(pl);
+    let tree_pl = menu_tree();
+    let (_, window_pl) = tree_pl.iter().find(|(t, _)| *t == "Window").unwrap();
+    let seps_pl: Vec<usize> = window_pl.iter().enumerate().filter(|(_, it)| matches!(it, Item::Sep)).map(|(i, _)| i).collect();
+    let panels_pl = &window_pl[seps_pl[1] + 1..seps_pl[2]];
+    let pl_labels: Vec<String> = panels_pl.iter().map(|it| item_display(it, pl)).collect();
+    let pl_keys: Vec<String> = pl_labels.iter().map(|l| name_sort_key(l)).collect();
+    assert!(pl_keys.windows(2).all(|w| w[0] <= w[1]), "Polish panels must be alphabetical: {pl_labels:?}");
+    let pos_pl = |name: &str| pl_labels.iter().position(|l| l == name).unwrap_or_else(|| panic!("missing {name} in {pl_labels:?}"));
+    assert!(pos_pl("Łącza") < pos_pl("Warstwy"), "Łącza before Warstwy");
+    assert!(pos_pl("Warstwy") < pos_pl("Zmienne"), "Warstwy before Zmienne");
+
     set_current(prev);
 }
