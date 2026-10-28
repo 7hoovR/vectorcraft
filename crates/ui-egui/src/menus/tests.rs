@@ -768,3 +768,67 @@ fn new_window_is_disabled_until_it_opens_a_window() {
     let e = app.run("window.newWindow", json!({})).unwrap_err();
     assert!(!e.contains("M11.5"), "a user-facing message, not a milestone: {e}");
 }
+
+/// #4143: Window menu panels and panel submenus are listed in alphabetical order according to the
+/// active interface language (e.g. French), rather than staying frozen in English alphabetical order.
+#[test]
+fn window_menu_panels_are_sorted_alphabetically_in_active_language() {
+    use crate::i18n::{Lang, current, name_sort_key, set_current, tr, tr_id};
+
+    let prev = current();
+
+    // 1. In English: panels between separator 2 and 3 are alphabetical.
+    set_current(Lang::EN);
+    let tree = menu_tree();
+    let (_, window) = tree.iter().find(|(t, _)| *t == "Window").unwrap();
+
+    let seps: Vec<usize> = window.iter().enumerate().filter(|(_, it)| matches!(it, Item::Sep)).map(|(i, _)| i).collect();
+    assert!(seps.len() >= 3, "Window menu should have at least 3 separators");
+    let panels = &window[seps[1] + 1..seps[2]];
+
+    let item_display = |it: &Item, lang: Lang| -> String {
+        match it {
+            Item::Cmd(l, id, _) => tr_id(lang, id, l).to_string(),
+            Item::Sub(l, _) | Item::Todo(l, _) | Item::Header(l) => tr(lang, l).to_string(),
+            Item::Sep => String::new(),
+        }
+    };
+
+    let en_keys: Vec<String> = panels.iter().map(|it| name_sort_key(&item_display(it, Lang::EN))).collect();
+    assert!(en_keys.windows(2).all(|w| w[0] <= w[1]), "English panels must be alphabetical: {en_keys:?}");
+
+    // 2. In French: panels are sorted alphabetically by their French names.
+    let fr = Lang::from_code("fr").unwrap();
+    set_current(fr);
+    let tree_fr = menu_tree();
+    let (_, window_fr) = tree_fr.iter().find(|(t, _)| *t == "Window").unwrap();
+    let seps_fr: Vec<usize> = window_fr.iter().enumerate().filter(|(_, it)| matches!(it, Item::Sep)).map(|(i, _)| i).collect();
+    let panels_fr = &window_fr[seps_fr[1] + 1..seps_fr[2]];
+
+    let fr_labels: Vec<String> = panels_fr.iter().map(|it| item_display(it, fr)).collect();
+    let fr_keys: Vec<String> = fr_labels.iter().map(|l| name_sort_key(l)).collect();
+    assert!(fr_keys.windows(2).all(|w| w[0] <= w[1]), "French panels must be alphabetical: {fr_labels:?}");
+
+    // Specific French placements:
+    // Calques (Layers) is under C, Plans de travail (Artboards) is under P, Nuancier (Swatches) is under N.
+    let pos = |name: &str| fr_labels.iter().position(|l| l == name).unwrap_or_else(|| panic!("missing {name} in {fr_labels:?}"));
+    assert!(pos("Aspect") < pos("Calques"), "Aspect before Calques");
+    assert!(pos("Calques") < pos("Dégradé"), "Calques before Dégradé");
+    assert!(pos("Nuancier") < pos("Plans de travail"), "Nuancier before Plans de travail");
+    assert!(pos("Plans de travail") < pos("Texte"), "Plans de travail before Texte");
+
+    // 3. Type submenu is also alphabetical in French.
+    let type_sub = panels_fr
+        .iter()
+        .find_map(|it| match it {
+            Item::Sub(l, items) if *l == "Type" => Some(items),
+            _ => None,
+        })
+        .unwrap();
+    let type_labels: Vec<String> = type_sub.iter().map(|it| item_display(it, fr)).collect();
+    let type_keys: Vec<String> = type_labels.iter().map(|l| name_sort_key(l)).collect();
+    assert!(type_keys.windows(2).all(|w| w[0] <= w[1]), "Type submenu must be alphabetical: {type_labels:?}");
+    assert_eq!(type_labels, vec!["Caractère", "Glyphes", "OpenType", "Paragraphe", "Styles de caractère", "Styles de paragraphe", "Tabulations",]);
+
+    set_current(prev);
+}
