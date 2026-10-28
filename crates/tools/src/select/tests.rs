@@ -2,6 +2,35 @@ use super::*;
 use crate::testutil::*;
 use vectorcraft_doc::Selection;
 
+/// While an opacity mask is edited, a press on a selected Shaper original shape moves it, over the
+/// art the group shows and over a part of the shape the group does not show. A press on an original
+/// shape that is not selected selects the Shaper Group or starts a marquee, as before.
+#[test]
+fn a_press_on_a_selected_shaper_source_moves_it_while_a_mask_is_edited() {
+    let (mut d, g, sources, _) = doc_with_shaper_group();
+    let rect = d.layers[0].children().unwrap()[0].id;
+    let layer = d.layers[0].id;
+    d.mask_edit = Some(vectorcraft_doc::MaskEdit { object: rect, layer });
+    let ids: Vec<NodeId> = d.node(sources).unwrap().children().unwrap().iter().map(|n| n.id).collect();
+    let (mut s, p) = (Selection::default(), paint());
+    s.set([ids[1]]);
+    let c = ToolContext { isolation: Some(layer), ..cx(&d, &s, &p) };
+    for x in [75.0, 125.0] {
+        let mut t = SelectionTool::default();
+        assert_eq!(t.cursor(&c, Point::new(x, 350.0), Mods::default()), Cursor::Move, "at {x}");
+        let down = t.pointer(&c, &ev(PointerKind::Down, x, 350.0));
+        assert!(!down.iter().any(|a| matches!(a, Action::Exec(c, _) if c == "select.set")), "at {x}: {down:?}");
+        let drag = t.pointer(&c, &ev(PointerKind::Drag, x + 20.0, 350.0));
+        assert!(drag.iter().any(|a| matches!(a, Action::Preview(c, _) if c == "object.transform")), "at {x}: {drag:?}");
+    }
+    s.set([ids[0]]);
+    let c = ToolContext { isolation: Some(layer), ..cx(&d, &s, &p) };
+    let down = SelectionTool::default().pointer(&c, &ev(PointerKind::Down, 125.0, 350.0));
+    assert!(down.is_empty(), "{down:?}");
+    let down = SelectionTool::default().pointer(&c, &ev(PointerKind::Down, 75.0, 350.0));
+    assert!(down.iter().any(|a| matches!(a, Action::Exec(c, v) if c == "select.set" && v["ids"] == json!([g.0]))), "{down:?}");
+}
+
 fn ev(kind: PointerKind, x: f64, y: f64) -> PointerEvent {
     PointerEvent::new(kind, x, y)
 }
