@@ -1200,6 +1200,22 @@ fn line_family_tools_draw_and_click_asks_dialog() {
     assert_eq!(ui, vec![UiRequest::Dialog("polarGrid".into(), json!({"x": 10.0, "y": 10.0}))]);
 }
 
+/// A closed `shape.arc` with Base Along Y runs from the box's bottom-left corner to its top-right
+/// one and closes through the top-left corner, the X-base arc's sector mirrored top to bottom.
+#[test]
+fn shape_arc_closed_along_y_closes_through_the_top_left_corner() {
+    let mut s = session();
+    let p = json!({"x": 100, "y": 50, "lengthX": 80, "lengthY": 40, "baseAlong": "y", "slope": 100, "closed": true});
+    let id = NodeId(s.execute("shape.arc", &p).unwrap()["id"].as_u64().unwrap());
+    let path = s.doc().unwrap().doc.node(id).unwrap().path_data().unwrap().clone();
+    let sp = &path.subpaths[0];
+    assert!(sp.closed);
+    let ends: Vec<Point> = sp.anchors.iter().map(|a| a.p).collect();
+    assert_eq!(ends, [Point::new(100.0, 90.0), Point::new(180.0, 50.0), Point::new(100.0, 50.0)]);
+    let area = sp.signed_area().abs() / (80.0 * 40.0);
+    assert!((area - std::f64::consts::FRAC_PI_4).abs() < 0.01, "{area}");
+}
+
 /// The children of the grid a `shape.rectangularGrid` / `shape.polarGrid` call made, bottom first.
 fn grid(s: &mut Session, cmd: &str, p: serde_json::Value) -> Vec<std::sync::Arc<vectorcraft_doc::Node>> {
     let id = NodeId(s.execute(cmd, &p).unwrap()["id"].as_u64().unwrap());
