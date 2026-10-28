@@ -276,17 +276,21 @@ pub(crate) mod accessibility_tests {
 mod spinner_modifier_tests {
     use super::*;
 
+    fn pt(v: f64) -> String {
+        Unit::Points.format(v)
+    }
+
     #[test]
     fn shift_steps_stroke_weight_by_ten_points() {
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, egui::Modifiers::SHIFT, &[]), 24.0);
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &[]), 4.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, egui::Modifiers::SHIFT, &[], &pt), 24.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &[], &pt), 4.0);
     }
 
     #[test]
     fn unmodified_and_command_steps_keep_existing_behavior() {
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, egui::Modifiers::NONE, &[]), 15.0);
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::COMMAND, &[]), 13.9);
-        assert_eq!(spinner_step(0.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &[]), 0.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, egui::Modifiers::NONE, &[], &pt), 15.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::COMMAND, &[], &pt), 13.9);
+        assert_eq!(spinner_step(0.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &[], &pt), 0.0);
     }
 
     /// A plain click on the spinner stops at each stop; Shift and Ctrl/Cmd steps do not.
@@ -294,12 +298,21 @@ mod spinner_modifier_tests {
     fn a_plain_spinner_step_stops_at_the_stops() {
         let stops = [0.25, 0.5, 0.75, 1.0, 2.0, 10.0, 20.0];
         let plain = egui::Modifiers::NONE;
-        assert_eq!(spinner_step(0.52, 1.0, 0.0, false, plain, &stops), 0.5);
-        assert_eq!(spinner_step(0.52, 1.0, 0.0, true, plain, &stops), 0.75);
-        assert_eq!(spinner_step(0.1, 1.0, 0.0, false, plain, &stops), 0.0);
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, plain, &stops), 15.0);
-        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &stops), 4.0);
-        assert!((spinner_step(0.52, 1.0, 0.0, false, egui::Modifiers::COMMAND, &stops) - 0.42).abs() < 1e-9);
+        assert_eq!(spinner_step(0.52, 1.0, 0.0, false, plain, &stops, &pt), 0.5);
+        assert_eq!(spinner_step(0.52, 1.0, 0.0, true, plain, &stops, &pt), 0.75);
+        assert_eq!(spinner_step(0.1, 1.0, 0.0, false, plain, &stops, &pt), 0.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, true, plain, &stops, &pt), 15.0);
+        assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::SHIFT, &stops, &pt), 4.0);
+        assert!((spinner_step(0.52, 1.0, 0.0, false, egui::Modifiers::COMMAND, &stops, &pt) - 0.42).abs() < 1e-9);
+    }
+
+    /// A stop the spinner's text shows as the value counts as reached: 2.004 pt and the 2 pt stop
+    /// both show as `0.167 p`, so a click down goes on to 1 pt.
+    #[test]
+    fn a_spinner_stop_shown_as_the_value_is_passed() {
+        let pc = |v: f64| Unit::Picas.format(v);
+        assert_eq!(spinner_step(2.004, 1.0, 0.0, false, egui::Modifiers::NONE, &[1.0, 2.0, 3.0], &pc), 1.0);
+        assert_eq!(spinner_step(2.004, 1.0, 0.0, true, egui::Modifiers::NONE, &[1.0, 2.0, 3.0], &pc), 3.0);
     }
 }
 
@@ -352,6 +365,9 @@ mod step_through_tests {
         assert_eq!(step_through(0.167, 1.0, -1.0, &picas, shown(Unit::Picas)), 1.0 / 12.0);
         assert_eq!(step_through(0.083, 1.0, 1.0, &picas, shown(Unit::Picas)), 2.0 / 12.0);
         assert_eq!(step_through(0.016, 1.0, -1.0, &[0.0078, 0.0156], shown(Unit::Inches)), 0.0156);
+        // The next whole step shown as the value is passed too: 2.0004 pt shows as `2 pt`.
+        assert_eq!(step_through(2.0004, 1.0, -1.0, &[1.0, 2.0], shown(Unit::Points)), 1.0);
+        assert_eq!(step_through(2.0004, 1.0, -1.0, &[], shown(Unit::Points)), 1.0);
     }
 }
 

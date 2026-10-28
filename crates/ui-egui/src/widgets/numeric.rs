@@ -137,13 +137,17 @@ pub(super) fn step_to_multiple(v: f64, size: f64, n: f64) -> f64 {
 /// `v` moved `n` steps of `size` (down when negative), where each step goes to the nearer of the
 /// next multiple of `size` ([`step_to_multiple`]) and the next of `stops` in its direction. By 1 with
 /// stops at 0.25, 0.5 and 0.75, 0.52 goes down to 0.5 and up to 0.75, 1 goes down to 0.75, and 14
-/// goes up to 15. A stop that `same` finds equal to the value counts as reached: in a field, a stop
-/// shown with the same text as the value (`0.167 p` for 2 pt) moves on to the next.
+/// goes up to 15. A stop or multiple that `same` finds equal to the value counts as reached: a
+/// stop shown with the same text as the value (`0.167 p` for 2 pt, see [`shown_alike`]) moves on
+/// to the next.
 pub(super) fn step_through(v: f64, size: f64, n: f64, stops: &[f64], same: impl Fn(f64, f64) -> bool) -> f64 {
     let mut v = v;
     // One call takes at most 1,000 steps.
     for _ in 0..n.abs().min(1000.0) as u32 {
-        let multiple = step_to_multiple(v, size, n.signum());
+        let mut multiple = step_to_multiple(v, size, n.signum());
+        if same(multiple, v) {
+            multiple = step_to_multiple(multiple, size, n.signum());
+        }
         let ahead = |s: f64| (if n > 0.0 { s > v } else { s < v }) && !same(s, v);
         let stop = stops.iter().copied().filter(|&s| ahead(s));
         v = if n > 0.0 { stop.fold(multiple, f64::min) } else { stop.fold(multiple, f64::max) };
@@ -152,8 +156,15 @@ pub(super) fn step_through(v: f64, size: f64, n: f64, stops: &[f64], same: impl 
 }
 
 /// Whether `a` and `b` are within a millionth of `size` of each other.
+#[cfg(test)]
 pub(super) fn within_a_millionth(size: f64) -> impl Fn(f64, f64) -> bool {
     move |a, b| (a - b).abs() <= size.abs() * 1e-6
+}
+
+/// Whether `show` gives `a` and `b` the same text, for [`step_through`]: the field's ↑/↓ and the
+/// spinner both treat a stop shown as the value as reached.
+pub(super) fn shown_alike(show: impl Fn(f64) -> String) -> impl Fn(f64, f64) -> bool {
+    move |a, b| show(a) == show(b)
 }
 
 /// ↑/↓ in focused numeric field `resp`, or the mouse wheel turned over it, step the number `buf`
@@ -231,7 +242,7 @@ fn step_value(
             // The field's own steps: ten at once with Shift, one with or without Ctrl/Cmd.
             Some(step) => step(v, if mods == egui::Modifiers::SHIFT { 10.0 * n } else { n }),
             None if mods == egui::Modifiers::SHIFT => v + size * n,
-            None if mods == egui::Modifiers::NONE && !stops.is_empty() => step_through(v, size, n, stops, |a, b| show(a) == show(b)),
+            None if mods == egui::Modifiers::NONE && !stops.is_empty() => step_through(v, size, n, stops, shown_alike(&show)),
             None => step_to_multiple(v, size, n),
         };
         // Each step stops at the bounds, so a step back in the same frame starts from there.
@@ -604,7 +615,7 @@ fn spin_generic(
             && let Some(v) = value
         {
             let modifiers = ui.input(|i| i.modifiers);
-            out = Some(SpinPick::Value(spinner_step(v, step, min, up.contains(p), modifiers, stops)));
+            out = Some(SpinPick::Value(spinner_step(v, step, min, up.contains(p), modifiers, stops, fmt)));
         }
         let fw = if presets.is_empty() { width - 15.0 } else { width - 34.0 };
         if let Some(v) = field(ui, fw, label) {
@@ -633,11 +644,20 @@ fn spin_generic(
 
 /// Spinner buttons follow the same modifier sizes as ↑/↓ in a focused number field:
 /// Shift ×10, Ctrl/Cmd ÷10, otherwise the caller's normal step, which also stops at each of
-/// `stops` ([`step_through`]).
-pub(super) fn spinner_step(value: f64, step: f64, min: f64, up: bool, modifiers: egui::Modifiers, stops: &[f64]) -> f64 {
+/// `stops` ([`step_through`]). A stop that `show` writes with the same text as the value counts as
+/// reached, as in the field.
+pub(super) fn spinner_step(
+    value: f64,
+    step: f64,
+    min: f64,
+    up: bool,
+    modifiers: egui::Modifiers,
+    stops: &[f64],
+    show: &dyn Fn(f64) -> String,
+) -> f64 {
     let (mods, multiplier) = STEPS.iter().find(|(m, _)| modifiers.matches_logically(*m)).map_or((egui::Modifiers::NONE, 1.0), |&(m, f)| (m, f));
     if mods == egui::Modifiers::NONE && !stops.is_empty() {
-        return step_through(value, step, if up { 1.0 } else { -1.0 }, stops, within_a_millionth(step)).max(min);
+        return step_through(value, step, if up { 1.0 } else { -1.0 }, stops, shown_alike(show)).max(min);
     }
     let delta = step * multiplier;
     (value + if up { delta } else { -delta }).max(min)
