@@ -1,4 +1,6 @@
-use super::{Color32, Point, Pos2, Rect, Shape, Stroke, Ui, VectorcraftApp, Xf, json, vec2};
+use serde_json::{Value, json};
+
+use super::*;
 
 /// The width an artboard needs on screen for its name to show (px): narrower, the name is left
 /// out rather than spilling over its neighbours.
@@ -96,11 +98,16 @@ pub(super) fn artboard_name_at(app: &VectorcraftApp, ui: &Ui, xf: &Xf, screen: P
     if !artboard_tool && st.doc.artboards.len() <= 1 {
         return None;
     }
-    let tool_labelled = artboard_tool.then(|| app.session.tool_options()["active"].as_u64()).flatten();
+    let tool_selected: Vec<u64> = if artboard_tool {
+        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
+    } else {
+        vec![]
+    };
     let painter = ui.painter();
     let mut hit = None;
     for (i, ab) in st.doc.artboards.iter().enumerate() {
-        if tool_labelled == u64::try_from(i).ok() {
+        let is_tool_labelled = u64::try_from(i).ok().is_some_and(|idx| tool_selected.contains(&idx));
+        if is_tool_labelled {
             continue;
         }
         let corner = xf.to_screen(Point::new(ab.rect.x0, ab.rect.y0));
@@ -110,16 +117,18 @@ pub(super) fn artboard_name_at(app: &VectorcraftApp, ui: &Ui, xf: &Xf, screen: P
             hit = Some(i);
         }
     }
-    if let Some(i) = tool_labelled.and_then(|i| usize::try_from(i).ok())
-        && let Some(ab) = st.doc.artboards.get(i)
-        && tool_name_rect(painter, xf, ab.rect, i, &ab.name).contains(screen)
-    {
-        return Some(i);
+    for &idx in &tool_selected {
+        if let Some(i) = usize::try_from(idx).ok()
+            && let Some(ab) = st.doc.artboards.get(i)
+            && tool_name_rect(painter, xf, ab.rect, i, &ab.name).contains(screen)
+        {
+            return Some(i);
+        }
     }
     hit
 }
 
-pub(super) fn select_named_artboard(app: &mut VectorcraftApp, index: usize) {
+pub(super) fn select_named_artboard(app: &mut VectorcraftApp, index: usize, shift: bool) {
     let n = app.session.active().map(|st| st.doc.artboards.len()).unwrap_or(0);
     if index >= n {
         return;
@@ -128,7 +137,11 @@ pub(super) fn select_named_artboard(app: &mut VectorcraftApp, index: usize) {
         v.artboard = index;
     }
     if app.session.tool_id() == "artboard" {
-        app.session.set_tool_option("active", &json!(index));
+        if shift {
+            crate::panels::artboards::toggle(app, index, n);
+        } else {
+            app.session.set_tool_option("active", &json!(index));
+        }
     }
 }
 
@@ -195,9 +208,14 @@ pub(super) fn artboard_name_field_rect(app: &VectorcraftApp, ui: &Ui, xf: &Xf, i
     let st = app.session.active()?;
     let ab = st.doc.artboards.get(index)?;
     let artboard_tool = app.session.tool_id() == "artboard";
-    let tool_labelled = artboard_tool.then(|| app.session.tool_options()["active"].as_u64()).flatten();
+    let tool_selected: Vec<u64> = if artboard_tool {
+        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
+    } else {
+        vec![]
+    };
     let painter = ui.painter();
-    let rect = if tool_labelled == u64::try_from(index).ok() {
+    let is_tool_labelled = u64::try_from(index).ok().is_some_and(|idx| tool_selected.contains(&idx));
+    let rect = if is_tool_labelled {
         tool_name_rect(painter, xf, ab.rect, index, &ab.name)
     } else {
         let corner = xf.to_screen(Point::new(ab.rect.x0, ab.rect.y0));

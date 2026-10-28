@@ -3,7 +3,7 @@
 
 use egui::emath::GuiRounding as _;
 use egui::{Color32, CornerRadius, Pos2, Sense, Shape, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
-use serde_json::json;
+use serde_json::{Value, json};
 use vectorcraft_doc::text::TextKind;
 use vectorcraft_doc::{Node, NodeKind, SymbolBoxes, Unit};
 use vectorcraft_geom::{Affine, BezPath, PathEl, Point, Rect};
@@ -717,7 +717,11 @@ fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf:
     // a move or resize): that one isn't named twice.
     let active_ab = crate::panels::artboards::selected(app, doc.artboards.len());
     let artboard_tool = app.session.tool_id() == "artboard";
-    let tool_labelled = artboard_tool.then(|| app.session.tool_options()["active"].as_u64()).flatten();
+    let tool_selected: Vec<u64> = if artboard_tool {
+        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
+    } else {
+        vec![]
+    };
     let editing_name = ui.data(|d| d.get_temp::<ArtboardNameEdit>(name_edit_id()).map(|e| e.index));
     for (i, ab) in doc.artboards.iter().enumerate() {
         let c = if i == active_ab { Color32::from_gray(0) } else { Color32::from_gray(120) };
@@ -729,7 +733,8 @@ fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf:
         // Show Center Mark, Show Cross Hairs and Show Video Safe Areas (Artboard Options). Only the
         // canvas draws them, as it does the edges: exports and print leave them out.
         artboard_marks(painter, xf, ab, t.artboard_mark);
-        if editing_name != Some(i) && (artboard_tool || doc.artboards.len() > 1) && tool_labelled != u64::try_from(i).ok() {
+        let labelled_by_tool = u64::try_from(i).ok().is_some_and(|idx| tool_selected.contains(&idx));
+        if editing_name != Some(i) && (artboard_tool || doc.artboards.len() > 1) && !labelled_by_tool {
             // At the artboard's own top-left corner, which a rotated view turns away from its
             // bounding box's (#1095).
             let corner = xf.to_screen(Point::new(ab.rect.x0, ab.rect.y0));

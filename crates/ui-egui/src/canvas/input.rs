@@ -91,7 +91,7 @@ pub(super) fn handle_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Respo
         // The artboard's name sits above its corner. A press there renames on a double-click
         // and does not start a tool gesture (a fitted artboard, a new one, Artboard Options).
         if let Some(i) = artboard_name_at(app, ui, &xf, p) {
-            ui.data_mut(|dd| dd.insert_temp(name_press_id(), i));
+            ui.data_mut(|dd| dd.insert_temp(name_press_id(), (i, m.shift)));
         } else {
             begin_drag(app, ui, &f, p);
         }
@@ -134,9 +134,9 @@ pub(super) fn handle_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Respo
         ui.ctx().request_repaint_after(std::time::Duration::from_millis(16));
     }
     if pointer.primary_released()
-        && let Some(i) = ui.data_mut(|d| d.remove_temp::<usize>(name_press_id()))
+        && let Some((i, shift)) = ui.data_mut(|d| d.remove_temp::<(usize, bool)>(name_press_id()))
     {
-        select_named_artboard(app, i);
+        select_named_artboard(app, i, shift || m.shift);
     }
     if resp.double_clicked()
         && let Some(p) = at
