@@ -301,6 +301,16 @@ impl<'p> Colors<'p> {
         let process = cmyk.iter().any(|v| *v > 0.0);
         let (c, t) = match (ink, first_ink) {
             (Some(_), _) if several || process => {
+                // The color can't link to one swatch, but each ink it paints with is still a
+                // spot swatch.
+                for (c, t) in colorants.iter().zip(comps) {
+                    if let Colorant::Ink(k) = *c
+                        && round3(t.clamp(0.0, 1.0)) > 0.0
+                        && let Some(ink) = self.inks.get_mut(k)
+                    {
+                        ink.used = true;
+                    }
+                }
                 self.mixed = true;
                 return None;
             }

@@ -164,6 +164,29 @@ fn device_n_inks_become_spot_swatches_and_process_plates_cmyk() {
     assert_eq!(d.swatches.iter().filter(|s| s.spot).count(), 2);
 }
 
+#[test]
+fn a_spot_ink_mixed_with_a_process_plate_keeps_its_swatch() {
+    // Gold and Cyan → CMYK (cyan, 0, gold, 0): a fill, then an axial shading of Gold 0 to 1 over
+    // Cyan at 0.3.
+    let space = format!("[/DeviceN [/Gold /Cyan] /DeviceCMYK {} 0 R]", first_extra(1));
+    let func = "<< /FunctionType 4 /Domain [0 1 0 1] /Range [0 1 0 1 0 1 0 1] /Length 17 >>\nstream\n{ exch 0 exch 0 }\nendstream";
+    let shading = format!(
+        "<< /ShadingType 2 /ColorSpace {space} /Coords [0 0 50 0] /Function << /FunctionType 2 /Domain [0 1] /C0 [0 0.3] /C1 [1 0.3] /N 1 >> /Extend [true true] >>"
+    );
+    let fill = page_with(&format!("/CS0 {space}"), &[("CS0", "0.5 0.3")]);
+    let sh = PdfPage { resources: format!("/Shading << /Sh0 {shading} >>"), ..PdfPage::new(100.0, 50.0, "q 0 0 50 50 re W n /Sh0 sh Q") };
+    for (what, page) in [("fill", fill), ("shading", sh)] {
+        let r = import_with_report(&pdf_with(&[page], &[func], None), &ImportOptions::default()).unwrap();
+        let d = &r.document;
+        assert!(r.warnings.iter().any(|w| w.contains("several inks")), "{what}: {:?}", r.warnings);
+        assert!(links(d).iter().all(Option::is_none), "{what}: the art stays RGB");
+        let gold = d.swatch("Gold").unwrap_or_else(|| panic!("{what}: no Gold swatch"));
+        assert!(gold.spot && gold.global, "{what}: Gold is a spot swatch");
+        assert!(near(gold.paint.color().unwrap(), Color::cmyk(0.0, 0.0, 1.0, 0.0)), "{what}: {gold:?}");
+        assert_eq!(d.swatches.iter().filter(|s| s.spot).count(), 1, "{what}: Cyan is a process plate");
+    }
+}
+
 /// The spaces `/CS1` and `/CS2` of two inks (`[/{kind} {a} …]`, `[/{kind} {b} …]`) with the same
 /// alternate and tint transform, blue at 100 %: they look the same to the interpreter.
 fn blues(kind: &str, a: &str, b: &str) -> String {
