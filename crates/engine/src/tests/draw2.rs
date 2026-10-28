@@ -502,6 +502,19 @@ fn blob_brush_merges_with_the_topmost_match_and_its_neighbors() {
     assert_eq!(area(&path(&s, below)), area_below, "the path below the red one is left as it was");
     assert_eq!(area(&path(&s, red)), area_red);
 
+    // A matching path the stroke does not touch, between two it touches: both touched ones merge,
+    // and the untouched one is left as it was.
+    let mut s = session();
+    let lower = blob(&mut s, 100.0);
+    let untouched = NodeId(s.execute("path.blob", &json!({"points": [[200, 300], [200, 380]], "size": 20})).unwrap()["id"].as_u64().unwrap());
+    let upper = blob(&mut s, 300.0);
+    let area_untouched = area(&path(&s, untouched));
+    let id = NodeId(s.execute("path.blob", &across).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(id, upper);
+    assert!(s.doc().unwrap().doc.node(lower).is_none(), "the lower path joined the upper one");
+    assert_eq!(area(&path(&s, untouched)), area_untouched);
+    assert_eq!(paths(&s).len(), 2);
+
     // Two adjacent matches in a group both merge; a match outside the group is left alone.
     let mut s = session();
     let outside = blob(&mut s, 100.0);
