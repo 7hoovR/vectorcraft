@@ -126,6 +126,36 @@ fn circular_subpath(sub: &Sub) -> Option<CircularSub> {
     if samples.iter().any(|p| (centre.distance(*p) - radius).abs() > tolerance) {
         return None;
     }
+    // Verify that the curve progresses monotonically around the circle without reversing,
+    // and that closed subpaths make exactly one full turn while open subpaths do not exceed one turn.
+    let mut total_turn = 0.0;
+    let mut dir: Option<bool> = None;
+    for w in samples.windows(2) {
+        let (p0, p1) = (w[0], w[1]);
+        let (v0x, v0y) = (p0.x - centre.x, p0.y - centre.y);
+        let (v1x, v1y) = (p1.x - centre.x, p1.y - centre.y);
+        let cross = v0x * v1y - v0y * v1x;
+        let dot = v0x * v1x + v0y * v1y;
+        let d_theta = cross.atan2(dot);
+        if d_theta.abs() > 1e-9 {
+            let is_ccw = d_theta > 0.0;
+            if let Some(expected_ccw) = dir {
+                if is_ccw != expected_ccw {
+                    return None;
+                }
+            } else {
+                dir = Some(is_ccw);
+            }
+            total_turn += d_theta;
+        }
+    }
+    if sub.closed {
+        if (total_turn.abs() - std::f64::consts::TAU).abs() > 1e-3 {
+            return None;
+        }
+    } else if total_turn.abs() < 1e-6 || total_turn.abs() >= std::f64::consts::TAU - 1e-3 {
+        return None;
+    }
     Some(CircularSub { centre, radius, samples })
 }
 
