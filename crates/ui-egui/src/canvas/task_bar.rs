@@ -142,13 +142,14 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
         items.push((tl!("Duplicate"), "copy", "edit.duplicate", none()));
     }
     let fill = first.as_ref().map(|f| f.appearance.fill_paint()).unwrap_or_default();
+    let stroke = first.as_ref().map(|f| f.appearance.stroke_paint()).unwrap_or_default();
     let colored = has_colors(&st.doc, &st.selection.objects);
     let doc = st.uid;
     // Under the selection's lowest corner on screen, centered on the selection (the view may be
     // rotated).
     let lowest = xf.quad(b).iter().map(|c| c.y).fold(f32::NEG_INFINITY, f32::max);
     let anchor = pos2(xf.to_screen(b.center()).x, lowest);
-    let est_w = 118.0 + items.iter().map(|(l, _, _, _)| l.len() as f32 * 7.2 + 44.0).sum::<f32>();
+    let est_w = 150.0 + items.iter().map(|(l, _, _, _)| l.len() as f32 * 7.2 + 44.0).sum::<f32>();
     // Its place under the selection, then where the handle moved it, kept on the canvas (with the
     // bar's size last frame, the estimate before it first shows).
     let under = pos2(anchor.x - est_w / 2.0, anchor.y + 28.0);
@@ -207,7 +208,7 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
                             run = Some((*cmd, params.clone()));
                         }
                     }
-                    // The selected objects' Fill, Recolor Artwork and Lock, left out with the Artboard tool.
+                    // The selected objects' Fill, Stroke, Recolor Artwork and Lock, left out with the Artboard tool.
                     if !on_artboards {
                         let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
                         widgets::paint_chip(ui, egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)), &fill);
@@ -219,6 +220,15 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
                         );
                         if resp.on_hover_text(tl!("Fill")).clicked() {
                             app.session.fill_active = true;
+                            app.ui.open_panel = Some("swatches".into());
+                        }
+                        // The Stroke chip, drawn as a ring as the Control bar's is.
+                        let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
+                        let chip = egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0));
+                        widgets::proxy_chip(ui, chip, &stroke, false, Some(4.0));
+                        ui.painter().rect_stroke(chip, 0.0, Stroke::new(1.0, t.button_border), StrokeKind::Outside);
+                        if resp.on_hover_text(tl!("Stroke")).clicked() {
+                            app.session.fill_active = false;
                             app.ui.open_panel = Some("swatches".into());
                         }
                         // Recolor Artwork, when the selection has colours to recolour.
