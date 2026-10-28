@@ -468,10 +468,13 @@ impl Tool for TypeTool {
         self.finish(cx)
     }
     /// After `text.create` / `text.createInPath` the engine selects the new object; edit it. After
-    /// `edit.undo` / `edit.redo` the caret goes to where the step changed the edited text.
+    /// `edit.undo` / `edit.redo` the caret goes to where the step changed the edited text. The
+    /// `batch.*` notices keep what a failed `command.batch` changed from staying ([`TypeTool::batch_notice`]).
     fn notify(&mut self, cx: &ToolContext, what: &str) {
         if matches!(what, "edit.undo" | "edit.redo") {
             self.after_history_step(cx, what == "edit.undo");
+        } else if what.starts_with("batch.") {
+            self.batch_notice(what);
         } else if what == "text.editNew"
             && let Some(id) = cx.selection.objects.first().copied()
         {

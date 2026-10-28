@@ -92,6 +92,7 @@ struct TypedList {
 /// typing session or a typed list), `ends` holds the byte where the changed span ends before and
 /// after it, so that Undo and Redo of the step put the caret there even where the change repeats
 /// the characters next to it; a step a command from outside the tool made has none.
+#[derive(Clone)]
 struct OwnEdit {
     id: NodeId,
     before: u64,
@@ -99,6 +100,18 @@ struct OwnEdit {
     ends: Option<(usize, usize)>,
     /// False once Undo took the step back, until Redo makes it again.
     done: bool,
+}
+
+/// What Undo and Redo change in the tool, kept when a `command.batch` begins so that a batch that
+/// fails and is rolled back puts it back ([`TypeTool::batch_notice`]).
+struct HistoryState {
+    editing: Option<NodeId>,
+    caret: usize,
+    anchor: usize,
+    goal_x: Option<f64>,
+    known: Option<(NodeId, String)>,
+    edits: Vec<OwnEdit>,
+    stepped: bool,
 }
 
 /// How many undo steps [`TypeTool::edits`] keeps.
@@ -183,6 +196,8 @@ pub struct TypeTool {
     edits: Vec<OwnEdit>,
     /// The command that ran was Undo or Redo ([`TypeTool::after_history_step`]).
     stepped: bool,
+    /// The state at the start of each `command.batch` still running, innermost last.
+    batches: Vec<HistoryState>,
     cache: Mutex<Option<CachedLayout>>,
 }
 
@@ -513,6 +528,35 @@ impl TypeTool {
             }
         }
         self.known = Some((id, text));
+    }
+
+    /// A `command.batch` began (`batch.begin`), ended (`batch.end`), or failed and was rolled back
+    /// (`batch.rollBack`). After a rollback, what the batch's Undo and Redo steps changed in the tool
+    /// is as it was at the batch's start, when the tool still edits the same object.
+    fn batch_notice(&mut self, what: &str) {
+        match what {
+            "batch.begin" => self.batches.push(HistoryState {
+                editing: self.editing,
+                caret: self.caret,
+                anchor: self.anchor,
+                goal_x: self.goal_x,
+                known: self.known.clone(),
+                edits: self.edits.clone(),
+                stepped: self.stepped,
+            }),
+            "batch.end" => {
+                self.batches.pop();
+            }
+            "batch.rollBack" => {
+                if let Some(s) = self.batches.pop()
+                    && s.editing == self.editing
+                {
+                    (self.caret, self.anchor, self.goal_x) = (s.caret, s.anchor, s.goal_x);
+                    (self.known, self.edits, self.stepped) = (s.known, s.edits, s.stepped);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// After Undo of a list that typed characters started (and of what was typed after it), the
