@@ -72,6 +72,17 @@ fn artboard_array(data: &[u8]) -> Option<&[u8]> {
     }
 }
 
+/// The swatches and color groups of the palette of the editing data `data`, for a file whose
+/// layers aren't read: the swatches its PDF part has are the defaults (#4036). They come as
+/// [`read`] makes them, with pattern swatches only for the patterns in `patterns`; `None` when the
+/// palette is empty or reading stops before it.
+pub fn palette(data: &[u8], patterns: &[PatternDef]) -> Option<(Vec<Swatch>, Vec<vectorcraft_color::swatch::SwatchGroup>)> {
+    let mut r = Reader::new(data);
+    // The palette and the gradients it names come before the art, so an error in the art leaves them read.
+    let _ = r.run();
+    r.palette_swatches(patterns)
+}
+
 /// [`artboards`] as far as reading `data` from its start gets: those read before an error, and
 /// those of a `/Document` still open when it stopped (its art can be what stopped it).
 fn artboards_read(data: &[u8]) -> Vec<(String, Rect)> {
@@ -290,6 +301,40 @@ impl<'a> Reader<'a> {
         if self.pattern.is_some() { FLIP } else { self.ensure_space() }
     }
 
+    /// The swatches of the palette, `[None]` first, in its order, and its color groups; a gradient
+    /// swatch only when its gradient was read, and a pattern swatch only for a pattern in
+    /// `patterns`. `None` when the palette is empty.
+    fn palette_swatches(&mut self, patterns: &[PatternDef]) -> Option<(Vec<Swatch>, Vec<vectorcraft_color::swatch::SwatchGroup>)> {
+        if self.palette.is_empty() {
+            return None;
+        }
+        let palette = std::mem::take(&mut self.palette);
+        let swatch = |e: crate::import::ai::palette::Entry| -> Option<Swatch> {
+            use crate::import::ai::palette::Cell;
+            let (paint, global, spot) = match e.cell {
+                Cell::Color { color, global, spot } => (Paint::solid(color), global, spot),
+                Cell::Gradient(g) => {
+                    let mut gp = vectorcraft_color::gradient::GradientPaint::new(self.gradients.get(&g)?.clone());
+                    gp.swatch = Some(e.name.clone());
+                    (Paint::Gradient(Box::new(gp)), false, false)
+                }
+                Cell::Pattern(p) => {
+                    patterns.iter().find(|d| d.name == p)?;
+                    (Paint::Pattern { pattern: p, xf: Affine::IDENTITY }, false, false)
+                }
+            };
+            Some(Swatch { name: e.name, paint, global, spot })
+        };
+        let mut swatches = vec![Swatch { name: "[None]".into(), paint: Paint::None, global: false, spot: false }];
+        swatches.extend(palette.swatches.into_iter().filter_map(swatch));
+        let groups: Vec<_> = palette
+            .groups
+            .into_iter()
+            .map(|(name, s)| vectorcraft_color::swatch::SwatchGroup { name, swatches: s.into_iter().filter_map(swatch).collect() })
+            .collect();
+        Some((swatches, groups))
+    }
+
     pub(super) fn finish(mut self) -> Result<Structure, String> {
         if !self.unknown.is_empty() {
             let ops: Vec<String> = self.unknown.iter().map(|o| format!("`{o}`")).collect();
@@ -349,31 +394,7 @@ impl<'a> Reader<'a> {
             doc.units = u;
         }
         // The file's own swatches in place of the defaults, in its order and colour groups.
-        if !self.palette.is_empty() {
-            let palette = std::mem::take(&mut self.palette);
-            let swatch = |e: crate::import::ai::palette::Entry| -> Option<Swatch> {
-                use crate::import::ai::palette::Cell;
-                let (paint, global, spot) = match e.cell {
-                    Cell::Color { color, global, spot } => (Paint::solid(color), global, spot),
-                    Cell::Gradient(g) => {
-                        let mut gp = vectorcraft_color::gradient::GradientPaint::new(self.gradients.get(&g)?.clone());
-                        gp.swatch = Some(e.name.clone());
-                        (Paint::Gradient(Box::new(gp)), false, false)
-                    }
-                    Cell::Pattern(p) => {
-                        doc.patterns.iter().find(|d| d.name == p)?;
-                        (Paint::Pattern { pattern: p, xf: Affine::IDENTITY }, false, false)
-                    }
-                };
-                Some(Swatch { name: e.name, paint, global, spot })
-            };
-            let mut swatches = vec![Swatch { name: "[None]".into(), paint: Paint::None, global: false, spot: false }];
-            swatches.extend(palette.swatches.into_iter().filter_map(swatch));
-            let groups: Vec<_> = palette
-                .groups
-                .into_iter()
-                .map(|(name, s)| vectorcraft_color::swatch::SwatchGroup { name, swatches: s.into_iter().filter_map(swatch).collect() })
-                .collect();
+        if let Some((swatches, groups)) = self.palette_swatches(&doc.patterns) {
             (doc.swatches, doc.swatch_groups) = (swatches.into(), groups.into());
         }
         // The colour operators' definitions first: a gradient, defined before the art, names a
