@@ -551,7 +551,7 @@ fn dos_time() -> (u16, u16) {
 /// A zip archive of `files` ((path with `/` separators, bytes)), each deflated, or stored when
 /// that isn't smaller, every entry dated now.
 pub(crate) fn zip(files: &[(String, &[u8])]) -> Result<Vec<u8>> {
-    super::fileio::zip::deflate(files, dos_time()).map_err(|_| bad(C, "too large for a zip archive: package to a folder"))
+    super::fileio::zip::deflate(files, dos_time(), || false).map_err(|_| bad(C, "too large for a zip archive: package to a folder"))
 }
 
 #[cfg(test)]

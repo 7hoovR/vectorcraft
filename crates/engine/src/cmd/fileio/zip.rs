@@ -17,6 +17,8 @@ pub const FIXED_TIME: (u16, u16) = (0, DOS_DATE);
 const UTF8_NAMES: u16 = 1 << 11;
 /// Version needed to extract: 2.0.
 const VERSION: u16 = 20;
+/// How many bytes of a file [`deflate`] compresses between two calls of its `stop`: 1 MiB.
+pub const DEFLATE_CHUNK: usize = 1 << 20;
 
 /// The archive of `files` (`(name, bytes)`; `/` separates folders in a name), stored without
 /// compression. Fails past the limits of a ZIP without its 64-bit extension (65535 files, 4 GB).
@@ -74,8 +76,9 @@ pub fn store<N: AsRef<str>, B: AsRef<[u8]>>(files: &[(N, B)]) -> Result<Vec<u8>,
 
 /// The archive of `files` (`(name, bytes)`; `/` separates folders in a name), each deflated, or
 /// stored when deflating doesn't make it smaller, every entry dated `(time, date)` (MS-DOS format).
-/// Fails past the same limits as [`store`].
-pub fn deflate<N: AsRef<str>, B: AsRef<[u8]>>(files: &[(N, B)], (time, date): (u16, u16)) -> Result<Vec<u8>, String> {
+/// Fails past the same limits as [`store`]. `stop` is asked before each [`DEFLATE_CHUNK`] bytes are
+/// deflated; when it answers true, the archive is dropped and an error returned.
+pub fn deflate<N: AsRef<str>, B: AsRef<[u8]>>(files: &[(N, B)], (time, date): (u16, u16), stop: impl Fn() -> bool) -> Result<Vec<u8>, String> {
     let too_big = || "too much to zip: at most 65535 files and 4 GB".to_string();
     let (mut out, mut central) = (Vec::new(), Vec::new());
     for (name, bytes) in files {
@@ -83,7 +86,12 @@ pub fn deflate<N: AsRef<str>, B: AsRef<[u8]>>(files: &[(N, B)], (time, date): (u
         let mut crc = Crc::new();
         crc.update(bytes);
         let mut enc = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::default());
-        enc.write_all(bytes).map_err(|e| e.to_string())?;
+        for chunk in bytes.chunks(DEFLATE_CHUNK) {
+            if stop() {
+                return Err("stopped before the archive was finished".into());
+            }
+            enc.write_all(chunk).map_err(|e| e.to_string())?;
+        }
         let deflated = enc.finish().map_err(|e| e.to_string())?;
         let (method, data): (u16, &[u8]) = if deflated.len() < bytes.len() { (8, &deflated) } else { (0, bytes) };
         let offset = u32::try_from(out.len()).map_err(|_| too_big())?;

@@ -662,7 +662,7 @@ fn zip_archives_deflate_what_gets_smaller() {
         .collect();
     let text = "<rect x=\"5\" y=\"5\" width=\"20\" height=\"20\"/>\n".repeat(100).into_bytes();
     let files = [("art.svg", text.clone()), ("sub/ünï.png", noise.clone()), ("empty", vec![])];
-    let zip = super::zip::deflate(&files, super::zip::FIXED_TIME).unwrap();
+    let zip = super::zip::deflate(&files, super::zip::FIXED_TIME, || false).unwrap();
     assert_eq!(methods(&zip), [8, 0, 0], "the text deflated, the noise and the empty file stored");
     assert!(zip.windows(noise.len()).any(|w| w == noise.as_slice()), "a stored file's bytes are in the archive as they are");
     assert!(zip.len() < super::zip::store(&files).unwrap().len());
@@ -671,7 +671,60 @@ fn zip_archives_deflate_what_gets_smaller() {
     for ((n, b), (m, c)) in files.iter().zip(&back) {
         assert_eq!((*n, b), (m.as_str(), c));
     }
-    assert_eq!(super::zip::deflate(&files, super::zip::FIXED_TIME).unwrap(), zip, "the same files, the same archive");
+    assert_eq!(super::zip::deflate(&files, super::zip::FIXED_TIME, || false).unwrap(), zip, "the same files, the same archive");
+}
+
+/// `deflate` asks `stop` before each chunk of a file and drops the archive when it answers true.
+#[test]
+fn zip_deflating_stops_between_chunks() {
+    let big = vec![7u8; 3 * super::zip::DEFLATE_CHUNK];
+    let files = [("a.bin", big.clone()), ("b.bin", big)];
+    let asked = std::cell::Cell::new(0);
+    let all = super::zip::deflate(&files, super::zip::FIXED_TIME, || {
+        asked.set(asked.get() + 1);
+        false
+    });
+    assert!(all.is_ok());
+    assert_eq!(asked.get(), 6, "once per chunk of each file");
+    asked.set(0);
+    let r = super::zip::deflate(&files, super::zip::FIXED_TIME, || {
+        asked.set(asked.get() + 1);
+        asked.get() == 2
+    });
+    assert!(r.is_err(), "stopped");
+    assert_eq!(asked.get(), 2, "nothing more is deflated after the stop");
+}
+
+/// A cancel that comes after the last file was encoded (here: during the last step, a row that
+/// repeats the one before it and writes nothing) returns no files and no archive, as it writes no
+/// archive into a folder.
+#[cfg(not(target_arch = "wasm32"))]
+#[test]
+fn a_cancel_after_the_last_file_returns_nothing() {
+    let mut s = session(1);
+    let dir = std::env::temp_dir().join(format!("vc-screens-cancel-last-{}", std::process::id()));
+    let folder = dir.to_string_lossy().replace(std::path::MAIN_SEPARATOR, "/");
+    let rows = json!([{"format": "svg"}, {"format": "svg"}]);
+    for p in [json!({ "formats": rows }), json!({ "formats": rows, "zip": true }), json!({ "formats": rows, "zip": true, "folder": folder })] {
+        let prepared = s.prepare_screen_export("document.exportForScreens", &p).unwrap();
+        let token = vectorcraft_doc::cancel::CancelToken::new();
+        let on_last = token.clone();
+        let sink: vectorcraft_doc::cancel::ProgressSink = std::rc::Rc::new(move |done, total, _| {
+            if done + 1 == total {
+                on_last.cancel();
+            }
+        });
+        let mut written = vec![];
+        let r = vectorcraft_doc::cancel::scope(&token, Some(sink), || {
+            prepared.write(&mut |path: &str, _: &[u8]| {
+                written.push(path.to_string());
+                Ok(())
+            })
+        });
+        assert!(matches!(r, Err(crate::EngineError::Cancelled)), "{p}: {r:?}");
+        assert_eq!(written, Vec::<String>::new(), "{p}");
+    }
+    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[test]
