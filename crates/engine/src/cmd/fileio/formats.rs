@@ -79,7 +79,7 @@ const WIDTH: FormatOption = FormatOption {
     name: "width",
     ty: "number",
     default: "null",
-    description: "the width of each file in pixels: each artboard, rect or art bounds gets its own scale (0.01–64 pixels per point, stored in the file); wins over height, ppi and scale",
+    description: "the width of each file in pixels: each artboard, rect or art bounds gets its own scale (0.01–64 pixels per point, stored in the file except in GIF, WebP and Targa); wins over height, ppi and scale",
 };
 
 const HEIGHT: FormatOption = FormatOption {
@@ -110,7 +110,7 @@ const PPI: FormatOption = FormatOption {
     name: "ppi",
     ty: "number",
     default: "72",
-    description: "resolution in pixels per inch (72 = one pixel per point; 150, 300…), stored in the file; wins over scale",
+    description: "resolution in pixels per inch (72 = one pixel per point; 150, 300…), stored in the file except in GIF, WebP and Targa; wins over scale",
 };
 
 const BACKGROUND: FormatOption = FormatOption {
