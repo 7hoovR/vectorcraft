@@ -181,14 +181,12 @@ pub fn has_multi(s: &Session) -> std::result::Result<(), String> {
 }
 /// A document is open and it is not in isolation mode: Object › Lock's and Object › Hide's items,
 /// Unlock All and Show All are off in isolation mode. Pattern editing mode and opacity mask
-/// editing isolate their art too, and do not count as isolation mode here.
+/// editing isolate their art too, and do not count as isolation mode here while their own layer
+/// is the isolated one. An object isolated inside them counts.
 pub fn outside_isolation(s: &Session) -> std::result::Result<(), String> {
     let st = s.active().ok_or("no document open")?;
-    if st.isolation.is_some() && st.doc.pattern_edit.is_none() && st.doc.mask_edit.is_none() {
-        Err("exit isolation mode first".into())
-    } else {
-        Ok(())
-    }
+    let editing_layer = |l| st.doc.pattern_edit.as_ref().is_some_and(|e| e.layer == l) || st.doc.mask_edit.as_ref().is_some_and(|e| e.layer == l);
+    if st.isolation.is_some_and(|l| !editing_layer(l)) { Err("exit isolation mode first".into()) } else { Ok(()) }
 }
 /// Objects are selected ([`has_selection`]) and the document is not in isolation mode
 /// ([`outside_isolation`]).

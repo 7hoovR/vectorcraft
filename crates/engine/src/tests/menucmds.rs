@@ -381,6 +381,10 @@ fn unlock_all_and_show_all_are_off_in_isolation_mode() {
     assert!(!node(&s, tile[0]).visible, "hidden in pattern editing mode");
     s.execute("object.showAll", &json!({})).unwrap();
     assert!(node(&s, tile[0]).visible, "shown in pattern editing mode");
+    // An object isolated inside pattern editing mode is isolation mode again.
+    s.execute("object.isolate", &json!({"id": tile[0].0})).unwrap();
+    sel(&mut s, &[tile[0]]);
+    off_in_isolation(&mut s, &["object.unlockAll", "object.showAll"]);
     s.execute("object.pattern.cancel", &json!({})).unwrap();
 
     // Opacity mask editing: the mask's art locks and unlocks again.
