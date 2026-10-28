@@ -574,6 +574,20 @@ fn alt_clicking_a_layer_name_selects_its_art() {
     assert_eq!(state(&app).0, vec![], "Ctrl/Cmd+Alt");
 }
 
+/// Alt-click right of a one-letter layer name, inside the wider rename target, selects nothing.
+#[test]
+fn alt_clicking_beside_a_short_layer_name_selects_nothing() {
+    let (mut app, [_, sub, ..]) = nested();
+    app.session.execute("layer.setProps", &json!({"ids": [sub.0], "name": "I"})).unwrap();
+    let ctx = egui::Context::default();
+    let (circles, _) = frame(&mut app, &ctx, vec![], false);
+    // The sublayer's name area starts here; "I" ends about 5 points in, the rename target 20 points in.
+    let name_left = 2.0 * COLUMN + 2.0 + 6.0 + INDENT + 40.0;
+    click_with(&mut app, &ctx, egui::pos2(name_left + 14.0, circles[1].y), egui::Modifiers::ALT);
+    let st = app.session.active().unwrap();
+    assert_eq!((st.selection.objects.clone(), st.current_layer()), (vec![], Some(sub)));
+}
+
 #[test]
 fn eye_and_lock_toggle_nested_rows_and_drag_down_the_column() {
     let (mut app, [_, sub, g, b, a, _]) = nested();

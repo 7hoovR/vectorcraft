@@ -1602,6 +1602,20 @@ fn layers_panel_selects_nothing_outside_the_isolated_group() {
     assert_eq!(selected(&s), vec![b]);
 }
 
+/// In isolation mode the selection column of the isolated layer's own row selects the art on it.
+#[test]
+fn layers_panel_selects_the_art_of_the_isolated_layer() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 50.0, 50.0);
+    let b = rect(&mut s, 100.0, 0.0, 50.0, 50.0);
+    let layer = s.active().unwrap().doc.layers[0].id;
+    s.execute("object.isolate", &json!({"id": layer.0})).unwrap();
+    s.execute("layer.selectAll", &json!({"id": layer.0})).unwrap();
+    let mut got = selected(&s);
+    got.sort_by_key(|i| i.0);
+    assert_eq!(got, vec![a, b]);
+}
+
 /// In isolation mode a recalled selection leaves out the objects outside the isolated group, and
 /// Next Object Above selects nothing outside it.
 #[test]

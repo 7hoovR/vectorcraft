@@ -673,7 +673,9 @@ fn select_art(s: &mut Session, p: &Value) -> Result<Value> {
     let add = switch_or(p, "add", false, C)?;
     let st = s.doc()?;
     let n = st.doc.node(id).ok_or(EngineError::NoNode(id))?;
-    let ids: Vec<NodeId> = if !st.doc.is_editable(id) || !in_isolation(&st.doc, st.isolation, id) {
+    // An isolated layer's own row selects the art inside it.
+    let isolated_layer = st.isolation == Some(id) && n.is_layer();
+    let ids: Vec<NodeId> = if !st.doc.is_editable(id) || !(isolated_layer || in_isolation(&st.doc, st.isolation, id)) {
         vec![]
     } else if n.is_layer() {
         n.layer_art(true)
