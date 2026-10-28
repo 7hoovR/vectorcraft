@@ -142,6 +142,21 @@ impl Renderer {
         if self.skipped(f, a) {
             return;
         }
+        // An image masked by one white shape painted straight into the shape, as an image in a
+        // clip group is (envelopes with Preserve Shape Using Transparency cut distorted images into
+        // many such pieces).
+        if let Some(m) = a.extras().mask.as_deref()
+            && !f.opts.outline
+            && !self.is_shape(a)
+            && let NodeKind::Image(im) = &a.kind
+            && white_shape_mask(m)
+            && let Some(region) = self.clip_of(&m.art)
+            && shape_masked_image(a, im, &region.0)
+        {
+            self.draw_image_in(ctx, f, im, Some(&region), a.extras().pixelated);
+            self.stats.drawn += 1;
+            return;
+        }
         if let Some(m) = a.extras().mask.as_deref()
             && !m.disabled
             && !f.opts.outline
@@ -373,7 +388,7 @@ impl Renderer {
                         && let NodeKind::Image(im) = &image.kind
                         && plain_image(image, im, &region.0)
                     {
-                        self.draw_image_in(ctx, f, im, Some(&region));
+                        self.draw_image_in(ctx, f, im, Some(&region), image.extras().pixelated);
                         self.stats.drawn += 1;
                         return;
                     }
@@ -427,7 +442,7 @@ impl Renderer {
                 self.draw_shape(ctx, f, n, &bp, *rule);
             }
             NodeKind::Text(t) => self.draw_text(ctx, f, n, t),
-            NodeKind::Image(im) => self.draw_image(ctx, f, im),
+            NodeKind::Image(im) => self.draw_image_in(ctx, f, im, None, n.extras().pixelated),
             NodeKind::SymbolInstance { symbol, xf } => {
                 if let Some(sym) = f.doc.symbols.iter().find(|s| &s.name == symbol)
                     && self.charge_symbol(&sym.art)

@@ -30,6 +30,7 @@ impl Serialize for Node {
             e.graph.is_none(),
             e.series_index.is_none(),
             is_default(&e.type_outlines),
+            is_default(&e.pixelated),
             e.shaper.is_none(),
             false,
             e.graphic_style.is_none(),
@@ -69,6 +70,7 @@ impl Serialize for Node {
         field!("graph", &e.graph);
         field!("series_index", &e.series_index);
         field!("type_outlines", &e.type_outlines);
+        field!("pixelated", &e.pixelated);
         field!("shaper", &e.shaper);
         field!("kind", &self.kind);
         field!("graphic_style", &e.graphic_style);
@@ -158,6 +160,8 @@ pub(super) struct NodeWire {
     #[serde(default)]
     type_outlines: bool,
     #[serde(default)]
+    pixelated: bool,
+    #[serde(default)]
     shaper: Option<Box<crate::shaper::ShaperSpec>>,
     kind: NodeKind,
     #[serde(default)]
@@ -189,6 +193,7 @@ impl From<NodeWire> for Node {
             graph: w.graph,
             series_index: w.series_index,
             type_outlines: w.type_outlines,
+            pixelated: w.pixelated,
             shaper: w.shaper,
             graphic_style: w.graphic_style,
             attrs: w.attrs,

@@ -5134,7 +5134,10 @@ the options, `editing`), or with no envelope selected the options new envelopes 
 the current shape) switch its kind and keep its content. `object.envelope.options` sets `fidelity` and the options
 (`antiAlias`, `preserveShape`: clippingMask or transparency, `distortAppearance`, `distortLinearGradients`,
 `distortPatternFills`; the last two need `distortAppearance`); with no envelope selected it sets them for new
-envelopes. New envelopes start with Distort Appearance on, as in the reference app; envelopes saved before these
+envelopes. With `antiAlias` false, the envelope's distorted images are drawn without smoothing, SVG export writes
+them with `image-rendering: pixelated` and PDF export writes them without `/Interpolate`. With `preserveShape`
+`transparency`, each piece of a distorted image is the image with a white opacity mask in the piece's shape instead
+of a clip group, after Expand too. New envelopes start with Distort Appearance on, as in the reference app; envelopes saved before these
 options existed keep their old look (appearance applied after the distortion).
 
 `object.envelope.release` gives back the content and the envelope's shape (a grey gradient mesh for warp and mesh
