@@ -134,9 +134,14 @@ impl Panel {
     }
 
     fn click(&mut self, app: &mut VectorcraftApp, at: Pos2) -> Vec<(String, Pos2)> {
-        let b = |pressed| Event::PointerButton { pos: at, button: PointerButton::Primary, pressed, modifiers: Modifiers::NONE };
-        self.frame(app, vec![Event::PointerMoved(at), b(true)], Modifiers::NONE);
-        self.frame(app, vec![b(false)], Modifiers::NONE);
+        self.click_with(app, at, Modifiers::NONE)
+    }
+
+    /// A click at `at` with `m` held.
+    fn click_with(&mut self, app: &mut VectorcraftApp, at: Pos2, m: Modifiers) -> Vec<(String, Pos2)> {
+        let b = |pressed| Event::PointerButton { pos: at, button: PointerButton::Primary, pressed, modifiers: m };
+        self.frame(app, vec![Event::PointerMoved(at), b(true)], m);
+        self.frame(app, vec![b(false)], m);
         self.frame(app, vec![], Modifiers::NONE)
     }
 
@@ -310,6 +315,51 @@ fn the_thumbnail_menu_applies_gradient_swatches_and_saves_one() {
     let save = texts.iter().find(|(t, _)| t.ends_with("Save to Swatches")).unwrap().1;
     p.click(&mut app, save);
     assert_eq!(gradient_swatches(&app).len(), before + 1);
+}
+
+/// Cmd/Ctrl-click on the Gradient Fill box (the thumbnail) resets the active proxy's gradient to
+/// the linear White, Black gradient as one undo step; a plain click leaves a gradient as it is.
+#[test]
+fn cmd_click_on_the_gradient_fill_box_resets_to_the_linear_white_black_gradient() {
+    let stops = json!([{"offset": 0, "color": "#ff0000"}, {"offset": 0.5, "color": "#ffff00"}, {"offset": 1, "color": "#0000ff"}]);
+    let mut app = app(json!({"gradient": {"kind": "radial", "stops": stops}}));
+    let mut p = Panel::new();
+    p.frame(&mut app, vec![], Modifiers::NONE);
+    let thumb = p.widget("grad-swatches").left_center() - vec2(21.0, 0.0);
+    p.click(&mut app, thumb);
+    assert_eq!(hexes(&app), ["#ff0000", "#ffff00", "#0000ff"], "a plain click keeps the gradient");
+    p.click_with(&mut app, thumb, Modifiers::COMMAND);
+    assert_eq!(fill(&app).gradient.kind, GradientKind::Linear);
+    assert_eq!(hexes(&app), ["#ffffff", "#000000"]);
+    assert_eq!(app.session.last_gradient.gradient.stops.len(), 2, "the Tools panel's Gradient button shows it");
+    app.run("edit.undo", json!({})).unwrap();
+    assert_eq!(fill(&app).gradient.kind, GradientKind::Radial, "one undo step");
+    assert_eq!(hexes(&app), ["#ff0000", "#ffff00", "#0000ff"]);
+    // With the Stroke proxy in front, a solid stroke becomes the gradient; the fill stays.
+    app.run("paint.setStroke", json!({"color": "#00ff00"})).unwrap();
+    app.session.fill_active = false;
+    p.click_with(&mut app, thumb, Modifiers::COMMAND);
+    let stroke = match crate::panels::current_paints(&app).1 {
+        Paint::Gradient(g) => *g,
+        s => panic!("expected a gradient stroke, got {s:?}"),
+    };
+    assert_eq!(stroke.gradient.kind, GradientKind::Linear);
+    assert_eq!(stroke.gradient.stops.iter().map(|s| s.color.to_hex()).collect::<Vec<_>>(), ["#ffffff", "#000000"]);
+    assert_eq!(fill(&app).gradient.kind, GradientKind::Radial);
+}
+
+/// With the options hidden the Gradient Fill box stays, and Cmd/Ctrl-click on it resets a
+/// freeform gradient too.
+#[test]
+fn cmd_click_on_the_gradient_fill_box_with_the_options_hidden() {
+    let mut app = app(json!({"gradient": {"kind": "freeform"}}));
+    let mut p = Panel::new();
+    set_pstate(&p.ctx, HIDE_OPTIONS, true);
+    p.frame(&mut app, vec![], Modifiers::NONE);
+    let thumb = p.widget("grad-swatches").left_center() - vec2(21.0, 0.0);
+    p.click_with(&mut app, thumb, Modifiers::COMMAND);
+    assert_eq!(fill(&app).gradient.kind, GradientKind::Linear);
+    assert_eq!(hexes(&app), ["#ffffff", "#000000"]);
 }
 
 #[test]
