@@ -829,6 +829,16 @@ fn artboard_color(p: &Value, cmd: &str) -> Result<Option<Option<vectorcraft_colo
     }
 }
 
+/// An artboard command's text param `key`: None when absent or null, else the string. Any other
+/// value, such as 5, is an error: "`{key}` must be a string".
+fn artboard_str<'a>(p: &'a Value, key: &str, cmd: &str) -> Result<Option<&'a str>> {
+    match p.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::String(v)) => Ok(Some(v)),
+        Some(_) => Err(bad(cmd, format!("`{key}` must be a string"))),
+    }
+}
+
 /// An artboard command's `videoRulerPixelAspectRatio` param: None when absent, else a number within
 /// [`vectorcraft_doc::VIDEO_PIXEL_ASPECT_RANGE`].
 fn video_pixel_aspect(p: &Value, cmd: &str) -> Result<Option<f64>> {
@@ -849,12 +859,13 @@ fn artboard_new(s: &mut Session, p: &Value) -> Result<Value> {
     let r = rect_from(p, def);
     let color = artboard_color(p, "artboard.new")?.flatten();
     check_switches(p, &["showCenterMark", "showCrossHairs", "showVideoSafeAreas"], "artboard.new")?;
+    check_numbers(p, &["x", "y", "width", "height"], "artboard.new")?;
+    let given = artboard_str(p, "name", "artboard.new")?.map(str::trim).filter(|n| !n.is_empty());
     let (show_center_mark, show_cross_hairs) = (bool_or(p, "showCenterMark", false), bool_or(p, "showCrossHairs", false));
     let show_video_safe_areas = bool_or(p, "showVideoSafeAreas", false);
     let video_ruler_pixel_aspect_ratio = video_pixel_aspect(p, "artboard.new")?.unwrap_or(1.0);
     let idx = s.edit("New Artboard", |d, _| {
         let id = d.next_artboard_id();
-        let given = str_param(p, "name").map(str::trim).filter(|n| !n.is_empty());
         let name = given.map_or_else(|| format!("Artboard {}", d.artboards.len() + 1), str::to_string);
         d.artboards.push(Artboard {
             id,
@@ -994,7 +1005,7 @@ fn artboard_set(s: &mut Session, p: &Value) -> Result<Value> {
         edits.push(ArtboardEdit {
             index,
             now,
-            name: str_param(q, "name").map(str::trim),
+            name: artboard_str(q, "name", "artboard.setProps")?.map(str::trim),
             color,
             lock,
             center_mark,

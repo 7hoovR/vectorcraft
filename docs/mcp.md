@@ -3192,6 +3192,10 @@ were: `moveArt`, `scaleArt`, `strokes`, `corners`, `patterns`, `lockedAndHidden`
 and `art` in `artboard.copy` and `artboard.cut`. `artboard.setProps` refuses an artboard's `x`, `y`, `width` or
 `height` that is not a number, and `artboard.move` refuses such a `dx` or `dy`, with
 `` `dx` must be a number, not "10" ``. A null is read as a key left out.
+`artboard.new` refuses an `x`, `y`, `width` or `height` that is not a number with the same message, and
+`artboard.new` and `artboard.setProps` refuse a `name` that is not a string, such as 5, with
+`` `name` must be a string ``. Both leave the artboards and the undo history as they were, and read a null as the
+key left out.
 
 Scale Artwork with Artboard (#602): `artboard.setProps {index, x?, y?, width?, height?, scaleArt: true}` resizes an
 artboard and scales the art fully inside it, and its artboard guides, from the old rectangle onto the new one, each side
