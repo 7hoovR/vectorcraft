@@ -193,7 +193,7 @@ pub fn arc_segment(anchor: Point, reference: usize, length_x: f64, length_y: f64
 
 /// Quarter-ellipse arc from `a` to `b` (Arc tool default: open). `slope` is −100…100
 /// (concave…convex); 0 is a straight chord. A convex arc bulges toward the corner `(b.x, a.y)`,
-/// and a closed arc closes through the corner `(a.x, b.y)`, so a closed convex arc is the
+/// and a closed arc closes through the corner `(a.x, b.y)`, so a closed arc at slope 100 is the
 /// quarter-ellipse sector. The shape does not depend on `_base_along_x`: for a Y-base arc,
 /// [`arc_segment`] passes ends on the box mirrored top to bottom.
 pub fn arc(a: Point, b: Point, slope: f64, closed: bool, _base_along_x: bool) -> PathData {
