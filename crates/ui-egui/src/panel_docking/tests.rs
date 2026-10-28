@@ -440,6 +440,15 @@ fn a_column_resize_continues_while_the_system_reports_the_button_down() {
 }
 
 #[test]
+fn a_lost_release_after_the_pointer_moved_away_is_not_a_click() {
+    let mut h = Harness::new();
+    h.frame(vec![Event::PointerMoved(pos2(800.0, 600.0)), button(pos2(800.0, 600.0), true)]);
+    h.frame_with_system_buttons(vec![Event::PointerMoved(pos2(1000.0, 600.0))], false);
+    assert!(!h.ctx.input(|i| i.pointer.any_down()));
+    assert!(!h.ctx.input(|i| i.pointer.any_click()), "the release at the press position made a click");
+}
+
+#[test]
 fn control_channel_drags_keep_their_button_between_steps() {
     let mut h = Harness::new();
     h.frame(vec![Event::PointerMoved(pos2(800.0, 600.0)), button(pos2(800.0, 600.0), true)]);

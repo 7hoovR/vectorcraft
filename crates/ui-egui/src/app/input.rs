@@ -151,9 +151,19 @@ impl VectorcraftApp {
             .collect();
             (down, p.latest_pos().or_else(|| p.interact_pos()).or_else(|| p.press_origin()), i.modifiers)
         });
+        // The releases go after this frame's last pointer movement, at its position, so a pointer
+        // that moved away from the press does not end it with a click at the press position.
+        let moved = raw.events.iter().enumerate().rev().find_map(|(i, e)| match e {
+            egui::Event::PointerMoved(p) => Some((i + 1, *p)),
+            _ => None,
+        });
+        let (at, pos) = match moved {
+            Some((at, p)) => (at, Some(p)),
+            None => (0, pos),
+        };
         let Some(pos) = pos else { return };
         let releases = down.into_iter().map(|button| egui::Event::PointerButton { pos, button, pressed: false, modifiers });
-        raw.events.splice(0..0, releases);
+        raw.events.splice(at..at, releases);
     }
 
     /// Inject synthetic events (one press/release step, wheel turn or short key sequence per host
