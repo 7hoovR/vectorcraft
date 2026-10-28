@@ -362,6 +362,60 @@ fn cmd_click_on_the_gradient_fill_box_with_the_options_hidden() {
     assert_eq!(hexes(&app), ["#ffffff", "#000000"]);
 }
 
+/// Cmd/Ctrl-click on the Gradient Fill box gives an unpainted stroke (no paint, no weight) the
+/// White, Black gradient with the 1 pt weight, so the gradient shows.
+#[test]
+fn cmd_click_on_the_gradient_fill_box_gives_an_unpainted_stroke_its_weight() {
+    let mut app = app(json!({"color": "#336699"}));
+    app.run("paint.setStroke", json!({"none": true})).unwrap();
+    let stroke = |app: &VectorcraftApp| {
+        let st = app.session.doc().unwrap();
+        let n = st.doc.node(st.selection.objects[0]).unwrap();
+        n.appearance.stroke().map(|s| (s.paint.clone(), s.width)).unwrap()
+    };
+    assert_eq!(stroke(&app).1, 0.0);
+    app.session.fill_active = false;
+    let mut p = Panel::new();
+    p.frame(&mut app, vec![], Modifiers::NONE);
+    let thumb = p.widget("grad-swatches").left_center() - vec2(21.0, 0.0);
+    p.click_with(&mut app, thumb, Modifiers::COMMAND);
+    let (paint, width) = stroke(&app);
+    let Paint::Gradient(g) = paint else { panic!("expected a gradient stroke, got {paint:?}") };
+    assert_eq!(g.gradient.kind, GradientKind::Linear);
+    assert_eq!(width, 1.0, "the stroke gets the 1 pt default");
+}
+
+/// With characters selected with the Type tool, Cmd/Ctrl-click on the Gradient Fill box gives
+/// only those characters the White, Black gradient, as one undo step.
+#[test]
+fn cmd_click_on_the_gradient_fill_box_resets_only_the_selected_characters() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.run("file.new", json!({"width": 300, "height": 300})).unwrap();
+    app.session.select_tool("type", Default::default()).unwrap();
+    let id = app.run("text.create", json!({"x": 20, "y": 50, "text": "Sample Text", "size": 24})).unwrap()["id"].clone();
+    let id = NodeId(id.as_u64().unwrap());
+    app.session.apply_actions(vec![vectorcraft_tools::Action::Notify("text.editNew".into())]).unwrap();
+    app.session.set_tool_option("select", &json!({"start": 0, "end": 6}));
+    let runs = |app: &VectorcraftApp| match app.session.doc().unwrap().doc.node(id).map(|n| &n.kind) {
+        Some(vectorcraft_doc::NodeKind::Text(t)) => t.runs.iter().map(|r| (r.text.clone(), r.style.fill.clone())).collect::<Vec<_>>(),
+        k => panic!("expected type, got {k:?}"),
+    };
+    let before = runs(&app)[0].1.clone();
+    let mut p = Panel::new();
+    p.frame(&mut app, vec![], Modifiers::NONE);
+    let thumb = p.widget("grad-swatches").left_center() - vec2(21.0, 0.0);
+    p.click_with(&mut app, thumb, Modifiers::COMMAND);
+    let after = runs(&app);
+    assert_eq!(after.len(), 2);
+    assert_eq!(after[0].0, "Sample");
+    let Paint::Gradient(g) = &after[0].1 else { panic!("expected a gradient fill, got {:?}", after[0].1) };
+    assert_eq!(g.gradient.kind, GradientKind::Linear);
+    assert_eq!(g.gradient.stops.iter().map(|s| s.color.to_hex()).collect::<Vec<_>>(), ["#ffffff", "#000000"]);
+    assert_eq!(after[1], (" Text".to_string(), before.clone()), "the rest keeps its fill");
+    app.run("edit.undo", json!({})).unwrap();
+    assert!(runs(&app).iter().all(|(_, f)| *f == before), "one undo step");
+}
+
 #[test]
 fn alt_drag_copies_a_stop_and_alt_dropping_on_a_stop_swaps_colours() {
     let mut app = app(json!({"gradient": {}}));

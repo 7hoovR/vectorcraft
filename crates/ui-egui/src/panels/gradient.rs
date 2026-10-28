@@ -191,11 +191,14 @@ fn write_stops(app: &mut VectorcraftApp, params: Value, select: Option<usize>, p
     }
 }
 
-/// Make the gradient behind the active proxy linear with the White, Black stops, as one undo
-/// step (a solid or no paint becomes that gradient). With nothing selected it sets the default.
-/// Cmd/Ctrl-click on the Gradient Fill box or on the Tools panel's Gradient button runs it.
+/// Paint the active proxy with the linear White, Black gradient, as one undo step (a solid or no
+/// paint becomes that gradient). It runs `paint.setFill` or `paint.setStroke`, so characters
+/// selected with the Type tool take it alone and an unpainted stroke gets its 1 pt weight. With
+/// nothing selected it sets the default. Cmd/Ctrl-click on the Gradient Fill box or on the Tools
+/// panel's Gradient button runs it.
 pub(crate) fn reset_to_linear_white_black(app: &mut VectorcraftApp) {
-    edit(app, json!({ "kind": "linear", "stops": stops_json(&Gradient::default().stops) }), Live::Released);
+    let cmd = if app.session.fill_active { "paint.setFill" } else { "paint.setStroke" };
+    app.run(cmd, json!({ "gradient": { "kind": "linear", "stops": stops_json(&Gradient::default().stops) } })).ok();
 }
 
 /// Save the gradient as a swatch; its stops keep their color models.
