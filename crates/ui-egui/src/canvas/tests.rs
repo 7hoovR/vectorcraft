@@ -731,11 +731,18 @@ fn shift_clicking_canvas_artboard_label_toggles_multi_selection() {
     };
     let at1 = label_pos("02 - Artboard 2");
 
-    // Shift-click artboard 2's name label
+    // Shift-click artboard 2's name label (Shift held on press, released before mouse release)
     let shift = egui::Modifiers::SHIFT;
     let button = |pressed| egui::Event::PointerButton { pos: at1, button: egui::PointerButton::Primary, pressed, modifiers: shift };
     frame(&mut app, &ctx, vec![egui::Event::ModifiersChanged(shift), egui::Event::PointerMoved(at1), button(true)]);
-    frame(&mut app, &ctx, vec![egui::Event::ModifiersChanged(shift), button(false)]);
+    frame(
+        &mut app,
+        &ctx,
+        vec![
+            egui::Event::ModifiersChanged(egui::Modifiers::NONE),
+            egui::Event::PointerButton { pos: at1, button: egui::PointerButton::Primary, pressed: false, modifiers: egui::Modifiers::NONE },
+        ],
+    );
 
     assert_eq!(app.session.tool_options()["selected"], json!([1, 0]), "Shift-clicking artboard label adds it to selection");
 
