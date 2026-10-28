@@ -634,6 +634,67 @@ fn zip_archives_store_their_files() {
     assert!(super::zip::entries(&broken).is_err(), "the CRC catches a changed byte");
 }
 
+/// The compression method of each file in `zip` (0: stored, 8: deflated), from its central directory.
+fn methods(zip: &[u8]) -> Vec<u16> {
+    let u16_at = |at: usize| usize::from(u16::from_le_bytes([zip[at], zip[at + 1]]));
+    let end = zip.len() - 22;
+    let mut at = u32::from_le_bytes(zip[end + 16..end + 20].try_into().unwrap()) as usize;
+    (0..u16_at(end + 10))
+        .map(|_| {
+            let method = u16_at(at + 10) as u16;
+            at += 46 + u16_at(at + 28) + u16_at(at + 30) + u16_at(at + 32);
+            method
+        })
+        .collect()
+}
+
+#[test]
+fn zip_archives_deflate_what_gets_smaller() {
+    // A xorshift run: bytes that deflating makes larger.
+    let mut x = 0x9E37_79B9u32;
+    let noise: Vec<u8> = (0..4096)
+        .map(|_| {
+            x ^= x << 13;
+            x ^= x >> 17;
+            x ^= x << 5;
+            x as u8
+        })
+        .collect();
+    let text = "<rect x=\"5\" y=\"5\" width=\"20\" height=\"20\"/>\n".repeat(100).into_bytes();
+    let files = [("art.svg", text.clone()), ("sub/ünï.png", noise.clone()), ("empty", vec![])];
+    let zip = super::zip::deflate(&files, super::zip::FIXED_TIME).unwrap();
+    assert_eq!(methods(&zip), [8, 0, 0], "the text deflated, the noise and the empty file stored");
+    assert!(zip.windows(noise.len()).any(|w| w == noise.as_slice()), "a stored file's bytes are in the archive as they are");
+    assert!(zip.len() < super::zip::store(&files).unwrap().len());
+    let back = super::zip::entries(&zip).unwrap();
+    assert_eq!(back.len(), 3);
+    for ((n, b), (m, c)) in files.iter().zip(&back) {
+        assert_eq!((*n, b), (m.as_str(), c));
+    }
+    assert_eq!(super::zip::deflate(&files, super::zip::FIXED_TIME).unwrap(), zip, "the same files, the same archive");
+}
+
+#[test]
+fn zip_exports_deflate_their_files() {
+    let mut s = session(1);
+    for i in 0..40 {
+        s.execute("shape.rectangle", &json!({"x": i % 30, "y": i % 20, "width": 8, "height": 6})).unwrap();
+    }
+    let p = json!({"formats": [{"format": "svg"}, {"format": "png"}]});
+    let plain = files(&export(&mut s, p.clone()));
+    let mut q = p;
+    q["zip"] = json!(true);
+    let r = export(&mut s, q);
+    let zip = b64(&r);
+    assert_eq!(super::zip::entries(&zip).unwrap(), plain, "every file comes back byte for byte");
+    let svg = plain.iter().position(|(n, _)| n.ends_with(".svg")).unwrap();
+    let png = plain.iter().position(|(n, _)| n.ends_with(".png")).unwrap();
+    let methods = methods(&zip);
+    assert_eq!((methods[svg], methods[png]), (8, 0), "the SVG deflated, the PNG stored");
+    assert!(zip.len() < super::zip::store(&plain).unwrap().len(), "smaller than the stored archive");
+    assert_eq!(r["bytes"].as_u64(), Some(zip.len() as u64));
+}
+
 #[test]
 fn the_document_remembers_its_export_settings() {
     let mut s = session(2);
