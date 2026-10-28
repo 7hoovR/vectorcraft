@@ -648,7 +648,10 @@ way.
 
 Raster exports take more options in `options`: `ppi` (72, 150, 300…; stored in the file), `background`
 (`transparent`, `white`, `black` or `"#rrggbb"`), `antiAlias` (`none`, `art`, `type`: text snapped to pixels) and,
-for PNG, `interlaced`.
+for PNG, `interlaced`. `width` or `height` sets the size of each file in pixels: each artboard (with `useArtboards`,
+each file), `rect` or art bounds gets the scale that makes it that wide or high, within 0.01–64 pixels per point, and
+the file stores the resolution that results. `width` wins over `height`, and either one wins over `ppi` and `scale`. A
+value that is not a positive number is refused. Export for Screens rows keep their own size (`scale: "512w"`).
 
 Long-tail commands:
 

@@ -95,9 +95,9 @@ impl ScreenSize {
         }
     }
 
-    /// Pixels per point for `region`.
-    fn scale_for(self, region: Rect) -> Result<f64> {
-        let per = |px: f64, pt: f64| (pt > 0.0).then(|| px / pt).ok_or_else(|| bad(C, "an empty artboard has no width or height to scale to"));
+    /// Pixels per point for `region` (`cmd` names the command in the error).
+    pub(super) fn scale_for(self, cmd: &str, region: Rect) -> Result<f64> {
+        let per = |px: f64, pt: f64| (pt > 0.0).then(|| px / pt).ok_or_else(|| bad(cmd, "an empty artboard has no width or height to scale to"));
         match self {
             Self::Width(w) => per(w, region.width()),
             Self::Height(h) => per(h, region.height()),
@@ -264,7 +264,7 @@ impl Row {
                 // The resolution is stored in the file too.
                 ScreenSize::Ppi(ppi) => o["ppi"] = json!(ppi),
                 size => {
-                    o["scale"] = json!(size.scale_for(region)?);
+                    o["scale"] = json!(size.scale_for(C, region)?);
                     if let Some(m) = o.as_object_mut() {
                         m.remove("ppi");
                     }
