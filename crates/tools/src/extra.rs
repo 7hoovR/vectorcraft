@@ -1,9 +1,11 @@
 //! Flare, Reshape, Shaper and Graph tools.
 //!
-//! Flare: drag sets the centre and its size (click without dragging opens the Flare Tool Options),
-//! then a click sets the end point of the rings; the rest comes from the tool's options (the Flare
-//! Tool Options, which last). Reshape: drag a point of a selected path; the engine's
-//! `path.reshape` adds an anchor there if needed and moves the neighbourhood smoothly.
+//! Flare: drag sets the center and its size and turns the rays with the pointer (Shift keeps them in
+//! their original orientation; click without dragging opens the Flare Tool Options), then a click
+//! sets the end point of the rings; Space held during either drag moves the flare. The rest comes
+//! from the tool's options (the Flare Tool Options, which last). Reshape: drag a point of a
+//! selected path; the engine's `path.reshape` adds an anchor there if needed and moves the
+//! neighbourhood smoothly.
 
 use serde_json::{Value, json};
 use vectorcraft_geom::{Point, Vec2};
@@ -51,9 +53,13 @@ pub struct FlareTool {
     /// Centre placed, waiting for the end-point click: (centre, diameter).
     placed: Option<(Point, f64)>,
     hover: Point,
+    /// The pointer at the last press or drag, from which Space held moves the flare.
+    last: Point,
     began: bool,
     /// Ray count changed with ↑/↓ during the gesture (None = the options' count).
     rays: Option<u64>,
+    /// The rays' turn (`shape.flare`'s `rotation`, degrees) the center drag set.
+    turn: f64,
     /// The options' values, in [`FLARE_OPTIONS`] order.
     values: [f64; 12],
     /// Whether the flare has rays and rings (the options' Rays and Rings checkboxes).
@@ -67,8 +73,10 @@ impl Default for FlareTool {
             drag: None,
             placed: None,
             hover: Point::ZERO,
+            last: Point::ZERO,
             began: false,
             rays: None,
+            turn: 0.0,
             values: FLARE_OPTIONS.map(|(_, default, _, _)| default),
             rays_on: true,
             rings_on: true,
@@ -101,12 +109,21 @@ pub fn flare_params(o: &Value, c: Point) -> Value {
     v
 }
 
+/// The rays' turn (degrees, clockwise) for a center drag along `v`: as a polygon's first corner,
+/// the rays follow the pointer, and a drag straight up leaves them unturned. Shift keeps them in
+/// their original orientation: unturned, or turned by General › Constrain Angle `base` (degrees,
+/// counter-clockwise) as a polygon drawn with Shift is.
+fn ray_turn(v: Vec2, shift: bool, base: f64) -> f64 {
+    if shift { vectorcraft_geom::constrain_rotation(base).unwrap_or(0.0) } else { (v.atan2().to_degrees() + 90.0).rem_euclid(360.0) }
+}
+
 impl FlareTool {
-    /// `shape.flare`'s params: the options, with the dragged centre and diameter, the ray count
-    /// ↑/↓ chose and the rings' end point once clicked.
+    /// `shape.flare`'s params: the options, with the dragged center and diameter, the rays' turn,
+    /// the ray count ↑/↓ chose and the rings' end point once clicked.
     fn params(&self, c: Point, diameter: f64, end: Option<Point>) -> Value {
         let mut v = flare_params(&self.options(), c);
         v["diameter"] = json!(diameter.max(1.0));
+        v["rotation"] = json!(self.turn);
         if let Some(r) = self.rays.filter(|_| self.rays_on) {
             v["rays"] = json!(r);
         }
@@ -132,12 +149,17 @@ impl Tool for FlareTool {
                 if self.placed.is_none() {
                     self.drag = Some((ev.pos, ev.pos));
                     self.rays = None;
+                    self.turn = 0.0;
                 }
+                self.last = ev.pos;
                 vec![]
             }
             PointerKind::Drag => {
-                if let Some((c, _)) = self.drag {
+                if let Some((mut c, _)) = self.drag {
+                    // Space held moves the center with the pointer, so the size and the turn stay.
+                    crate::shape::space_moves(&mut c, &mut self.last, ev, self.began);
                     self.drag = Some((c, ev.pos));
+                    self.turn = ray_turn(ev.pos - c, ev.mods.shift, cx.constrain_angle);
                     if !self.began && ev.pos.distance(c) >= cx.tol(3.0) {
                         self.began = true;
                         return vec![
@@ -148,7 +170,10 @@ impl Tool for FlareTool {
                     if self.began {
                         return vec![Action::Preview("shape.flare".into(), self.params(c, 2.0 * ev.pos.distance(c), None))];
                     }
-                } else if let Some((c, d)) = self.placed {
+                } else if let Some((mut c, d)) = self.placed {
+                    // Space held moves the whole flare, rings' end point included.
+                    crate::shape::space_moves(&mut c, &mut self.last, ev, true);
+                    self.placed = Some((c, d));
                     return vec![Action::Preview("shape.flare".into(), self.params(c, d, Some(ev.pos)))];
                 }
                 vec![]
@@ -536,6 +561,89 @@ mod tests {
         assert_eq!(p["longest"].as_f64(), Some(300.0));
         t.set_option("raysOn", &json!(false));
         assert_eq!(t.params(Point::ZERO, 1.0, None)["rays"].as_u64(), Some(0));
+    }
+
+    /// The last `shape.flare` preview of `a`.
+    fn flare_preview(a: &[Action]) -> Value {
+        match a.iter().rev().find(|a| matches!(a, Action::Preview(..))) {
+            Some(Action::Preview(c, v)) if c == "shape.flare" => v.clone(),
+            other => panic!("no flare preview: {other:?}"),
+        }
+    }
+
+    /// The center drag turns the rays with the pointer, and Shift keeps them in their original
+    /// orientation; the second drag keeps the turn the first one left.
+    #[test]
+    fn flare_drag_turns_the_rays_and_shift_keeps_them_unturned() {
+        use crate::testutil::*;
+        use vectorcraft_doc::Selection;
+
+        let (d, _) = doc_with_rect();
+        let s = Selection::default();
+        let p = paint();
+        let cx = cx(&d, &s, &p);
+        let shift = Mods { shift: true, ..Default::default() };
+        let mut t = FlareTool::default();
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
+        let turn = |t: &mut FlareTool, x: f64, y: f64, m: Mods| {
+            flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, x, y).with_mods(m)))["rotation"].as_f64()
+        };
+        assert_eq!(turn(&mut t, 140.0, 100.0, Mods::default()), Some(90.0));
+        assert_eq!(turn(&mut t, 100.0, 60.0, Mods::default()), Some(0.0));
+        assert_eq!(turn(&mut t, 100.0, 140.0, Mods::default()), Some(180.0));
+        assert_eq!(turn(&mut t, 60.0, 100.0, Mods::default()), Some(270.0));
+        // Shift: the rays as they are without a turn, at the size the pointer gives.
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 130.0, 140.0).with_mods(shift)));
+        assert_eq!((v["rotation"].as_f64(), v["diameter"].as_f64()), (Some(0.0), Some(100.0)));
+        // ↑ adds a ray and keeps the turn.
+        assert_eq!(turn(&mut t, 140.0, 100.0, Mods::default()), Some(90.0));
+        assert_eq!(flare_preview(&t.key(&cx, ToolKey::Up, Mods::default()))["rotation"].as_f64(), Some(90.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 140.0, 100.0));
+        // Placing the rings' end point keeps the turn the center drag left.
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 300.0, 200.0));
+        let a = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 300.0, 200.0).with_mods(shift));
+        assert_eq!(a.last(), Some(&Action::Commit));
+        assert_eq!(flare_preview(&a)["rotation"].as_f64(), Some(90.0));
+        // With a Constrain Angle, Shift keeps the rays turned by it, as a polygon drawn with Shift.
+        let mut cx = cx;
+        cx.constrain_angle = 30.0;
+        let mut t = FlareTool::default();
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 140.0, 100.0).with_mods(shift)));
+        assert_eq!(v["rotation"].as_f64(), Some(-30.0));
+    }
+
+    /// Space held while dragging out a flare moves it at its current size and turn, in the center
+    /// drag and in the drag that places the rings' end point; let go, the drag goes on from there.
+    #[test]
+    fn space_moves_the_flare_being_drawn() {
+        use crate::testutil::*;
+        use vectorcraft_doc::Selection;
+
+        let (d, _) = doc_with_rect();
+        let s = Selection::default();
+        let p = paint();
+        let cx = cx(&d, &s, &p);
+        let space = Mods { space: true, ..Default::default() };
+        let mut t = FlareTool::default();
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 130.0, 100.0));
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 180.0, 150.0).with_mods(space)));
+        let at = |v: &Value| (v["cx"].as_f64(), v["cy"].as_f64(), v["diameter"].as_f64(), v["rotation"].as_f64());
+        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(60.0), Some(90.0)));
+        // Space let go: the size follows the pointer again, from the moved center.
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 190.0, 150.0)));
+        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(80.0), Some(90.0)));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 190.0, 150.0));
+        // The second drag: Space held moves the flare, its rings' end point with it.
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Move, 300.0, 300.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 300.0, 300.0));
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 320.0, 310.0).with_mods(space)));
+        assert_eq!((at(&v), v["x2"].as_f64(), v["y2"].as_f64()), ((Some(170.0), Some(160.0), Some(80.0), Some(90.0)), Some(320.0), Some(310.0)));
+        let a = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 340.0, 310.0));
+        assert_eq!(a.last(), Some(&Action::Commit));
+        let v = flare_preview(&a);
+        assert_eq!((v["cx"].as_f64(), v["cy"].as_f64(), v["x2"].as_f64()), (Some(170.0), Some(160.0), Some(340.0)));
     }
 
     #[test]
