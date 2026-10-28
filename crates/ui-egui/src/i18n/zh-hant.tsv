@@ -1790,6 +1790,7 @@ file-filter	Templates	範本
 @msg	clipboard is empty	剪貼簿是空的
 @msg	no anchor points selected	未選取錨點
 @msg	select at least two objects	請選取至少兩個物件
+@msg	exit isolation mode first	請先結束隔離模式
 @msg	no saved presets	沒有已儲存的預設集
 @msg	compound paths can only contain paths	複合路徑只能包含路徑
 @msg	no bounds	沒有邊界

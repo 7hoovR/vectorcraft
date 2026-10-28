@@ -286,6 +286,141 @@ fn lock_and_hide_other_layers() {
     assert!(!s.doc().unwrap().doc.node(l2).unwrap().visible);
 }
 
+/// Whether `id` is visible and whether it is locked.
+fn shown_and_locked(s: &Session, id: NodeId) -> (bool, bool) {
+    let n = node(s, id);
+    (n.visible, n.locked)
+}
+
+/// Each of `commands` is off in isolation mode: the command list reports it disabled, its error
+/// names isolation mode, and so does the error of a call that gives the selection as `ids` (for a
+/// command that takes them).
+fn off_in_isolation(s: &mut Session, commands: &[&str]) {
+    let ids: Vec<u64> = selected(s).iter().map(|i| i.0).collect();
+    for c in commands {
+        let spec = find_command(c).unwrap();
+        assert_eq!(spec.info(s).disabled_reason.as_deref(), Some("exit isolation mode first"), "{c}");
+        let given = cmd::params::takes_key(spec.params, "ids").then(|| json!({"ids": ids}));
+        for p in std::iter::once(json!({})).chain(given) {
+            let e = s.execute(c, &p).unwrap_err().to_string();
+            assert!(e.contains("exit isolation mode first"), "{c} {p}: {e}");
+        }
+    }
+}
+
+/// In isolation mode, Lock › Selection and Hide › Selection are off and change nothing, in an
+/// isolated group and in an isolated compound path with one of its paths selected. After Exit
+/// Isolation Mode they lock and hide again.
+#[test]
+fn lock_and_hide_selection_are_off_in_isolation_mode() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 10.0, 10.0);
+    let b = rect(&mut s, 20.0, 0.0, 10.0, 10.0);
+    sel(&mut s, &[a, b]);
+    let g = id_of(&s.execute("object.group", &json!({})).unwrap());
+    let outer = rect(&mut s, 100.0, 100.0, 100.0, 100.0);
+    let hole = rect(&mut s, 120.0, 120.0, 20.0, 20.0);
+    sel(&mut s, &[outer, hole]);
+    let compound = id_of(&s.execute("object.compoundPath.make", &json!({})).unwrap());
+    let ids = [a, b, g, outer, hole, compound];
+    let commands = ["object.lock", "object.hide"];
+    for (isolated, member) in [(g, a), (compound, hole)] {
+        s.execute("object.isolate", &json!({"id": isolated.0})).unwrap();
+        sel(&mut s, &[member]);
+        off_in_isolation(&mut s, &commands);
+        for id in ids {
+            assert_eq!(shown_and_locked(&s, id), (true, false), "{id:?} in isolation of {isolated:?}");
+        }
+        assert_eq!(selected(&s), [member]);
+        s.execute("object.exitIsolation", &json!({})).unwrap();
+    }
+    sel(&mut s, &[a]);
+    s.execute("object.lock", &json!({})).unwrap();
+    sel(&mut s, &[outer]);
+    s.execute("object.hide", &json!({})).unwrap();
+    assert_eq!(shown_and_locked(&s, a), (true, true));
+    assert_eq!(shown_and_locked(&s, compound), (false, false));
+}
+
+/// In isolation mode, Unlock All and Show All are off: the locked and the hidden objects outside
+/// and inside the isolated group stay as they are. Pattern editing mode and opacity mask editing
+/// are not isolation mode for them.
+#[test]
+fn unlock_all_and_show_all_are_off_in_isolation_mode() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 10.0, 10.0);
+    let b = rect(&mut s, 20.0, 0.0, 10.0, 10.0);
+    let c = rect(&mut s, 40.0, 0.0, 10.0, 10.0);
+    sel(&mut s, &[a, b, c]);
+    let g = id_of(&s.execute("object.group", &json!({})).unwrap());
+    let locked = rect(&mut s, 100.0, 0.0, 10.0, 10.0);
+    let hidden = rect(&mut s, 120.0, 0.0, 10.0, 10.0);
+    s.execute("layer.setProps", &json!({"id": locked.0, "locked": true})).unwrap();
+    s.execute("layer.setProps", &json!({"id": hidden.0, "visible": false})).unwrap();
+    s.execute("layer.setProps", &json!({"id": b.0, "locked": true})).unwrap();
+    s.execute("layer.setProps", &json!({"id": c.0, "visible": false})).unwrap();
+    s.execute("object.isolate", &json!({"id": g.0})).unwrap();
+    sel(&mut s, &[a]);
+    off_in_isolation(&mut s, &["object.unlockAll", "object.showAll"]);
+    for (id, want) in [(locked, (true, true)), (hidden, (false, false)), (b, (true, true)), (c, (false, false))] {
+        assert_eq!(shown_and_locked(&s, id), want, "{id:?}");
+    }
+    s.execute("object.exitIsolation", &json!({})).unwrap();
+    s.execute("object.unlockAll", &json!({})).unwrap();
+    s.execute("object.showAll", &json!({})).unwrap();
+    for id in [locked, hidden, b, c] {
+        assert_eq!(shown_and_locked(&s, id), (true, false), "{id:?}");
+    }
+
+    // Pattern editing mode: the tile's art hides and shows again.
+    let r = rect(&mut s, 300.0, 300.0, 10.0, 10.0);
+    sel(&mut s, &[r]);
+    s.execute("object.pattern.make", &json!({"name": "P"})).unwrap();
+    let tile = selected(&s);
+    s.execute("object.hide", &json!({})).unwrap();
+    assert!(!node(&s, tile[0]).visible, "hidden in pattern editing mode");
+    s.execute("object.showAll", &json!({})).unwrap();
+    assert!(node(&s, tile[0]).visible, "shown in pattern editing mode");
+    s.execute("object.pattern.cancel", &json!({})).unwrap();
+
+    // Opacity mask editing: the mask's art locks and unlocks again.
+    let obj = rect(&mut s, 0.0, 300.0, 200.0, 200.0);
+    let m = rect(&mut s, 0.0, 300.0, 100.0, 200.0);
+    sel(&mut s, &[obj, m]);
+    s.execute("transparency.makeOpacityMask", &json!({})).unwrap();
+    s.execute("transparency.editOpacityMask", &json!({})).unwrap();
+    let mask = selected(&s);
+    s.execute("object.lock", &json!({})).unwrap();
+    assert!(node(&s, mask[0]).locked, "locked in opacity mask editing");
+    s.execute("object.unlockAll", &json!({})).unwrap();
+    assert!(!node(&s, mask[0]).locked, "unlocked in opacity mask editing");
+}
+
+/// In isolation mode, Lock › All Artwork Above, Lock › Other Layers, Hide › All Artwork Above and
+/// Hide › Other Layers are off: the art above and the other layer stay as they are.
+#[test]
+fn lock_and_hide_above_and_other_layers_are_off_in_isolation_mode() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 100.0, 100.0);
+    let b = rect(&mut s, 200.0, 0.0, 10.0, 10.0);
+    sel(&mut s, &[a, b]);
+    let g = id_of(&s.execute("object.group", &json!({})).unwrap());
+    let over = rect(&mut s, 50.0, 50.0, 100.0, 100.0);
+    let l2 = id_of(&s.execute("layer.new", &json!({})).unwrap());
+    s.execute("object.isolate", &json!({"id": g.0})).unwrap();
+    sel(&mut s, &[a]);
+    off_in_isolation(&mut s, &["object.lock.above", "object.lock.otherLayers", "object.hide.above", "object.hide.otherLayers"]);
+    for id in [a, b, g, over, l2] {
+        assert_eq!(shown_and_locked(&s, id), (true, false), "{id:?}");
+    }
+    s.execute("object.exitIsolation", &json!({})).unwrap();
+    sel(&mut s, &[g]);
+    assert_eq!(s.execute("object.lock.above", &json!({})).unwrap(), json!({"count": 1}));
+    s.execute("object.hide.otherLayers", &json!({})).unwrap();
+    assert_eq!(shown_and_locked(&s, over), (true, true));
+    assert_eq!(shown_and_locked(&s, l2), (false, false));
+}
+
 /// How many steps there are to undo and to redo, and whether the document has unsaved changes.
 fn history(s: &Session) -> (usize, usize, bool) {
     let st = s.doc().unwrap();

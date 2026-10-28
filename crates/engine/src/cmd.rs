@@ -179,6 +179,23 @@ pub fn has_multi(s: &Session) -> std::result::Result<(), String> {
     let st = s.active().ok_or("no document open")?;
     if st.selection.len() < 2 { Err("select at least two objects".into()) } else { Ok(()) }
 }
+/// A document is open and it is not in isolation mode: Object › Lock's and Object › Hide's items,
+/// Unlock All and Show All are off in isolation mode. Pattern editing mode and opacity mask
+/// editing isolate their art too, and do not count as isolation mode here.
+pub fn outside_isolation(s: &Session) -> std::result::Result<(), String> {
+    let st = s.active().ok_or("no document open")?;
+    if st.isolation.is_some() && st.doc.pattern_edit.is_none() && st.doc.mask_edit.is_none() {
+        Err("exit isolation mode first".into())
+    } else {
+        Ok(())
+    }
+}
+/// Objects are selected ([`has_selection`]) and the document is not in isolation mode
+/// ([`outside_isolation`]).
+pub fn has_selection_outside_isolation(s: &Session) -> std::result::Result<(), String> {
+    outside_isolation(s)?;
+    has_selection(s)
+}
 pub fn can_undo(s: &Session) -> std::result::Result<(), String> {
     s.active().filter(|d| !d.history.undo.is_empty()).map(|_| ()).ok_or_else(|| "nothing to undo".into())
 }

@@ -4184,6 +4184,7 @@ theme	Appearance	Erscheinungsbild
 @msg	select an object in perspective	wählen Sie ein Objekt in der Perspektive aus
 @msg	select artwork (or a colour group) to recolor	wählen Sie eine Grafik (oder eine Farbgruppe) zum Neufärben aus
 @msg	select at least two objects	wählen Sie mindestens zwei Objekte aus
+@msg	exit isolation mode first	beenden Sie zuerst den Isolationsmodus
 @msg	select objects, not layers	wählen Sie Objekte aus, keine Ebenen
 @msg	select one path, or give its `id`	wählen Sie einen Pfad aus oder geben Sie seine `id` an
 @msg	select paths to join	wählen Sie Pfade zum Zusammenfügen aus
