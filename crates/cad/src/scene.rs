@@ -127,9 +127,34 @@ fn circular_subpath(sub: &Sub) -> Option<CircularSub> {
         return None;
     }
     // Verify that the curve progresses monotonically around the circle without reversing,
+    // both along each cubic segment's angular derivative and across sampled intervals,
     // and that closed subpaths make exactly one full turn while open subpaths do not exceed one turn.
     let mut total_turn = 0.0;
     let mut dir: Option<bool> = None;
+    let ang_threshold = radius * radius * 1e-9;
+    let mut seg_from = sub.start;
+    for seg in &sub.segs {
+        let Seg::Cubic(a, b, to) = *seg else { return None };
+        for step in 0..=32 {
+            let t = f64::from(step) / 32.0;
+            let p = cubic_point(seg_from, a, b, to, t);
+            let u = 1.0 - t;
+            let dx = 3.0 * u * u * (a.x - seg_from.x) + 6.0 * u * t * (b.x - a.x) + 3.0 * t * t * (to.x - b.x);
+            let dy = 3.0 * u * u * (a.y - seg_from.y) + 6.0 * u * t * (b.y - a.y) + 3.0 * t * t * (to.y - b.y);
+            let cross = (p.x - centre.x) * dy - (p.y - centre.y) * dx;
+            if cross.abs() > ang_threshold {
+                let is_ccw = cross > 0.0;
+                if let Some(expected_ccw) = dir {
+                    if is_ccw != expected_ccw {
+                        return None;
+                    }
+                } else {
+                    dir = Some(is_ccw);
+                }
+            }
+        }
+        seg_from = to;
+    }
     for w in samples.windows(2) {
         let (p0, p1) = (w[0], w[1]);
         let (v0x, v0y) = (p0.x - centre.x, p0.y - centre.y);

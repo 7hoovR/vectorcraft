@@ -280,6 +280,19 @@ fn a_closed_sliver_along_a_circle_is_not_a_circle() {
 }
 
 #[test]
+fn cubic_with_hidden_angular_reversal_is_not_promoted_to_arc() {
+    let d = doc_with(|d| {
+        let mut b = vectorcraft_geom::BezPath::new();
+        b.move_to(Point::new(-8.404028665134, 62.061475842818));
+        b.curve_to(Point::new(-13.285253116737, 62.103123153545), Point::new(52.811163576591, 52.471253544459), Point::new(60.0, 50.0));
+        vec![path(d, PathData::from_bezpath(&b), Paint::None, Paint::solid(Color::BLACK), 1.0)]
+    });
+    let dxf = export(&d, &opts(&d)).unwrap();
+    assert_ne!(kinds(&dxf), ["ARC"]);
+    assert_eq!(kinds(&dxf), ["SPLINE"]);
+}
+
+#[test]
 fn spline_closed_flags_follow_path_intent_across_versions_without_changing_geometry() {
     let cases = [(true, true), (true, false), (false, false), (false, true)];
     let make_doc = |keep_closure: bool| {
