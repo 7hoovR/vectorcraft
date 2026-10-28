@@ -4311,6 +4311,9 @@ font-technology	Variable	ცვლადი
 @msg	not a PSD file	PSD ფაილი არ არის
 @msg	the PSD file has an unknown colour mode ({m})	PSD ფაილს უცნობი ფერის რეჟიმი აქვს ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	PSD ფაილის გამოსახულების მონაცემები უცნობ შეკუმშვას იყენებს ({m})
+@msg	the PCX file is cut short	PCX ფაილი შეკვეცილია
+@msg	the PCX file's header is damaged	PCX ფაილის სათაური დაზიანებულია
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	{planes} სიბრტყეში {bits}-ბიტიანი პიქსელების მქონე PCX ფაილების წაკითხვა ვერ ხერხდება
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	PSD გამოსახულება ზედმეტად დიდია წასაკითხად ({_1} × {_2} პიქსელი)
 @msg	zipped 32-bit PSD image data with prediction can't be read	zip-ით შეკუმშული 32-ბიტიანი PSD გამოსახულების მონაცემების წაკითხვა პროგნოზირებით ვერ ხერხდება
 @msg	{depth}-bit PSD files in this colour mode can't be read	ამ ფერის რეჟიმში {depth}-ბიტიანი PSD ფაილების წაკითხვა ვერ ხერხდება

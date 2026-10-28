@@ -4610,6 +4610,9 @@ theme	Appearance	Erscheinungsbild
 @msg	the PSD file's header is damaged	der Header der PSD-Datei ist beschädigt
 @msg	the PSD file's image data can't be read: {e}	die Bilddaten der PSD-Datei können nicht gelesen werden: {e}
 @msg	the PSD file's image data uses an unknown compression ({m})	die Bilddaten der PSD-Datei verwenden eine unbekannte Komprimierung ({m})
+@msg	the PCX file is cut short	die PCX-Datei ist unvollständig
+@msg	the PCX file's header is damaged	der Dateikopf der PCX-Datei ist beschädigt
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	PCX-Dateien mit {bits}-Bit-Pixeln in {planes} Ebenen können nicht gelesen werden
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	das PSD-Bild ist zu groß zum Lesen ({_1} × {_2} Pixel)
 @msg	zipped 32-bit PSD image data with prediction can't be read	ZIP-komprimierte 32-Bit-PSD-Bilddaten mit Vorhersage können nicht gelesen werden
 @msg	{depth}-bit PSD files in this colour mode can't be read	{depth}-Bit-PSD-Dateien in diesem Farbmodus können nicht gelesen werden

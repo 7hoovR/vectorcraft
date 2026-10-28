@@ -4773,6 +4773,9 @@ imageTrace	Outline	Ääriviiva
 @msg	not a PSD file	ei PSD-tiedosto
 @msg	the PSD file has an unknown colour mode ({m})	tämän PSD-tiedoston väritila on tuntematon ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	tämän PSD-tiedoston kuvadata käyttää tuntematonta pakkausta ({m})
+@msg	the PCX file is cut short	tämä PCX-tiedosto on katkennut
+@msg	the PCX file's header is damaged	PCX-tiedoston otsake on vahingoittunut
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	PCX-tiedostoja, joissa on {bits}-bittisiä pikseleitä {planes} tasossa, ei voi lukea
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	tämä PSD-kuva on liian suuri luettavaksi ({_1} × {_2} pikseliä)
 @msg	zipped 32-bit PSD image data with prediction can't be read	ennustusta käyttävää zip-pakattua 32-bittistä PSD-kuvadataa ei voi lukea
 @msg	{depth}-bit PSD files in this colour mode can't be read	tässä väritilassa olevia {depth}-bittisiä PSD-tiedostoja ei voi lukea

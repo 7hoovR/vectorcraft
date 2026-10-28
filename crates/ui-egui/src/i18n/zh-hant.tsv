@@ -2326,6 +2326,9 @@ file-filter	Templates	範本
 @msg	not a PSD file	不是 PSD 檔案
 @msg	the PSD file has an unknown colour mode ({m})	PSD 檔案的色彩模式不明 ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	PSD 檔案的影像資料使用了不明的壓縮方式 ({m})
+@msg	the PCX file is cut short	PCX 檔案不完整
+@msg	the PCX file's header is damaged	PCX 檔案標頭已損毀
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	無法讀取 {planes} 個平面中含 {bits} 位元像素的 PCX 檔案
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	PSD 影像過大，無法讀取 ({_1} × {_2} 像素)
 @msg	zipped 32-bit PSD image data with prediction can't be read	無法讀取使用預測的 ZIP 壓縮 32 位元 PSD 影像資料
 @msg	{depth}-bit PSD files in this colour mode can't be read	無法讀取此色彩模式的 {depth} 位元 PSD 檔案

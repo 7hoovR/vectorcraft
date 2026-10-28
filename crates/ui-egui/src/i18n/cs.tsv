@@ -4870,6 +4870,9 @@ imageTrace	Outline	Obrys
 @msg	not a PSD file	nejde o soubor PSD
 @msg	the PSD file has an unknown colour mode ({m})	soubor PSD má neznámý barevný režim ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	obrazová data souboru PSD používají neznámou kompresi ({m})
+@msg	the PCX file is cut short	soubor PCX je useknutý
+@msg	the PCX file's header is damaged	hlavička souboru PCX je poškozená
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	soubory PCX s {bits}bitovými obrazovými body v {planes} rovinách nelze přečíst
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	obraz PSD je příliš velký na přečtení ({_1} × {_2} obrazových bodů)
 @msg	zipped 32-bit PSD image data with prediction can't be read	zazipovaná 32bitová obrazová data PSD s predikcí nelze přečíst
 @msg	{depth}-bit PSD files in this colour mode can't be read	{depth}bitové soubory PSD v tomto barevném režimu nelze přečíst

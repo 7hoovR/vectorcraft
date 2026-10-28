@@ -4629,6 +4629,9 @@ axis	Both	Оба
 @msg	not a PSD file	это не документ PSD
 @msg	the PSD file has an unknown colour mode ({m})	у файла PSD неизвестный цветовой режим ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	данные изображения файла PSD используют неизвестное сжатие ({m})
+@msg	the PCX file is cut short	файл PCX обрезан
+@msg	the PCX file's header is damaged	заголовок файла PCX повреждён
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	файлы PCX с {bits}-битными пикселями в {planes} плоскостях не читаются
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	изображение PSD слишком велико для чтения ({_1} × {_2} пикс.)
 @msg	zipped 32-bit PSD image data with prediction can't be read	32-битные данные изображения PSD со сжатием ZIP с предсказанием не читаются
 @msg	{depth}-bit PSD files in this colour mode can't be read	{depth}-битные файлы PSD в этом цветовом режиме не читаются
