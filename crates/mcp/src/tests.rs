@@ -1252,22 +1252,33 @@ fn remote_does_not_send_on_a_connection_with_a_stray_line() {
 
 #[test]
 fn remote_call_reports_nothing_sent_when_reconnect_is_refused() {
-    let listener = reusable_listener(std::net::SocketAddr::from(([127, 0, 0, 1], 0)));
-    let addr = listener.local_addr().unwrap();
-    let mut remote = Remote::connect(&addr.to_string()).unwrap();
-    let (old_connection, _) = listener.accept().unwrap();
-    drop(old_connection);
-    drop(listener);
-    wait_for_remote_eof(&remote);
-    let held = socket2::Socket::new(socket2::Domain::IPV4, socket2::Type::STREAM, None).unwrap();
-    held.set_reuse_address(true).unwrap();
-    held.bind(&addr.into()).unwrap();
+    // A remote whose connection the app closed, and the app's port bound but not listening.
+    let closed_remote = || {
+        let listener = reusable_listener(std::net::SocketAddr::from(([127, 0, 0, 1], 0)));
+        let addr = listener.local_addr().unwrap();
+        let remote = Remote::connect(&addr.to_string()).unwrap();
+        let (old_connection, _) = listener.accept().unwrap();
+        drop(old_connection);
+        drop(listener);
+        wait_for_remote_eof(&remote);
+        let held = socket2::Socket::new(socket2::Domain::IPV4, socket2::Type::STREAM, None).unwrap();
+        held.set_reuse_address(true).unwrap();
+        held.bind(&addr.into()).unwrap();
+        (remote, held)
+    };
 
-    // Every call connects again: the first after finding the old connection closed, a later one because the failed call left none.
+    // Each run finds the old connection closed and connects again; only the call is timed.
     let mut errors = Vec::new();
-    let took = runs_until_faster_than(FAILED_CONNECT, || {
+    let mut took = Vec::new();
+    while took.len() < 5 {
+        let (mut remote, _held) = closed_remote();
+        let start = std::time::Instant::now();
         errors.push(remote.call("engine.execute", json!({"command": "shape.rectangle", "params": {"width": 20, "height": 20}})).unwrap_err());
-    });
+        took.push(start.elapsed());
+        if took.last() < Some(&FAILED_CONNECT) {
+            break;
+        }
+    }
 
     assert!(took.last() < Some(&FAILED_CONNECT), "took {took:?}");
     for error in errors {
