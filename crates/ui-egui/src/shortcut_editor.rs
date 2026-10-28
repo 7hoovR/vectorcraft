@@ -723,6 +723,7 @@ pub fn show(app: &mut VectorcraftApp, ctx: &egui::Context) {
     let mut km = Cow::Borrowed(&view.keymap);
     let mut ok = false;
     let mut cancel = false;
+    drop_hidden(&mut d, km.overrides());
     let recording = d.str("__recording");
     // Record a chord (before widgets see the keys). Modifiers held down are part of the next key's
     // chord, not a chord of their own.
@@ -977,6 +978,18 @@ fn export_from_dialog(app: &mut VectorcraftApp) {
     app.ui.shortcut_set = saved_set;
 }
 
+/// A row that left the list (Clear, Use Default, Reset to Defaults or another set took the
+/// shortcut from a command that needs a value) is no longer recorded or selected, so the next key
+/// press does not give the hidden command a shortcut.
+fn drop_hidden(d: &mut Dialog, overrides: &Overrides) {
+    for field in ["__recording", "__selected"] {
+        let key = d.str(field);
+        if !key.is_empty() && entry(&key).is_none_or(|e| !listed(overrides, e)) {
+            d.fields.insert(field.into(), json!(""));
+        }
+    }
+}
+
 /// Apply a recorded chord to `key` in the working set, warning about (and resolving) conflicts.
 fn record(d: &mut Dialog, km: &mut Keymap, key: &str, chord: &str) {
     d.fields.insert("__recording".into(), json!(""));
@@ -1037,6 +1050,41 @@ mod tests {
         // A modifier's own key press is no chord (#487).
         assert_eq!(chord_from_event(Key::ShiftLeft, Modifiers::SHIFT), None);
         assert!(normalize("ShiftLeft").is_none() && normalize("Cmd+ControlRight").is_none());
+    }
+
+    #[test]
+    fn clearing_a_row_that_leaves_the_list_stops_its_recording() {
+        let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
+        crate::keymap::set_override(&mut app.ui.shortcut_overrides, "document.setUnits", "Cmd+Alt+Shift+F12");
+        crate::keymap::set_override(&mut app.ui.shortcut_overrides, "edit.duplicate", "Cmd+Alt+Shift+F11");
+        open(&mut app);
+        let mut d = app.ui.dialog.clone().unwrap();
+        let start = keymap_with(&dialog_overrides(&d));
+        let set = |d: &mut Dialog, key: &str| {
+            d.fields.insert("__recording".into(), json!(key));
+            d.fields.insert("__selected".into(), json!(key));
+        };
+        let state = |d: &Dialog| (d.str("__recording"), d.str("__selected"));
+        // Clear, and Use Default, take the row out of the list: its recording stops.
+        let mut km = start.clone();
+        set(&mut d, "document.setUnits");
+        assign_in(&mut km, "document.setUnits", None, true).unwrap();
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(state(&d), (String::new(), String::new()));
+        let mut km = start.clone();
+        set(&mut d, "document.setUnits");
+        km.reset(&command_of("document.setUnits"));
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(state(&d), (String::new(), String::new()));
+        // A row that stays listed keeps its recording, and so does a tool's.
+        let mut km = start.clone();
+        set(&mut d, "edit.duplicate");
+        assign_in(&mut km, "edit.duplicate", None, true).unwrap();
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(state(&d), ("edit.duplicate".to_string(), "edit.duplicate".to_string()));
+        set(&mut d, "tool:groupSelection");
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(state(&d), ("tool:groupSelection".to_string(), "tool:groupSelection".to_string()));
     }
 
     #[test]
