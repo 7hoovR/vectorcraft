@@ -5033,7 +5033,7 @@ mark-style	Japanese	Japansk
 	This system has no screen color sampler	Dette system har ingen skærmfarvesampler
 	Color blindness – Tritanopia-type	Farveblindhed – tritanopitype
 	Panels Except Tools and Control	Paneler undtagen værktøjer og kontrol
-	Reset Tracking and Kerning	Nulstil spærring og kerning
+	Reset Tracking and Kerning	Nulstil sporing og kerning
 	Reset Horizontal Scale	Nulstil vandret skalering
 @msg	span must be "object" or "selection", got {v}	span skal være "object" eller "selection", fik {v}
 @msg	span: "selection" places a `gradient`, not a swatch	span: "selection" placerer en `gradient`, ikke en farveprøve

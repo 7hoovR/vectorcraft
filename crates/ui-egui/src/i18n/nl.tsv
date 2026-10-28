@@ -1524,7 +1524,7 @@ lighting	Light	Licht
 	Threshold	Drempel
 	Trace	Traceren
 	Trace the image with the Default preset	De afbeelding traceren met de standaardvoorinstelling
-	Size: {size}  Tracking: {tracking}	Grootte: {size}  Spatiëring: {tracking}
+	Size: {size}  Tracking: {tracking}	Grootte: {size}  Tracking: {tracking}
 	<Opacity Mask>	<Dekkingsmasker>
 	Create New Layer	Nieuwe laag maken
 	Create New Sublayer	Nieuwe sublaag maken
@@ -5045,7 +5045,7 @@ mark-style	Japanese	Japans
 	This system has no screen color sampler	Dit systeem heeft geen schermkleurkiezer
 	Color blindness – Tritanopia-type	Kleurenblindheid – type tritanopie
 	Panels Except Tools and Control	Alle panelen behalve Gereedschap en Bediening
-	Reset Tracking and Kerning	Spatiëring en kerning herstellen
+	Reset Tracking and Kerning	Tracking en kerning herstellen
 	Reset Horizontal Scale	Horizontale schaal herstellen
 @msg	span must be "object" or "selection", got {v}	span moet "object" of "selection" zijn, maar is {v}
 @msg	span: "selection" places a `gradient`, not a swatch	span: "selection" plaatst een `gradient`, geen staal
