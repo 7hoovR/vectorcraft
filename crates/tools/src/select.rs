@@ -465,15 +465,28 @@ pub(crate) fn hold_point(cx: &ToolContext, h: &Hit, p: Point) -> Point {
 /// While an opacity mask or a pattern is edited, a Shaper double-click selects a Shaper Group's
 /// original shape without isolating the group's original shapes. A press at `p` on a selected
 /// original shape holds it for a move: the hit inside its Shaper Group's original shapes, and that
-/// container. None otherwise.
+/// container. Each selected original shape's Shaper Group is checked, front to back, and an object
+/// in front of that group at `p` keeps the press. None otherwise.
 fn selected_source_hit(cx: &ToolContext, p: Point) -> Option<(Hit, NodeId)> {
     if cx.doc.mask_edit.is_none() && cx.doc.pattern_edit.is_none() {
         return None;
     }
-    let first = *cx.selection.objects.first()?;
-    let sources = cx.doc.parent_of(first).filter(|g| cx.doc.node(*g).is_some_and(|n| n.name.as_deref() == Some(vectorcraft_doc::shaper::SOURCES)))?;
-    let h = hit_test(cx.doc, p, vectorcraft_doc::hit::HitOptions { scope: Some(sources), ..cx.selection_hit_options() })?;
-    cx.selection.contains(h.top_object(Some(sources))).then_some((h, sources))
+    let is_sources = |g: &NodeId| cx.doc.node(*g).is_some_and(|n| n.name.as_deref() == Some(vectorcraft_doc::shaper::SOURCES));
+    let mut containers = cx.doc.paint_order(cx.selection.objects.iter().filter_map(|id| cx.doc.parent_of(*id)).filter(is_sources));
+    containers.dedup();
+    let front = hit_test(cx.doc, p, cx.selection_hit_options());
+    containers.into_iter().rev().find_map(|sources| {
+        let group = cx.doc.parent_of(sources)?;
+        if let Some(f) = &front
+            && f.leaf != group
+            && !f.ancestry.contains(&group)
+            && cx.doc.paint_order([group, f.leaf]).last() == Some(&f.leaf)
+        {
+            return None;
+        }
+        let h = hit_test(cx.doc, p, vectorcraft_doc::hit::HitOptions { scope: Some(sources), ..cx.selection_hit_options() })?;
+        cx.selection.contains(h.top_object(Some(sources))).then_some((h, sources))
+    })
 }
 
 impl SelectionTool {

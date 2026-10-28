@@ -31,6 +31,35 @@ fn a_press_on_a_selected_shaper_source_moves_it_while_a_mask_is_edited() {
     assert!(down.iter().any(|a| matches!(a, Action::Exec(c, v) if c == "select.set" && v["ids"] == json!([g.0]))), "{down:?}");
 }
 
+/// While an opacity mask is edited, a selected Shaper original shape that is not the first selected
+/// object still moves on a press, and an object in front of the Shaper Group keeps the press.
+#[test]
+fn a_selected_shaper_source_moves_after_other_objects_and_behind_front_art() {
+    use vectorcraft_doc::{Appearance, Node};
+    let (mut d, _, sources, _) = doc_with_shaper_group();
+    let rect = d.layers[0].children().unwrap()[0].id;
+    let layer = d.layers[0].id;
+    d.mask_edit = Some(vectorcraft_doc::MaskEdit { object: rect, layer });
+    let ids: Vec<NodeId> = d.node(sources).unwrap().children().unwrap().iter().map(|n| n.id).collect();
+    let (mut s, p) = (Selection::default(), paint());
+    s.set([rect, ids[1]]);
+    let c = ToolContext { isolation: Some(layer), ..cx(&d, &s, &p) };
+    let mut t = SelectionTool::default();
+    assert_eq!(t.cursor(&c, Point::new(125.0, 350.0), Mods::default()), Cursor::Move);
+    let down = t.pointer(&c, &ev(PointerKind::Down, 125.0, 350.0));
+    assert!(!down.iter().any(|a| matches!(a, Action::Exec(c, _) if c == "select.set")), "{down:?}");
+    let drag = t.pointer(&c, &ev(PointerKind::Drag, 145.0, 350.0));
+    assert!(drag.iter().any(|a| matches!(a, Action::Preview(c, _) if c == "object.transform")), "{drag:?}");
+    let front = d.alloc_id();
+    let square = vectorcraft_geom::shapes::rectangle(Rect::new(110.0, 340.0, 140.0, 360.0));
+    d.insert(Some(layer), 2, Node::path(front, square, Appearance::default_art())).unwrap();
+    s.set([ids[1]]);
+    let c = ToolContext { isolation: Some(layer), ..cx(&d, &s, &p) };
+    assert_ne!(SelectionTool::default().cursor(&c, Point::new(125.0, 350.0), Mods::default()), Cursor::Move);
+    let down = SelectionTool::default().pointer(&c, &ev(PointerKind::Down, 125.0, 350.0));
+    assert!(down.iter().any(|a| matches!(a, Action::Exec(c, v) if c == "select.set" && v["ids"] == json!([front.0]))), "{down:?}");
+}
+
 fn ev(kind: PointerKind, x: f64, y: f64) -> PointerEvent {
     PointerEvent::new(kind, x, y)
 }
