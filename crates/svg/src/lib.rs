@@ -347,6 +347,10 @@ pub enum SvgError {
     /// nested-image expansion bombs, #3564).
     #[error("the SVG expands to more than {0} objects")]
     TooLarge(usize),
+    /// The SVG expands to more nested SVG images than the reader takes (a guard against
+    /// nested-image expansion bombs, #3564).
+    #[error("the SVG expands to more than {0} nested SVG images")]
+    TooManyImages(usize),
 }
 
 /// Export a document as an SVG string (linked images are not returned: see [`export_full`]).

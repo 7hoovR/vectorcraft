@@ -664,7 +664,7 @@ impl Importer {
             return None;
         }
         if self.nested_svg_images >= crate::MAX_NESTED_SVG_IMAGES {
-            self.error = Some(SvgError::TooLarge(self.max_nodes));
+            self.error = Some(SvgError::TooManyImages(crate::MAX_NESTED_SVG_IMAGES));
             return None;
         }
         self.nested_svg_images += 1;
@@ -680,5 +680,49 @@ impl Importer {
         let art = self.group_node(tree.root(), acc);
         (self.links, self.hidden, self.uses, self.labels, self.non_scaling, self.data, self.events) = outer;
         art
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::import::files::Files;
+    use crate::import::text::TextSlots;
+    use std::collections::{HashMap, HashSet};
+    use vectorcraft_doc::Document;
+
+    #[test]
+    fn svg_image_cap_sets_too_many_images_error() {
+        let mut im = Importer {
+            doc: Document::new(100.0, 100.0),
+            warnings: vec![],
+            mask_flags: HashMap::new(),
+            links: HashMap::new(),
+            slots: TextSlots::default(),
+            patterns: HashMap::new(),
+            midpoints: HashMap::new(),
+            labels: HashMap::new(),
+            hidden: HashSet::new(),
+            uses: HashMap::new(),
+            symbols: HashMap::new(),
+            blends: HashMap::new(),
+            files: Files::default(),
+            non_scaling: HashSet::new(),
+            data: HashMap::new(),
+            events: HashMap::new(),
+            foreign: HashMap::new(),
+            sublayers: HashSet::new(),
+            sublayer_groups: HashSet::new(),
+            screen: 1.0,
+            converted_nodes: 0,
+            max_nodes: 1000,
+            error: None,
+            nested_svg_images: crate::MAX_NESTED_SVG_IMAGES,
+        };
+        let tree = usvg::Tree::from_str(r#"<svg xmlns="http://www.w3.org/2000/svg"/>"#, &usvg::Options::default()).unwrap();
+        let res = im.svg_image(&tree, Affine::IDENTITY);
+        assert!(res.is_none());
+        assert!(matches!(im.error, Some(SvgError::TooManyImages(crate::MAX_NESTED_SVG_IMAGES))));
+        assert_eq!(im.error.unwrap().to_string(), "the SVG expands to more than 256 nested SVG images");
     }
 }
