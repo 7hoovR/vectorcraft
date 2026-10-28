@@ -1,6 +1,7 @@
 //! Delete and Backspace through shortcut routing: Artboard editing protects selected artwork,
 //! including when no artboard can be deleted. Width points and Puppet Warp pins take the keys
-//! while selected, then leave them to Clear.
+//! while selected, then leave them to Clear. Escape deselects the selected width points before it
+//! leaves isolation mode.
 
 use egui::{Key, Modifiers};
 use serde_json::{Value, json};
@@ -81,6 +82,34 @@ fn delete_and_backspace_remove_the_selected_width_point_then_clear() {
         press(&mut app, key);
         assert!(!exists(&app, id), "{key:?} with no width point selected clears the selection");
     }
+}
+
+#[test]
+fn escape_deselects_the_selected_width_point_then_leaves_isolation() {
+    let (mut app, id) = app_with_line();
+    app.run("stroke.widthPoint.set", json!({"id": id, "t": 0.5, "left": 12, "right": 12})).unwrap();
+    app.run("object.group", json!({})).unwrap();
+    app.run("object.isolate", json!({})).unwrap();
+    app.run("select.set", json!({"ids": [id]})).unwrap();
+    app.select_tool("width");
+    click(&mut app, 200.0, 200.0);
+    let st = app.session.active().unwrap();
+    let (doc, undo) = (st.doc.clone(), st.history.undo.len());
+    // Escape deselects the width point only: the line, its widths, the undo history and isolation
+    // mode stay as they were.
+    press(&mut app, Key::Escape);
+    let st = app.session.active().unwrap();
+    assert!(*st.doc == *doc && st.history.undo.len() == undo, "Escape changes nothing in the document");
+    assert!(st.isolation.is_some(), "the first Escape stays in isolation mode");
+    assert_eq!((app.session.tool_id(), width_points(&app, id)), ("width", json!(3)));
+    // With no width point selected, Escape leaves isolation mode as with other tools.
+    press(&mut app, Key::Escape);
+    assert!(app.session.active().unwrap().isolation.is_none(), "the next Escape leaves isolation mode");
+    // Delete after Escape clears the line instead of removing the width point.
+    click(&mut app, 200.0, 200.0);
+    press(&mut app, Key::Escape);
+    press(&mut app, Key::Delete);
+    assert!(!exists(&app, id), "Delete after Escape clears the selected line");
 }
 
 #[test]

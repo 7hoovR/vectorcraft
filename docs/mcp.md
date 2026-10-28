@@ -3003,7 +3003,8 @@ for a uniform stroke). `stroke.widthPoint.remove {id, index | indices}` deletes 
 points}` replaces them all, as dragging several Shift-selected points with the Width tool does in one undo step.
 With the Width tool, `press_key` Delete or Backspace removes the selected width points (`handledBy: "tool"`); with none
 selected the key clears the selected objects as usual (`edit.clear`). The Puppet Warp tool's selected pins go the
-same way.
+same way. With the Width tool, `press_key` Escape deselects the selected width points (`handledBy: "tool"`) and
+leaves the document and its undo history as they were.
 A compound path's stroke is the compound's: width point commands given one of its members edit the compound's
 profile, which runs along every subpath (the Width tool shows each subpath's points).
 
