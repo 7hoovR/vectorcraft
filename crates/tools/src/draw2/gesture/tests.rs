@@ -703,6 +703,34 @@ fn pencil_alt_with_alt_to_smooth_on_smooths_instead_of_drawing_a_line() {
     assert!(matches!(&acts.last().unwrap()[0], Action::Exec(c, v) if c == "path.smoothRegion" && v["points"].as_array().unwrap().len() == 3));
 }
 
+/// While Alt switches the Pencil to the Smooth tool, the Pencil smooths within the Smooth tool's
+/// radius at any Edit selected paths Within value, 0 included.
+#[test]
+fn pencil_alt_smooths_within_the_smooth_tools_radius() {
+    let (d, id) = doc_with_rect();
+    let mut s = Selection::default();
+    s.set([id]);
+    let p = paint();
+    let mut cx = cx(&d, &s, &p);
+    cx.smart_guides = false;
+    let pts = [(50.0, 150.0), (150.0, 150.0), (250.0, 160.0)];
+    let radius = |acts: &[Vec<Action>]| match acts.last().and_then(|a| a.first()) {
+        Some(Action::Exec(c, v)) if c == "path.smoothRegion" => v["radius"].as_f64().unwrap(),
+        a => panic!("expected path.smoothRegion, got: {a:?}"),
+    };
+    let alt = Mods { alt: true, ..Default::default() };
+    for zoom in [1.0, 2.0] {
+        cx.zoom = zoom;
+        let want = radius(&drag(&mut GestureTool::new("smooth"), &cx, &pts, Mods::default()));
+        for within in [0.0, 5.0, 40.0] {
+            let mut t = GestureTool::new("pencil");
+            t.set_option("altSmooth", &json!(true));
+            t.set_option("editWithin", &json!(within));
+            assert_eq!(radius(&drag_held(&mut t, &cx, &pts, alt)), want, "zoom {zoom}, editWithin {within}");
+        }
+    }
+}
+
 /// #3799: Alt's line starts and ends on Smart Guides as a stroke does, and pressed on an end of
 /// a selected open path it continues the path from that end to the pointer.
 #[test]

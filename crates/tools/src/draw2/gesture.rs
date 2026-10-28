@@ -22,6 +22,10 @@ use super::{FEEDBACK, eraser_area, points_json, polyline};
 use crate::guides::DrawSnap;
 use crate::{Action, Cursor, Mods, Overlay, PointerEvent, PointerKind, Tool, ToolContext, ToolKey};
 
+/// How far from its drag the Smooth tool smooths, in screen pixels. The Pencil uses the same
+/// radius while Alt switches it to the Smooth tool.
+const SMOOTH_RADIUS: f64 = 12.0;
+
 pub struct GestureTool {
     /// How many points the last preview of the stroke had ([`crate::previews_at`]).
     previewed: usize,
@@ -339,9 +343,13 @@ impl GestureTool {
         let pts = &self.points;
         let has_sel = !cx.selection.is_empty();
         let tol = cx.tol(self.edit_within);
+        let radius = cx.tol(SMOOTH_RADIUS);
         if self.smoothing {
             if has_sel && pts.len() >= 2 {
-                return vec![Action::Exec("path.smoothRegion".into(), json!({"points": points_json(pts), "radius": tol, "fidelity": self.fidelity}))];
+                return vec![Action::Exec(
+                    "path.smoothRegion".into(),
+                    json!({"points": points_json(pts), "radius": radius, "fidelity": self.fidelity}),
+                )];
             }
             return vec![];
         }
@@ -378,7 +386,7 @@ impl GestureTool {
             )],
             "knife" if pts.len() >= 2 => vec![Action::Exec("path.knife".into(), json!({"points": points_json(pts)}))],
             "smooth" if has_sel && pts.len() >= 2 => {
-                vec![Action::Exec("path.smoothRegion".into(), json!({"points": points_json(pts), "radius": tol, "fidelity": self.fidelity}))]
+                vec![Action::Exec("path.smoothRegion".into(), json!({"points": points_json(pts), "radius": radius, "fidelity": self.fidelity}))]
             }
             "pathEraser" if has_sel => vec![Action::Exec("path.eraseSegments".into(), json!({"points": points_json(pts), "width": cx.tol(8.0)}))],
             "join" if pts.len() >= 2 => vec![Action::Exec("path.joinScrub".into(), json!({"points": points_json(pts), "tolerance": tol}))],
