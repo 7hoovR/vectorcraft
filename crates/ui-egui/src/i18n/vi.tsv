@@ -4701,6 +4701,7 @@ theme	Appearance	Giao diện
 @msg	the object already has an opacity mask	đối tượng đã có mặt nạ độ mờ
 @msg	the object has no geometry	đối tượng không có hình học
 @msg	the object has no opacity mask	đối tượng không có mặt nạ độ mờ
+@msg	stop editing the opacity mask first	hãy dừng chỉnh sửa mặt nạ độ mờ trước
 @msg	the object has no stroke	đối tượng không có nét
 @msg	the object is beyond the plane's horizon	đối tượng vượt qua đường chân trời của mặt phẳng
 @msg	the object isn't in perspective	đối tượng không ở trong phối cảnh

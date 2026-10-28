@@ -1784,6 +1784,7 @@ file-filter	Templates	範本
 @msg	select a blend	請選取漸變物件
 @msg	select a gradient mesh	請選取漸層網格
 @msg	the object has no opacity mask	物件沒有不透明度遮色片
+@msg	stop editing the opacity mask first	請先停止編輯不透明度遮色片
 @msg	Convert to Artboards: selection has no area	轉換為工作區域：選取範圍沒有面積
 @msg	Convert to Shape: no rectangles or ellipses selected	轉換為形狀：未選取矩形或橢圓形
 @msg	image would be too large; lower the resolution	影像會過大；請降低解析度

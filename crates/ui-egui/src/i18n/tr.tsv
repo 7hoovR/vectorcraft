@@ -4080,6 +4080,7 @@ axis	Both	Her İkisi
 @msg	the object already has an opacity mask	nesnenin zaten bir opaklık maskesi var
 @msg	the object has no geometry	nesnenin geometrisi yoktur
 @msg	the object has no opacity mask	nesnenin opaklık maskesi yok
+@msg	stop editing the opacity mask first	önce opaklık maskesini düzenlemeyi durdur
 @msg	the object has no stroke	nesnenin konturu yok
 @msg	the object is beyond the plane's horizon	nesne uçağın ufkunun ötesinde
 @msg	the object isn't in perspective	nesne perspektifte değil

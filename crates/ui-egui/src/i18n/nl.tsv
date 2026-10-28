@@ -4326,6 +4326,7 @@ imageTrace	Outline	Contour
 @msg	the object already has an opacity mask	het object heeft al een dekkingmasker
 @msg	the object has no geometry	het object heeft geen geometrie
 @msg	the object has no opacity mask	het object heeft geen dekkingmasker
+@msg	stop editing the opacity mask first	stop eerst met het bewerken van het dekkingmasker
 @msg	the object has no stroke	het object heeft geen lijn
 @msg	the object is beyond the plane's horizon	het object ligt voorbij de horizon van het vlak
 @msg	the object isn't in perspective	het object is niet in perspectief

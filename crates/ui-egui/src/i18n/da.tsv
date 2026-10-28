@@ -4314,6 +4314,7 @@ imageTrace	Outline	Kontur
 @msg	the object already has an opacity mask	objektet har allerede en opacitetsmaske
 @msg	the object has no geometry	objektet har ingen geometri
 @msg	the object has no opacity mask	objektet har ingen opacitetsmaske
+@msg	stop editing the opacity mask first	stop først redigeringen af opacitetsmasken
 @msg	the object has no stroke	objektet har ingen streg
 @msg	the object is beyond the plane's horizon	objektet er uden for planens horisont
 @msg	the object isn't in perspective	objektet er ikke i perspektiv

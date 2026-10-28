@@ -1262,6 +1262,12 @@ then composite against the art below it). SVG has no non-isolated groups, so the
 mask is edited; called again it shows the artwork, still editing. It is view state of the open document: the canvas
 (and `ui.screenshot`) shows it, exports never do, and it ends when mask editing ends.
 
+Isolation mode and mask editing exclude each other. In isolation mode `transparency.editOpacityMask` and
+`transparency.viewOpacityMask` are off, and `transparency.makeOpacityMask` refuses one target, an object or a layer,
+which it would take into mask editing; a call returns an error that ends "exit isolation mode first". While a mask is edited,
+`object.isolate` and `perspective.editText` are off, and a call returns an error that ends "stop editing the opacity
+mask first". Pattern editing mode does not count as isolation mode here.
+
 `view.transparencyGrid {on?}` (View → Show Transparency Grid; default: toggle) is view state of each open document,
 like the mask view: the grid shows behind the artboards of the documents that turn it on, on the canvas and in
 `ui.screenshot`, never in exports. It returns `{on}`, isn't undoable and doesn't mark the document changed.

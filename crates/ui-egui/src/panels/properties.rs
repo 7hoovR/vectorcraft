@@ -130,7 +130,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     }
     if is_group {
         actions.push((tl!("Ungroup"), "object.ungroup"));
-        actions.push((tl!("Isolate Group"), "object.isolate"));
+        // Isolate Group is left out while Enter Isolation Mode is off, as it is while an opacity mask is edited.
+        if crate::menus::enabled(app, "object.isolate") {
+            actions.push((tl!("Isolate Group"), "object.isolate"));
+        }
     }
     if is_live {
         actions.push((tl!("Expand Shape"), "object.expandShape"));

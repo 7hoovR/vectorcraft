@@ -4242,6 +4242,7 @@ theme	Appearance	Erscheinungsbild
 @msg	the object already has an opacity mask	das Objekt hat bereits eine Deckkraftmaske
 @msg	the object has no geometry	das Objekt hat keine Geometrie
 @msg	the object has no opacity mask	das Objekt hat keine Deckkraftmaske
+@msg	stop editing the opacity mask first	beenden Sie zuerst die Bearbeitung der Deckkraftmaske
 @msg	the object has no stroke	das Objekt hat keine Kontur
 @msg	the object is beyond the plane's horizon	das Objekt liegt jenseits des Horizonts der Perspektivebene
 @msg	the object isn't in perspective	das Objekt ist nicht in der Perspektive

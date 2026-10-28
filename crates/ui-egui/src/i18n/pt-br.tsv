@@ -3889,6 +3889,7 @@ axis	Both	Ambos
 @msg	the object already has an opacity mask	o objeto já tem uma máscara de opacidade
 @msg	the object has no geometry	o objeto não tem geometria
 @msg	the object has no opacity mask	o objeto não tem máscara de opacidade
+@msg	stop editing the opacity mask first	pare de editar a máscara de opacidade primeiro
 @msg	the object has no stroke	o objeto não tem traço
 @msg	the object is beyond the plane's horizon	o objeto está além do horizonte do plano
 @msg	the object isn't in perspective	o objeto não está em perspectiva

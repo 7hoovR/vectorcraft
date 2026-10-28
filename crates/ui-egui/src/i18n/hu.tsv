@@ -5044,6 +5044,7 @@ imageTrace	Outline	Körvonal
 @msg	the object already has an opacity mask	az objektumnak már van átlátszósági maszkja
 @msg	the object has no geometry	az objektumnak nincs geometriája
 @msg	the object has no opacity mask	az objektumnak nincs átlátszósági maszkja
+@msg	stop editing the opacity mask first	előbb fejezd be az átlátszósági maszk szerkesztését
 @msg	the object has no stroke	az objektumnak nincs körvonala
 @msg	the object is beyond the plane's horizon	az objektum a sík horizontján túl van
 @msg	the object isn't in perspective	az objektum nincs perspektívában

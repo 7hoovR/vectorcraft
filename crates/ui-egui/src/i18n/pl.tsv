@@ -4446,6 +4446,7 @@ imageTrace	Outline	Kontur
 @msg	the object already has an opacity mask	obiekt ma już maskę krycia
 @msg	the object has no geometry	obiekt nie ma geometrii
 @msg	the object has no opacity mask	obiekt nie ma maski krycia
+@msg	stop editing the opacity mask first	najpierw zakończ edycję maski krycia
 @msg	the object has no stroke	obiekt nie ma obrysu
 @msg	the object is beyond the plane's horizon	obiekt jest za horyzontem płaszczyzny
 @msg	the object isn't in perspective	obiekt nie jest w perspektywie

@@ -4314,6 +4314,7 @@ imageTrace	Outline	Kontur
 @msg	the object already has an opacity mask	objek sudah memiliki masker opasitas
 @msg	the object has no geometry	objek tidak memiliki geometri
 @msg	the object has no opacity mask	objek tidak memiliki masker opasitas
+@msg	stop editing the opacity mask first	hentikan pengeditan masker opasitas terlebih dahulu
 @msg	the object has no stroke	objek tidak memiliki goresan
 @msg	the object is beyond the plane's horizon	objek berada di luar horizon bidang
 @msg	the object isn't in perspective	objek tidak dalam perspektif

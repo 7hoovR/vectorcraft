@@ -4353,6 +4353,7 @@ axis	Both	Оба
 @msg	the object already has an opacity mask	у объекта уже есть непрозрачная маска
 @msg	the object has no geometry	у объекта нет геометрии
 @msg	the object has no opacity mask	у объекта нет непрозрачной маски
+@msg	stop editing the opacity mask first	сначала прекратите редактирование непрозрачной маски
 @msg	the object has no stroke	у объекта нет обводки
 @msg	the object is beyond the plane's horizon	объект находится за горизонтом плоскости
 @msg	the object isn't in perspective	объект не в перспективе

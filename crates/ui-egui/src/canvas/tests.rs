@@ -6352,6 +6352,32 @@ fn the_task_bar_offers_the_artboard_tools_actions() {
     assert_eq!(names(&mut app), ["Resize", "Duplicate", "Export"]);
 }
 
+/// A selected group's Contextual Task Bar offers Ungroup and Isolate. While an opacity mask is
+/// edited, when Enter Isolation Mode is off, a group in the mask art gets Ungroup without Isolate.
+#[test]
+fn the_task_bar_leaves_isolate_out_while_an_opacity_mask_is_edited() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+    app.select_tool("selection");
+    let ctx = egui::Context::default();
+    let names = |app: &mut VectorcraftApp| task_bar_labels(app, &ctx).into_iter().map(|(t, _)| t).collect::<Vec<_>>();
+    let rect = |app: &mut VectorcraftApp, x: f64| {
+        app.session.execute("shape.rectangle", &json!({"x": x, "y": 100, "width": 40, "height": 40})).unwrap()["id"].clone()
+    };
+    let group = |app: &mut VectorcraftApp, x: f64| {
+        let (a, b) = (rect(app, x), rect(app, x + 50.0));
+        app.session.execute("select.set", &json!({"ids": [a, b]})).unwrap();
+        app.session.execute("object.group", &json!({})).unwrap();
+    };
+    group(&mut app, 20.0);
+    assert_eq!(names(&mut app), ["Ungroup", "Isolate", "Duplicate"]);
+    let (obj, m) = (rect(&mut app, 200.0), rect(&mut app, 200.0));
+    app.session.execute("transparency.makeOpacityMask", &json!({"ids": [obj, m]})).unwrap();
+    app.session.execute("transparency.editOpacityMask", &json!({"id": obj})).unwrap();
+    group(&mut app, 200.0);
+    assert_eq!(names(&mut app), ["Ungroup", "Duplicate"]);
+}
+
 /// The Artboard tool's Contextual Task Bar buttons act on its selected artboards: Resize opens
 /// Artboard Options for the active one, Rearrange All opens Rearrange All Artboards, Export opens
 /// Export for Screens with the selected artboards checked, and Duplicate copies each selected
