@@ -2732,6 +2732,12 @@ the Align To choice, and while there is a key object or a key guide they send th
 `spacing`. Edit › Keyboard Shortcuts lists them under Align, with no default shortcut, and
 `shortcuts.set {id, shortcut}` gives one a shortcut.
 
+Edit › Keyboard Shortcuts and `shortcuts.list` leave out a command with a menu path and no default shortcut when its
+params doc has a required field (one with no `?` and no `=` default), no item of the menu bar runs it without params,
+and it opens no dialog when run without them, such as `document.setUnits {units}` (File › Document Setup › Units).
+They list such a command while the user has changed its shortcut (`overridden: true` in `shortcuts.list`), and
+`shortcuts.set` can change or clear it.
+
 The desktop app adds its active artboard, the one the Artboards panel highlights, to the `object.align`,
 `object.distribute`, `object.distributeSpacing` and `select.allOnArtboard` calls it runs without `artboard`, as it does
 for `edit.pasteInPlace`, `edit.pasteInFront` and `edit.pasteInBack`, and to each `command.batch`. A batch passes its
