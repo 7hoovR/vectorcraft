@@ -73,6 +73,9 @@ pub struct GestureTool {
     pub live_fit: bool,
     /// Active drag is smoothing with the Pencil or the Blob Brush (Alt held).
     smoothing: bool,
+    /// The pointer has moved from the press point, by any distance (a move too short to add a
+    /// point counts).
+    moved: bool,
     /// Active Pencil drag draws a straight line (Shift or Alt held at the press): the stroke is
     /// the press point and the pointer.
     straight: bool,
@@ -143,6 +146,7 @@ impl GestureTool {
             live_preview: true,
             live_fit: true,
             smoothing: false,
+            moved: false,
             straight: false,
             unconstrained: false,
             shift_raw: vec![],
@@ -193,7 +197,7 @@ impl GestureTool {
     /// Would Alt held now switch the Blob Brush to the Smooth tool? It does before a press, and
     /// during a drag that has not moved from the press point yet.
     fn blob_alt_smooths(&self, m: Mods) -> bool {
-        self.id == "blobBrush" && m.alt && self.points.len() < 2
+        self.id == "blobBrush" && m.alt && !self.moved
     }
 
     /// Where the stroke takes a pointer at `p`. For the Blob Brush with Shift held, that is the
@@ -237,6 +241,7 @@ impl GestureTool {
 
     /// Forget the stroke.
     fn clear(&mut self) {
+        self.moved = false;
         self.points.clear();
         self.pressures.clear();
         self.previewed = 0;
@@ -455,6 +460,7 @@ impl Tool for GestureTool {
                 if (!self.began && !self.straight && self.id == "pencil" && self.alt_smooth && ev.mods.alt) || self.blob_alt_smooths(ev.mods) {
                     self.smoothing = true;
                 }
+                self.moved |= self.points.first().is_some_and(|start| p.distance(*start) > vectorcraft_geom::EPS);
                 let p = self.constrained(cx, p, ev.mods);
                 let mut end = p;
                 if self.snaps() && !self.smoothing && !self.straight {
@@ -512,6 +518,10 @@ impl Tool for GestureTool {
             PointerKind::Up => {
                 if !self.active {
                     return vec![];
+                }
+                // Alt pressed while the pointer stood still at the press point switches the release too.
+                if self.blob_alt_smooths(ev.mods) {
+                    self.smoothing = true;
                 }
                 let p = self.constrained(cx, p, ev.mods);
                 let end = if self.snaps() && !self.smoothing && (!self.straight || self.unconstrained) { self.snap.drag(cx, p, None) } else { p };

@@ -397,6 +397,18 @@ fn blob_brush_alt_switches_to_the_smooth_tool() {
     t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 200.0, 150.0).with_mods(alt));
     let acts = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 250.0, 150.0).with_mods(alt));
     assert!(matches!(acts.as_slice(), [Action::Exec(c, v)] if c == "path.blob" && v["points"].as_array().unwrap().len() == 4), "{acts:?}");
+    // So does a stroke that has moved too little to add a point.
+    t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 50.0, 150.0));
+    t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 50.25, 150.0));
+    assert_eq!(t.cursor(&cx, at, alt), Cursor::BlobBrush);
+    t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 150.0, 150.0).with_mods(alt));
+    let acts = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 250.0, 150.0).with_mods(alt));
+    assert!(matches!(acts.as_slice(), [Action::Exec(c, _)] if c == "path.blob"), "{acts:?}");
+    // Alt pressed while the pointer stands still at the press point does not paint on the release.
+    t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 50.0, 150.0));
+    assert_eq!(t.cursor(&cx, at, alt), Cursor::Smooth);
+    let acts = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 50.0, 150.0).with_mods(alt));
+    assert!(acts.is_empty(), "{acts:?}");
     // With nothing selected an Alt drag sends nothing.
     let none = Selection::default();
     let empty = crate::testutil::cx(&d, &none, &p);
