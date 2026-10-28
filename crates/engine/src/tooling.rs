@@ -181,7 +181,7 @@ impl Session {
         let r = self.apply_actions(acts);
         self.keep_tool_settings();
         self.tool = lender;
-        self.after_command();
+        self.after_command(None);
         r.map(drop)
     }
 
@@ -678,9 +678,14 @@ impl Session {
 
     /// Let the active tool finish work a command from outside it ended ([`vectorcraft_tools::Tool::after_command`]):
     /// the Type tool and the Eyedropper clear a character range whose text is no longer selected.
-    pub(crate) fn after_command(&mut self) {
+    /// After `edit.undo` or `edit.redo` (`cmd`), the tool is told first, so the Type tool puts the
+    /// caret where the step changed the text.
+    pub(crate) fn after_command(&mut self, cmd: Option<&str>) {
         if self.in_tool_actions || (!self.tool.wants_text() && self.tool.id() != "eyedropper") {
             return;
+        }
+        if let Some(cmd @ ("edit.undo" | "edit.redo")) = cmd {
+            self.with_tool_cx(self.last_view, |t, cx| t.notify(cx, cmd));
         }
         let acts = self.with_tool_cx(self.last_view, |t, cx| t.after_command(cx));
         // The command itself succeeded: a failure here only leaves the edit as it was.
