@@ -979,10 +979,10 @@ fn export_from_dialog(app: &mut VectorcraftApp) {
 }
 
 /// A row that left the list (Clear, Use Default, Reset to Defaults or another set took the
-/// shortcut from a command that needs a value) is no longer recorded or selected, so the next key
-/// press does not give the hidden command a shortcut.
+/// shortcut from a command that needs a value) is no longer recorded, selected or offered by Go to
+/// Conflict, so the next key press does not give the hidden command a shortcut.
 fn drop_hidden(d: &mut Dialog, overrides: &Overrides) {
-    for field in ["__recording", "__selected"] {
+    for field in ["__recording", "__selected", "__conflict"] {
         let key = d.str(field);
         if !key.is_empty() && entry(&key).is_none_or(|e| !listed(overrides, e)) {
             d.fields.insert(field.into(), json!(""));
@@ -1085,6 +1085,17 @@ mod tests {
         set(&mut d, "tool:groupSelection");
         drop_hidden(&mut d, km.overrides());
         assert_eq!(state(&d), ("tool:groupSelection".to_string(), "tool:groupSelection".to_string()));
+        // A chord taken from a row that then leaves the list offers no Go to Conflict for it.
+        let mut km = start.clone();
+        record(&mut d, &mut km, "edit.duplicate", "Cmd+Alt+Shift+F12");
+        assert_eq!(d.str("__conflict"), "document.setUnits");
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(d.str("__conflict"), "");
+        // A conflict with a row that stays listed is kept.
+        let mut km = start.clone();
+        record(&mut d, &mut km, "document.setUnits", "Cmd+Alt+Shift+F11");
+        drop_hidden(&mut d, km.overrides());
+        assert_eq!(d.str("__conflict"), "edit.duplicate");
     }
 
     #[test]
