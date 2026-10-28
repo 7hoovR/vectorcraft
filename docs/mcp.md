@@ -2449,7 +2449,8 @@ so `path.moveAnchors {dx, dy}` (or a Direct Selection drag) pulls the path apart
 Selected End Points) joins the ends again; `path.join {ids: [a, b], ends: ["last", "first"]}` joins the ends asked for
 (the Pen's join, #776: drawing on from one open path, a click on another's end makes them one path). `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
 `path.split {id, subpath?, anchor}` do the same to one anchor (the Anchor Point and Scissors tools); the Pen with Alt
-held over a selected path's handle, anchor or segment works as the Anchor Point tool. `path.reshapeSegment {id,
+held over a selected path's handle, anchor or segment works as the Anchor Point tool. `press_key` Escape between two
+`pointer_gesture` calls of an Anchor Point drag cancels it: the path goes back and no undo step is added. `path.reshapeSegment {id,
 subpath?, segment, t, dx, dy, perpendicular?}` (a segment dragged with Direct Selection or the Anchor Point tool) moves the segment's
 point at `t` by `dx`, `dy`: a smooth anchor at either end stays smooth, its other handle turning with the moved one.
 With `perpendicular: true` (Shift held during the drag) both of the segment's handles stand at right angles to the
@@ -5059,6 +5060,8 @@ under the opposite corner, else of the front-most selected object. A Shift-click
 as a click does, so with `clickStrokeSplitsPath` on, a Shift-click on a stroke splits it. A marquee splits no stroke,
 however little the pointer moves: the tool sends no `splitStroke` with `rect`, and `shapeBuilder.merge` does not split
 a stroke when it has `rect`. With both `rect` and `points`, the command also touches what the points touch.
+`press_key` Escape during a Shape Builder drag, a marquee included, cancels it: the release sends no
+`shapeBuilder.merge`.
 
 ```json
 {"name":"run_command","arguments":{"command":"shapeBuilder.merge","params":{"rect":[50,50,200,200]}}}
@@ -5352,7 +5355,8 @@ right/left/down/up; none stored means the smooth mesh through the points, as old
 `object.envelope.setMeshPoint {id, index, x, y, handle?}` and `object.mesh.movePoint`, `object.mesh.addLine` and
 `object.mesh.deletePoint` edit them like a gradient mesh's (one undo step each). On the canvas a selected envelope
 shows its mesh; the Mesh tool and Direct Selection drag its points and the clicked point's handles, and the Mesh tool
-adds a row and a column where it clicks inside. The Control bar shows Edit Envelope / Edit Contents, the warp's
+adds a row and a column where it clicks inside. `press_key` Escape during a drag of a point or handle of a mesh
+envelope or a gradient mesh cancels it: the point goes back and no undo step is added. The Control bar shows Edit Envelope / Edit Contents, the warp's
 style, orientation, bend and distortions (or the mesh's rows and columns), Reset (an unbent warp, a flat mesh) and
 Envelope Options.
 
