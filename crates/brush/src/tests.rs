@@ -583,6 +583,48 @@ fn pattern_auto_sliced_masks_stroked_tiles_at_the_diagonal() {
     }
 }
 
+/// Auto-Sliced on a corner whose legs are too short for the side tile squeezes the tile along,
+/// but not its stroke: the mask still takes in the stroke past the tile's far end.
+#[test]
+fn pattern_auto_sliced_masks_keep_the_stroke_of_a_squeezed_tile() {
+    let mut b = auto_corner_brush(Some(CornerSource::AutoSliced), Some(CornerSource::AutoSliced));
+    if let BrushKind::Pattern(p) = &mut b.kind {
+        p.side.appearance = Appearance::basic(Paint::solid(Color::BLACK), Paint::solid(Color::WHITE), 4.0).into();
+    }
+    let sq = shapes::rectangle(Rect::new(0.0, 0.0, 8.0, 8.0)).to_bezpath();
+    let out = stroke_pieces(&Document::new(1.0, 1.0), &b, &sq, &stroke(1.0));
+    let clips: Vec<&Node> = out.iter().filter(|n| matches!(n.kind, NodeKind::Group { clip: true, .. })).collect();
+    assert_eq!(clips.len(), 8, "two masked tiles at each corner");
+    let center = Point::new(4.0, 4.0);
+    for g in clips {
+        let kids = g.children().unwrap();
+        let mask = kids[0].path_data().unwrap().to_bezpath();
+        let half = kids[1].appearance.stroke_width() / 2.0;
+        assert!(half > 0.0);
+        let tile = kids[1].path_data().unwrap();
+        let anchors: Vec<Point> = tile.anchors().map(|(_, _, a)| a.p).collect();
+        let mid = anchors.iter().fold(Point::ZERO, |m, a| m + a.to_vec2() / anchors.len() as f64);
+        // The tile's corner, and its diagonal through the square's center; each mask keeps one
+        // side of the diagonal.
+        let p = [(0.0, 0.0), (8.0, 0.0), (8.0, 8.0), (0.0, 8.0)]
+            .map(|(x, y)| Point::new(x, y))
+            .into_iter()
+            .min_by(|a, b| a.distance(mid).total_cmp(&b.distance(mid)))
+            .unwrap();
+        let cross = |q: Point| (q - p).cross(center - p);
+        let side = cross(mid).signum();
+        for a in &anchors {
+            // The points of the stroke round the anchor, along and across the tile's leg.
+            for d in [(1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0)] {
+                let q = *a + kurbo::Vec2::new(d.0, d.1) * half * 0.9;
+                if cross(q) * side > 0.01 && (q - p).hypot() < 7.0 {
+                    assert!(kurbo::Shape::winding(&mask, q) != 0, "the mask takes in the stroke at {q:?} (half width {half})");
+                }
+            }
+        }
+    }
+}
+
 #[test]
 fn bristle_makes_translucent_strands() {
     let b = Brush { name: "b".into(), kind: BrushKind::Bristle(Bristle::default()) };

@@ -519,9 +519,13 @@ fn auto_corner(t: &Track, i: usize, source: CornerSource, side: &(Node, Rect), k
                 return (first.into_iter().chain(second).collect(), far);
             }
             // Auto-Sliced masks each tile by the part of the outline of the box round its art
-            // (strokes included), placed as the tile is, on its own side of the diagonal.
+            // (strokes included), placed as the tile is, on its own side of the diagonal. A tile
+            // squeezed along keeps its stroke width, so the box's margins at its ends grow by as
+            // much as the tile is squeezed.
             let vb = art.visual_bounds().unwrap_or(*b);
-            let corners = [(vb.x0, vb.y0), (vb.x1, vb.y0), (vb.x1, vb.y1), (vb.x0, vb.y1), (vb.x0, vb.y0)].map(|(x, y)| Point::new(x, y));
+            let grow = 1.0 / s.min(1.0);
+            let (x0, x1) = (b.x0 - (b.x0 - vb.x0).max(0.0) * grow, b.x1 + (vb.x1 - b.x1).max(0.0) * grow);
+            let corners = [(x0, vb.y0), (x1, vb.y0), (x1, vb.y1), (x0, vb.y1), (x0, vb.y0)].map(|(x, y)| Point::new(x, y));
             let outline = |f: &dyn Fn(Point) -> Point| -> Vec<Point> {
                 let steps = (0..MASK_STEPS).map(|j| j as f64 / MASK_STEPS as f64);
                 corners.windows(2).flat_map(|w| steps.clone().map(move |s| w[0].lerp(w[1], s))).map(f).collect()
