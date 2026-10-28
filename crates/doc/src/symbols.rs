@@ -154,7 +154,7 @@ impl<'a> SymbolBoxes<'a> {
     }
 
     /// How many times [`Self::measure_art`] has run a measure on symbol art for these boxes, the
-    /// measures of [`Self::art`] and [`Self::placed_visual`] included.
+    /// measures behind the cached art boxes and placed visual boxes included.
     pub fn art_measured(&self) -> usize {
         self.runs.get()
     }
