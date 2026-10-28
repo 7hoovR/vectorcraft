@@ -3856,6 +3856,7 @@ axis	Both	Her İkisi
 @msg	missing `id` (see plugin.list)	`kimlik` eksik (bkz. eklenti.liste)
 @msg	missing `name`	"isim" eksik
 @msg	missing `tool`	'araç' eksik
+@msg	missing id	id eksik
 @msg	missing index	eksik dizin
 @msg	New Window isn't available yet: a document opens in one window	Yeni Pencere henüz kullanılamıyor: bir belge tek pencerede açılır
 @msg	name the file	dosyayı adlandırın
@@ -4080,6 +4081,9 @@ axis	Both	Her İkisi
 @msg	the layer or group is locked	katman veya grup kilitli
 @msg	the guide is on a hidden or locked layer	kılavuz gizli veya kilitli bir katmandadır
 @msg	the target layer is locked or hidden	hedef katman kilitli veya gizli
+@msg	the object is hidden or locked	nesne gizli veya kilitli
+@msg	the object is outside the isolated group	nesne izole edilen grubun dışında
+@msg	type objects can't be isolated	metin nesneleri izole edilemez
 @msg	the layer to flatten into is hidden	düzleştirilecek katman gizli
 @msg	the object already has an opacity mask	nesnenin zaten bir opaklık maskesi var
 @msg	the object has no geometry	nesnenin geometrisi yoktur

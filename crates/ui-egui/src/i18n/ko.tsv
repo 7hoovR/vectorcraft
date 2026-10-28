@@ -4010,6 +4010,9 @@ theme	Appearance	외관
 @msg	the layer or group is locked	레이어 또는 그룹이 잠겨 있습니다
 @msg	the guide is on a hidden or locked layer	안내선이 숨겨졌거나 잠긴 레이어에 있습니다
 @msg	the target layer is locked or hidden	대상 레이어가 잠겼거나 숨겨져 있습니다
+@msg	the object is hidden or locked	개체가 숨겨졌거나 잠겨 있습니다
+@msg	the object is outside the isolated group	개체가 격리된 그룹 밖에 있습니다
+@msg	type objects can't be isolated	문자 개체는 격리할 수 없습니다
 @msg	the layer to flatten into is hidden	병합 대상 레이어가 숨겨져 있습니다
 @msg	there are no objects to release	해제할 개체가 없습니다
 @msg	no library `{id}`	`{id}` 라이브러리가 없습니다
@@ -4413,6 +4416,7 @@ theme	Appearance	외관
 @msg	lang must be one of {_1}	lang은 {_1} 중 하나여야 합니다
 @msg	missing `name`	`name`이 없습니다
 @msg	missing `tool`	`tool`이 없습니다
+@msg	missing id	id가 없습니다
 @msg	missing index	index가 없습니다
 @msg	missing number `{key}`	숫자 `{key}`이(가) 없습니다
 @msg	missing integer `{key}`	정수 `{key}`이(가) 없습니다

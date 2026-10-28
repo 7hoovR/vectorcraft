@@ -3996,6 +3996,7 @@ theme	Appearance	Erscheinungsbild
 @msg	missing `id` (see plugin.list)	`id` fehlt (siehe plugin.list)
 @msg	missing `name`	`name` fehlt
 @msg	missing `tool`	`tool` fehlt
+@msg	missing id	id fehlt
 @msg	missing index	der Index fehlt
 @msg	missing number `{key}`	die Zahl `{key}` fehlt
 @msg	missing integer `{key}`	die ganze Zahl `{key}` fehlt
@@ -4238,6 +4239,9 @@ theme	Appearance	Erscheinungsbild
 @msg	the layer or group is locked	die Ebene oder Gruppe ist gesperrt
 @msg	the guide is on a hidden or locked layer	die Hilfslinie liegt auf einer ausgeblendeten oder gesperrten Ebene
 @msg	the target layer is locked or hidden	die Zielebene ist gesperrt oder ausgeblendet
+@msg	the object is hidden or locked	das Objekt ist ausgeblendet oder gesperrt
+@msg	the object is outside the isolated group	das Objekt liegt außerhalb der isolierten Gruppe
+@msg	type objects can't be isolated	Textobjekte können nicht isoliert werden
 @msg	the layer to flatten into is hidden	die Ebene, auf die reduziert werden soll, ist ausgeblendet
 @msg	the object already has an opacity mask	das Objekt hat bereits eine Deckkraftmaske
 @msg	the object has no geometry	das Objekt hat keine Geometrie

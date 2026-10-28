@@ -3650,6 +3650,7 @@ axis	Both	Ambos
 @msg	missing `id` (see plugin.list)	falta `id` (veja plugin.list)
 @msg	missing `name`	falta `name`
 @msg	missing `tool`	falta `tool`
+@msg	missing id	falta o id
 @msg	missing index	falta o índice
 @msg	missing number `{key}`	falta o número `{key}`
 @msg	missing integer `{key}`	falta o número inteiro `{key}`
@@ -3889,6 +3890,9 @@ axis	Both	Ambos
 @msg	the layer or group is locked	a camada ou o grupo está bloqueado
 @msg	the guide is on a hidden or locked layer	a guia está em uma camada oculta ou bloqueada
 @msg	the target layer is locked or hidden	a camada de destino está bloqueada ou oculta
+@msg	the object is hidden or locked	o objeto está oculto ou bloqueado
+@msg	the object is outside the isolated group	o objeto está fora do grupo isolado
+@msg	type objects can't be isolated	objetos de texto não podem ser isolados
 @msg	the layer to flatten into is hidden	a camada de destino do achatamento está oculta
 @msg	the object already has an opacity mask	o objeto já tem uma máscara de opacidade
 @msg	the object has no geometry	o objeto não tem geometria

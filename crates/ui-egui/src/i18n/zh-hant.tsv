@@ -1773,6 +1773,9 @@ file-filter	Templates	範本
 @msg	the layer or group is locked	圖層或群組已鎖定
 @msg	the guide is on a hidden or locked layer	參考線位於隱藏或鎖定的圖層上
 @msg	the target layer is locked or hidden	目標圖層已鎖定或隱藏
+@msg	the object is hidden or locked	物件已隱藏或鎖定
+@msg	the object is outside the isolated group	物件位於隔離的群組之外
+@msg	type objects can't be isolated	無法隔離文字物件
 @msg	the layer to flatten into is hidden	要平面化到的圖層已隱藏
 @msg	there are no objects to release	沒有可釋放的物件
 @msg	no library `{id}`	沒有資料庫 `{id}`
@@ -2165,6 +2168,7 @@ file-filter	Templates	範本
 @msg	lang must be one of {_1}	lang 必須是 {_1} 其中之一
 @msg	missing `name`	未提供 `name`
 @msg	missing `tool`	未提供 `tool`
+@msg	missing id	未提供 id
 @msg	missing index	未提供 index
 @msg	New Window isn't available yet: a document opens in one window	新增視窗尚無法使用：文件會在一個視窗中開啟
 @msg	no PNG encoder	沒有 PNG 編碼器

@@ -4040,6 +4040,7 @@ theme	Appearance	Εμφάνιση
 @msg	missing `id` (see plugin.list)	λείπει το `id` (δείτε plugin.list)
 @msg	missing `name`	λείπει το `name`
 @msg	missing `tool`	λείπει το `tool`
+@msg	missing id	λείπει το id
 @msg	missing index	λείπει ο δείκτης
 @msg	missing number `{key}`	λείπει ο αριθμός `{key}`
 @msg	missing integer `{key}`	λείπει ο ακέραιος `{key}`
@@ -4275,6 +4276,9 @@ theme	Appearance	Εμφάνιση
 @msg	the layer or group is locked	το επίπεδο ή η ομάδα είναι κλειδωμένα
 @msg	the guide is on a hidden or locked layer	ο οδηγός βρίσκεται σε κρυφό ή κλειδωμένο επίπεδο
 @msg	the target layer is locked or hidden	το επίπεδο προορισμού είναι κλειδωμένο ή κρυφό
+@msg	the object is hidden or locked	το αντικείμενο είναι κρυφό ή κλειδωμένο
+@msg	the object is outside the isolated group	το αντικείμενο βρίσκεται εκτός της απομονωμένης ομάδας
+@msg	type objects can't be isolated	τα αντικείμενα κειμένου δεν μπορούν να απομονωθούν
 @msg	the layer to flatten into is hidden	το επίπεδο προορισμού ισοπέδωσης είναι κρυφό
 @msg	the object already has an opacity mask	το αντικείμενο έχει ήδη μάσκα αδιαφάνειας
 @msg	the object has no geometry	το αντικείμενο δεν έχει γεωμετρία

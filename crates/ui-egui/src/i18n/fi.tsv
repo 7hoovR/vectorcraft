@@ -4292,6 +4292,7 @@ imageTrace	Outline	Ääriviiva
 @msg	missing `id` (see plugin.list)	`id` puuttuu (ks. plugin.list)
 @msg	missing `name`	`name` puuttuu
 @msg	missing `tool`	`tool` puuttuu
+@msg	missing id	id puuttuu
 @msg	missing index	indeksi puuttuu
 @msg	missing number `{key}`	luku `{key}` puuttuu
 @msg	missing integer `{key}`	kokonaisluku `{key}` puuttuu
@@ -4526,6 +4527,9 @@ imageTrace	Outline	Ääriviiva
 @msg	the layer or group is locked	taso tai ryhmä on lukittu
 @msg	the guide is on a hidden or locked layer	apuviiva on piilotetulla tai lukitulla tasolla
 @msg	the target layer is locked or hidden	kohdetaso on lukittu tai piilotettu
+@msg	the object is hidden or locked	objekti on piilotettu tai lukittu
+@msg	the object is outside the isolated group	objekti on eristetyn ryhmän ulkopuolella
+@msg	type objects can't be isolated	tekstiobjekteja ei voi eristää
 @msg	the layer to flatten into is hidden	taso, johon litistetään, on piilotettu
 @msg	the object already has an opacity mask	objektilla on jo peittävyysmaski
 @msg	the object has no geometry	objektilla ei ole geometriaa

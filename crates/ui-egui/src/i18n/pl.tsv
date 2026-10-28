@@ -4203,6 +4203,7 @@ imageTrace	Outline	Kontur
 @msg	missing `id` (see plugin.list)	brak `id` (patrz plugin.list)
 @msg	missing `name`	brak `name`
 @msg	missing `tool`	brak `tool`
+@msg	missing id	brak id
 @msg	missing index	brak indeksu
 @msg	missing number `{key}`	brak liczby `{key}`
 @msg	missing integer `{key}`	brak liczby całkowitej `{key}`
@@ -4446,6 +4447,9 @@ imageTrace	Outline	Kontur
 @msg	the layer or group is locked	warstwa lub grupa jest zablokowana
 @msg	the guide is on a hidden or locked layer	linia pomocnicza jest na ukrytej lub zablokowanej warstwie
 @msg	the target layer is locked or hidden	warstwa docelowa jest zablokowana lub ukryta
+@msg	the object is hidden or locked	obiekt jest ukryty lub zablokowany
+@msg	the object is outside the isolated group	obiekt znajduje się poza izolowaną grupą
+@msg	type objects can't be isolated	obiektów tekstowych nie można izolować
 @msg	the layer to flatten into is hidden	warstwa, na którą ma nastąpić spłaszczenie, jest ukryta
 @msg	the object already has an opacity mask	obiekt ma już maskę krycia
 @msg	the object has no geometry	obiekt nie ma geometrii

@@ -4078,6 +4078,9 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	the layer or group is locked	レイヤーまたはグループがロックされています
 @msg	the guide is on a hidden or locked layer	ガイドが非表示またはロックされたレイヤー上にあります
 @msg	the target layer is locked or hidden	ターゲットレイヤーがロックされているか非表示です
+@msg	the object is hidden or locked	オブジェクトが非表示かロックされています
+@msg	the object is outside the isolated group	オブジェクトが分離されたグループの外にあります
+@msg	type objects can't be isolated	テキストオブジェクトは分離できません
 @msg	the layer to flatten into is hidden	統合先のレイヤーが非表示になっています
 @msg	there are no objects to release	レイヤーに分配するオブジェクトがありません
 @msg	no library `{id}`	ライブラリ `{id}` が見つかりません
@@ -4481,6 +4484,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	lang must be one of {_1}	lang には {_1} のいずれかを指定してください
 @msg	missing `name`	`name` が指定されていません
 @msg	missing `tool`	`tool` が指定されていません
+@msg	missing id	id が指定されていません
 @msg	missing index	index が指定されていません
 @msg	missing number `{key}`	数値 `{key}` が指定されていません
 @msg	missing integer `{key}`	整数 `{key}` が指定されていません
