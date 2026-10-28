@@ -342,6 +342,7 @@ fn nested_instances_are_culled_in_bounded_time(effect: Option<vectorcraft_doc::E
     let (pixel, culled, measured) = rx.recv_timeout(std::time::Duration::from_secs(300)).expect("the frame within 300 s");
     assert_eq!(pixel, [0, 0, 0, 0]);
     assert!(culled > 0);
+    assert!(measured > 0, "the frame stats report no symbol art measures");
     assert!(measured <= 20_000, "symbol art measured {measured} times");
 }
 
