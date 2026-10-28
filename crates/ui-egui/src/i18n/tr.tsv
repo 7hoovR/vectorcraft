@@ -1796,6 +1796,10 @@ font-technology	Variable	Değişken
 	Outer Corner Tile	Dış Köşe Döşemesi
 	Side Tile	Yan Kiremit
 	Inner Corner Tile	İç Köşe Döşemesi
+	Auto-Centered	Otomatik Ortalı
+	Auto-Between	Otomatik Arada
+	Auto-Sliced	Otomatik Dilimli
+	Auto-Overlap	Otomatik Örtüşen
 	Start Tile	Döşemeyi Başlat
 	End Tile	Son Döşeme
 	Fit	Uygun

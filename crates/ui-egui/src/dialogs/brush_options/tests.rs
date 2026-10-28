@@ -443,6 +443,72 @@ fn pattern_options_show_the_tiles_and_set_scale_spacing_fit() {
     assert!((drawn_height(&app, id) / before - 2.0).abs() < 1e-6, "tiles twice the size");
 }
 
+/// Each corner tile has a menu below it: Original (only when the brush has corner art), None and
+/// the four automatic tiles. OK saves the choice, and an automatic tile or None replaces the art.
+#[test]
+fn pattern_options_set_each_corner_tile_to_original_none_or_an_automatic_tile() {
+    use crate::widgets::accessibility_tests::tree;
+    let mut app = app();
+    app.run("ui.brushOptions", json!({"name": "Diamonds"})).unwrap();
+    let d = app.ui.dialog.as_ref().unwrap();
+    assert_eq!((d.str("outerCornerTile"), d.str("innerCornerTile")), ("none".into(), "none".into()), "Diamonds has no corner art");
+    let shown_tree = tree(|ui| super::super::show(&mut app, ui.ctx()));
+    for name in ["Outer Corner Tile", "Inner Corner Tile"] {
+        let roles: Vec<_> = shown_tree.iter().filter(|n| n.label() == Some(name)).map(|n| n.role()).collect();
+        assert!(roles.contains(&egui::accesskit::Role::ComboBox), "a menu named {name}: {roles:?}");
+    }
+    for name in ["Side Tile", "Start Tile", "End Tile"] {
+        assert!(!shown_tree.iter().any(|n| n.label() == Some(name) && n.role() == egui::accesskit::Role::ComboBox), "no menu for {name}");
+    }
+    set(&mut app, json!({"outerCornerTile": "autoBetween", "innerCornerTile": "autoOverlap"}));
+    let text = shown(&mut app);
+    assert!(text.contains("Auto-Between") && text.contains("Auto-Overlap"), "{text}");
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Diamonds"})).unwrap();
+    assert_eq!((&def["outer_source"], &def["inner_source"]), (&json!("autoBetween"), &json!("autoOverlap")));
+    // Chain has corner art: Original keeps it, None and an automatic tile replace it, one corner
+    // at a time.
+    app.run("ui.brushOptions", json!({"name": "Chain"})).unwrap();
+    let d = app.ui.dialog.as_ref().unwrap();
+    assert_eq!((d.str("outerCornerTile"), d.str("innerCornerTile")), ("original".into(), "original".into()));
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Chain"})).unwrap();
+    assert!(def["outer_corner"].is_object() && def["inner_corner"].is_object() && def.get("outer_source").is_none(), "{def}");
+    app.run("ui.brushOptions", json!({"name": "Chain"})).unwrap();
+    set(&mut app, json!({"innerCornerTile": "none"}));
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Chain"})).unwrap();
+    assert!(def["outer_corner"].is_object() && def.get("inner_corner").is_none(), "{def}");
+    assert_eq!(def["inner_source"], json!("none"));
+    app.run("ui.brushOptions", json!({"name": "Chain"})).unwrap();
+    let d = app.ui.dialog.as_ref().unwrap();
+    assert_eq!((d.str("outerCornerTile"), d.str("innerCornerTile")), ("original".into(), "none".into()));
+    set(&mut app, json!({"outerCornerTile": "autoSliced"}));
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Chain"})).unwrap();
+    assert!(def.get("outer_corner").is_none() && def.get("inner_corner").is_none(), "{def}");
+    assert_eq!((&def["outer_source"], &def["inner_source"]), (&json!("autoSliced"), &json!("none")));
+    app.run("ui.brushOptions", json!({"name": "Chain"})).unwrap();
+    assert_eq!(app.ui.dialog.as_ref().unwrap().str("outerCornerTile"), "autoSliced");
+}
+
+/// A pattern brush with art for one kind of corner draws it at both kinds. Its other corner tile
+/// shows that art as Original, and OK keeps it there when the first corner tile changes.
+#[test]
+fn pattern_options_keep_the_corner_art_a_corner_borrows() {
+    let mut app = app();
+    let art = app.run("brush.get", json!({"name": "Chain"})).unwrap()["outer_corner"].clone();
+    app.run("brush.new", json!({"type": "pattern", "name": "One Corner", "params": {"side": art.clone(), "outer_corner": art}})).unwrap();
+    app.run("ui.brushOptions", json!({"name": "One Corner"})).unwrap();
+    let d = app.ui.dialog.as_ref().unwrap();
+    assert_eq!((d.str("outerCornerTile"), d.str("innerCornerTile")), ("original".into(), "original".into()));
+    set(&mut app, json!({"outerCornerTile": "none"}));
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "One Corner"})).unwrap();
+    assert!(def.get("outer_corner").is_none() && def["inner_corner"].is_object(), "{def}");
+    assert_eq!(def["outer_source"], json!("none"));
+}
+
 /// Art Brush Options' Width and Pattern Brush Options' Scale each have a slider beside their
 /// field, which screen readers name as the row, with the field's number and text over the
 /// value's whole range.

@@ -1887,6 +1887,10 @@ lighting	Light	Cahaya
 	Outer Corner Tile	Ubin sudut luar
 	Side Tile	Ubin sisi
 	Inner Corner Tile	Ubin sudut dalam
+	Auto-Centered	Otomatis-tengah
+	Auto-Between	Otomatis-antara
+	Auto-Sliced	Otomatis-iris
+	Auto-Overlap	Otomatis-tumpang
 	Start Tile	Ubin awal
 	End Tile	Ubin akhir
 	Fit	Pas

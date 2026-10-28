@@ -1865,6 +1865,10 @@ file-filter	Templates	模板
 	Outer Corner Tile	外角拼贴
 	Side Tile	边线拼贴
 	Inner Corner Tile	内角拼贴
+	Auto-Centered	自动居中
+	Auto-Between	自动居间
+	Auto-Sliced	自动切片
+	Auto-Overlap	自动重叠
 	Start Tile	起点拼贴
 	End Tile	终点拼贴
 	Fit	适合

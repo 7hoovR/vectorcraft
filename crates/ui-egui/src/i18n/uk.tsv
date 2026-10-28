@@ -1974,6 +1974,10 @@ file-filter	Templates	Шаблони
 	Outer Corner Tile	Фрагмент зовнішнього кута
 	Side Tile	Бічний фрагмент
 	Inner Corner Tile	Фрагмент внутрішнього кута
+	Auto-Centered	Авто: по центру
+	Auto-Between	Авто: між
+	Auto-Sliced	Авто: зріз
+	Auto-Overlap	Авто: перекриття
 	Start Tile	Початковий фрагмент
 	End Tile	Кінцевий фрагмент
 	Fit	Припасування

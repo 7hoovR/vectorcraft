@@ -1955,6 +1955,10 @@ font-technology	Variable	Variables
 	Outer Corner Tile	Mosaico de esquina exterior
 	Side Tile	Mosaico lateral
 	Inner Corner Tile	Mosaico de esquina interior
+	Auto-Centered	Auto-centrado
+	Auto-Between	Auto-entre
+	Auto-Sliced	Auto-cortado
+	Auto-Overlap	Auto-superposición
 	Start Tile	Mosaico inicial
 	End Tile	Mosaico final
 	Fit	Ajuste

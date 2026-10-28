@@ -1903,6 +1903,10 @@ font-technology	Variable	Променливи
 	Outer Corner Tile	Плочка за външен ъгъл
 	Side Tile	Странична плочка
 	Inner Corner Tile	Плочка за вътрешен ъгъл
+	Auto-Centered	Авто-центрирана
+	Auto-Between	Авто-между
+	Auto-Sliced	Авто-срязана
+	Auto-Overlap	Авто-застъпване
 	Start Tile	Начална плочка
 	End Tile	Крайна плочка
 	Fit	Пълно прилягане

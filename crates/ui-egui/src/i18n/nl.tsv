@@ -1901,6 +1901,10 @@ lighting	Light	Licht
 	Outer Corner Tile	Tegel voor buitenhoek
 	Side Tile	Zijtegel
 	Inner Corner Tile	Tegel voor binnenhoek
+	Auto-Centered	Auto-gecentreerd
+	Auto-Between	Auto-tussen
+	Auto-Sliced	Auto-verstek
+	Auto-Overlap	Auto-overlap
 	Start Tile	Begintegel
 	End Tile	Eindtegel
 	Fit	Passen
