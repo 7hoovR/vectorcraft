@@ -167,13 +167,15 @@ fn masked_targets(s: &Session, p: &Value) -> Result<Vec<NodeId>> {
 /// ([`super::maskedit::outside_isolation_mode`]). The selection is one object when it has one
 /// subject root, which `make` masks without `ids`, and at most one outermost object, which it
 /// masks with `ids` (a call's `ids` stand in for the selection here). `make` itself refuses any
-/// single target in isolation mode, a layer included.
+/// single target in isolation mode, a layer included, so a selection with a target counts as one
+/// object.
 fn can_make(s: &Session) -> std::result::Result<(), String> {
     has_doc(s)?;
     let Some(st) = s.active() else { return Ok(()) };
     let roots = super::appearance::subject_roots(s).map_or(0, |r| r.len());
     let outermost = super::edit::outermost(&st.doc, st.selection.in_paint_order(&st.doc)).len();
-    if roots == 1 && outermost <= 1 { super::maskedit::outside_isolation_mode(s) } else { Ok(()) }
+    let targeted = st.selection.target.is_some();
+    if roots == 1 && (outermost <= 1 || targeted) { super::maskedit::outside_isolation_mode(s) } else { Ok(()) }
 }
 
 fn make(s: &mut Session, p: &Value) -> Result<Value> {

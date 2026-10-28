@@ -308,6 +308,24 @@ fn opacity_mask_editing_is_not_entered_in_isolation_mode() {
     assert_eq!(doc(&s).mask_edit.map(|e| e.object), Some(obj));
 }
 
+/// In isolation mode, Make Opacity Mask is off for a targeted sublayer that holds two objects:
+/// the sublayer is its one target, which would get an empty mask and enter mask editing.
+#[test]
+fn make_opacity_mask_is_off_for_a_targeted_sublayer_in_isolation_mode() {
+    let mut s = session();
+    let layer = doc(&s).layers[0].id;
+    let sub = NodeId(s.execute("layer.newSublayer", &json!({"parent": layer.0})).unwrap()["id"].as_u64().unwrap());
+    s.execute("layer.setCurrent", &json!({"id": sub.0})).unwrap();
+    let (a, b) = (rect(&mut s, 0.0, 20.0), rect(&mut s, 40.0, 20.0));
+    s.execute("object.isolate", &json!({"id": layer.0})).unwrap();
+    s.execute("layer.target", &json!({"id": sub.0})).unwrap();
+    assert_eq!(s.doc().unwrap().selection.target, Some(sub));
+    off(&mut s, "transparency.makeOpacityMask", json!({}), "exit isolation mode first");
+    // Two objects given in `ids` still mask one with the other.
+    let r = s.execute("transparency.makeOpacityMask", &json!({"ids": [a.0, b.0]})).unwrap();
+    assert_eq!(r["editing"], json!(false));
+}
+
 #[test]
 fn mask_and_transparency_commands_take_ids_without_a_selection() {
     let mut s = session();
