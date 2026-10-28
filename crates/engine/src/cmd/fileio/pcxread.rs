@@ -75,9 +75,24 @@ pub(super) fn decode(bytes: &[u8], max_alloc: u64) -> Result<image::RgbaImage, S
         return Err(format!("an image of {w} × {h} pixels is too large to draw"));
     }
     // An 8-bit image's 256-color palette is its last 769 bytes, `0x0C` and then the colors; the
-    // image data ends before it.
-    let tail = bytes.len().checked_sub(769).filter(|at| *at >= HEADER && (bits, planes) == (8, 1) && bytes.get(*at) == Some(&0x0c));
-    let data = unpack(bytes.get(HEADER..tail.unwrap_or(bytes.len())).unwrap_or_default(), scan * h)?;
+    // image data ends before it. A `0x0C` there is image data instead when the image data runs to
+    // the end of the file.
+    let candidate = bytes.len().checked_sub(769).filter(|at| *at >= HEADER && (bits, planes) == (8, 1) && bytes.get(*at) == Some(&0x0c));
+    let body = bytes.get(HEADER..).unwrap_or_default();
+    let (tail, decoded) = match candidate {
+        Some(at) => match unpack(body, scan * h) {
+            Ok((data, used)) if used == body.len() => (None, Ok((data, used))),
+            _ => (Some(at), unpack(bytes.get(HEADER..at).unwrap_or_default(), scan * h)),
+        },
+        None => (None, unpack(body, scan * h)),
+    };
+    let (data, used) = decoded?;
+    // A palette marker right after the image data with fewer than 768 colors after it is a palette
+    // cut short.
+    let after = bytes.get(HEADER + used..).unwrap_or_default();
+    if tail.is_none() && (bits, planes) == (8, 1) && after.first() == Some(&0x0c) && after.len() < 769 {
+        return Err(TRUNCATED.into());
+    }
     let palette: Vec<[u8; 3]> = match (bits, planes) {
         (8, 1) => match tail.and_then(|at| bytes.get(at + 1..)) {
             Some(colors) => colors.as_chunks::<3>().0.to_vec(),
@@ -133,8 +148,8 @@ fn cga(background: u8, settings: u8) -> Vec<[u8; 3]> {
 
 /// `len` bytes of run-length encoded image data: a byte with its top two bits set repeats the
 /// next byte as many times as its other six bits count, and any other byte stands for itself.
-/// Runs may cross the end of a scan line.
-fn unpack(data: &[u8], len: usize) -> Result<Vec<u8>, String> {
+/// Runs may cross the end of a scan line. Also returns how many bytes of `data` were read.
+fn unpack(data: &[u8], len: usize) -> Result<(Vec<u8>, usize), String> {
     let mut out = Vec::with_capacity(len);
     let mut bytes = data.iter();
     while out.len() < len {
@@ -147,5 +162,5 @@ fn unpack(data: &[u8], len: usize) -> Result<Vec<u8>, String> {
             out.push(b);
         }
     }
-    Ok(out)
+    Ok((out, data.len() - bytes.len()))
 }

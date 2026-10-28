@@ -119,6 +119,13 @@ fn every_depth_and_plane_layout_reads() {
     // Without it, the index is a gray level.
     let f = pcx(5, 8, 1, 0, (2, 2), 2, 0, &[], &rle(&[0, 1, 254, 255]));
     assert_eq!(pixels(&f), [[0, 0, 0, 255], [1, 1, 1, 255], [254, 254, 254, 255], [255; 4]]);
+    // A gray level 12 769 bytes before the end of image data that runs to the end of the file.
+    let mut levels = vec![1; 1000];
+    levels[231] = 0x0c;
+    let f = pcx(5, 8, 1, 0, (1000, 1), 1000, 0, &[], &levels);
+    assert_eq!(f.len() - 769, 128 + 231);
+    let read = pixels(&f);
+    assert_eq!((read.len(), read[231], read[232]), (1000, [12, 12, 12, 255], [1, 1, 1, 255]));
     // A run may cross the end of a scan line.
     let f = pcx(5, 8, 1, 0, (2, 2), 2, 0, &[], &[0xc4, 9]);
     assert_eq!(pixels(&f), [[9, 9, 9, 255]; 4]);
@@ -175,6 +182,12 @@ fn damaged_and_unsupported_files_are_refused_with_a_message() {
     short.push(0x0c);
     short.extend([7; 768]);
     assert_eq!(message(&short), "the PCX file is cut short", "three pixels and a palette");
+    // A palette marker after the image data with fewer than 768 colors after it.
+    let mut cut_palette = gray.clone();
+    cut_palette.push(0x0c);
+    cut_palette.extend([7; 767]);
+    assert_eq!(message(&cut_palette), "the PCX file is cut short", "a palette cut short");
+    assert_eq!(message(&[&gray[..], &[0x0c]].concat()), "the PCX file is cut short", "a marker alone");
     let mut s = Session::new();
     let e = s.execute("document.open", &json!({"name": "a.pcx", "dataBase64": vectorcraft_format::base64_encode(&gray[..131])}));
     assert!(e.expect_err("refused").to_string().contains("the PCX file is cut short"));
