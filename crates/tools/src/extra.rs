@@ -179,7 +179,8 @@ impl Tool for FlareTool {
                 vec![]
             }
             PointerKind::Up => {
-                if let Some((c, d)) = self.placed.take() {
+                if let Some((mut c, d)) = self.placed.take() {
+                    crate::shape::space_moves(&mut c, &mut self.last, ev, true);
                     self.began = false;
                     return vec![Action::Preview("shape.flare".into(), self.params(c, d, Some(ev.pos))), Action::Commit];
                 }
@@ -644,6 +645,15 @@ mod tests {
         assert_eq!(a.last(), Some(&Action::Commit));
         let v = flare_preview(&a);
         assert_eq!((v["cx"].as_f64(), v["cy"].as_f64(), v["x2"].as_f64()), (Some(170.0), Some(160.0), Some(340.0)));
+        // A release with Space held away from the last drag moves the flare there too.
+        let mut t = FlareTool::default();
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 130.0, 100.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 130.0, 100.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 300.0, 300.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 320.0, 300.0));
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 340.0, 310.0).with_mods(space)));
+        assert_eq!((v["cx"].as_f64(), v["cy"].as_f64(), v["x2"].as_f64()), (Some(120.0), Some(110.0), Some(340.0)));
     }
 
     #[test]
