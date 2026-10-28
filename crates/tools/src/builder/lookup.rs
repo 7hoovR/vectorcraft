@@ -106,9 +106,14 @@ fn nearest_edge<'a>(edges: impl IntoIterator<Item = &'a Arc<Node>>, p: Point, to
 
 /// The visible Live Paint group with a face under `p` that is not hidden (front-most in paint order).
 pub fn live_paint_at(doc: &Document, p: Point) -> Option<NodeId> {
+    live_paint_at_where(doc, p, |id| doc.is_visible(id))
+}
+
+/// [`live_paint_at`] among the Live Paint groups for which `takes` is true.
+pub(super) fn live_paint_at_where(doc: &Document, p: Point, takes: impl Fn(NodeId) -> bool) -> Option<NodeId> {
     let mut hit = None;
     doc.walk(|n| {
-        if is_live_paint(n) && doc.is_visible(n.id) && visible_face_at(n, p).is_some() {
+        if is_live_paint(n) && takes(n.id) && visible_face_at(n, p).is_some() {
             hit = Some(n.id);
         }
     });

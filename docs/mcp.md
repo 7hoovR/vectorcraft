@@ -1570,7 +1570,14 @@ already walks Image Trace. Short agent entry points:
   highlight color, `#rrggbb` or a layer color's name; `#ff2a2a`) and `width` (the highlight's width, 1 to 20 screen
   pixels; 4). With `selectStrokes` off, Alt-click selects the face under the pointer as a click does; with
   `selectFills` off, a click selects the edge nearest the pointer as Alt-click does; with both off, a click selects
-  no face or edge.
+  no face or edge. A drag of 3 screen pixels or more draws a marquee, and the release runs `select.set {ids}` with
+  the faces and edges it touches (a face or edge partly inside counts, and so does a face that holds the whole
+  marquee), or `select.none` when it touches none. With Shift held at the press, the release runs
+  `select.toggle {ids}` with the faces and edges it touches, each of which leaves the selection or joins it, and runs
+  nothing when it touches none. `selectFills` off leaves the faces out, and `selectStrokes` off leaves the edges out. A click and a marquee run their command on the
+  release, and Escape between the press and the release removes the marquee so that the release runs nothing. The
+  tool does not highlight or select the faces and edges of a Live Paint group that is locked, on a locked layer or on
+  a locked artboard, or in isolation mode outside the isolated art.
   `livePaint.merge` keeps the bottom Live Paint group's id, name, lock, visibility, transparency, appearance, opacity
   mask and graphic style link. With a Live Paint group among the objects, `livePaint.make` adds the others to it as
   `livePaint.merge` does, and so does `livePaint.fill {ids}` when `point` is outside that group's faces.

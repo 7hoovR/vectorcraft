@@ -2230,10 +2230,43 @@ fn live_paint_bucket_tool_fills_face() {
     let gn = node(&s, g);
     let f = vectorcraft_tools::builder::face_at(&gn, vectorcraft_geom::Point::new(125.0, 50.0)).unwrap();
     assert_eq!(f.appearance.fill_paint(), s.paint.fill);
-    // Live Paint Selection selects the face.
+    // A Live Paint Selection click selects the face.
     s.select_tool("livePaintSelection", v).unwrap();
     s.pointer(&PointerEvent::new(PointerKind::Down, 125.0, 50.0), v).unwrap();
+    s.pointer(&PointerEvent::new(PointerKind::Up, 125.0, 50.0), v).unwrap();
     assert_eq!(s.doc().unwrap().selection.objects, vec![f.id]);
+}
+
+#[test]
+fn live_paint_selection_marquee_selects_what_it_touches() {
+    let mut s = session();
+    let g = live(&mut s);
+    let v = ViewInfo::default();
+    s.select_tool("livePaintSelection", v).unwrap();
+    let drag = |s: &mut Session, from: (f64, f64), to: (f64, f64), m: Mods, escape: bool| {
+        s.pointer(&PointerEvent::new(PointerKind::Down, from.0, from.1).with_mods(m), v).unwrap();
+        s.pointer(&PointerEvent::new(PointerKind::Drag, to.0, to.1).with_mods(m), v).unwrap();
+        if escape {
+            s.tool_key(ToolKey::Escape, Mods::default(), v).unwrap();
+        }
+        s.pointer(&PointerEvent::new(PointerKind::Up, to.0, to.1).with_mods(m), v).unwrap();
+        s.doc().unwrap().selection.objects.clone()
+    };
+    let gn = node(&s, g);
+    let face = |x: f64| vectorcraft_tools::builder::face_at(&gn, Point::new(x, 50.0)).unwrap().id;
+    let edge = |x: f64| vectorcraft_tools::builder::edge_near(&gn, Point::new(x, 50.0), 0.5).unwrap().id;
+    let shift = Mods { shift: true, ..Default::default() };
+    // Across the left side: the left face and that side.
+    assert_eq!(drag(&mut s, (-10.0, 40.0), (40.0, 60.0), Mods::default(), false), vec![face(25.0), edge(0.0)]);
+    // Shift-drag across the right side adds the right face and that side.
+    assert_eq!(drag(&mut s, (160.0, 40.0), (140.0, 60.0), shift, false), vec![face(25.0), edge(0.0), face(125.0), edge(150.0)]);
+    // Shift-drag across the left side again takes those out.
+    assert_eq!(drag(&mut s, (-10.0, 40.0), (40.0, 60.0), shift, false), vec![face(125.0), edge(150.0)]);
+    // Escape during the drag, with or without Shift, from a press on a face or outside the group:
+    // the selection stays as it was.
+    for (from, m) in [((-10.0, 40.0), shift), ((25.0, 50.0), Mods::default()), ((25.0, 50.0), shift)] {
+        assert_eq!(drag(&mut s, from, (40.0, 60.0), m, true), vec![face(125.0), edge(150.0)], "{from:?} {m:?}");
+    }
 }
 
 fn line(s: &mut Session, a: (f64, f64), b: (f64, f64)) -> NodeId {
