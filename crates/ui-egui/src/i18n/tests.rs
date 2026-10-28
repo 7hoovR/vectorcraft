@@ -489,7 +489,8 @@ fn no_translated_word_mixes_latin_cyrillic_and_greek_letters() {
 /// Each catalog gives the Character panel's Kerning, Leading and Tracking fields three different
 /// names, every word of the Tracking and Kerning names appears in the Reset Tracking and Kerning
 /// row, and every word of the Tracking name appears in the Info panel's type line outside its
-/// placeholders (ignoring case).
+/// placeholders (ignoring case). Each word is matched once, the longer name first, so a name
+/// that contains the other name does not count for both.
 /// A catalog without one of these rows is skipped for the checks that need it.
 #[test]
 fn character_panel_terms_agree_within_each_catalog() {
@@ -507,17 +508,23 @@ fn character_panel_terms_agree_within_each_catalog() {
                 bad.push(format!("{}: two Character panel fields are both {a:?}", l.code));
             }
         }
-        let mut uses = |row_src: &str, term: &Option<String>| {
-            if let (Some(text), Some(term)) = (row(row_src), term) {
-                let bare = placeholders(&text).iter().fold(text.clone(), |t, p| t.replace(&format!("{{{p}}}"), " "));
-                for word in term.split_whitespace().filter(|w| !bare.contains(*w)) {
-                    bad.push(format!("{}: {row_src:?} → {text:?} lacks {word:?} from the field {term:?}", l.code));
+        let mut uses = |row_src: &str, terms: &[&Option<String>]| {
+            let Some(text) = row(row_src) else { return };
+            let mut bare = placeholders(&text).iter().fold(text.clone(), |t, p| t.replace(&format!("{{{p}}}"), " "));
+            let mut terms: Vec<&String> = terms.iter().filter_map(|t| t.as_ref()).collect();
+            terms.sort_by_key(|t| std::cmp::Reverse(t.chars().count()));
+            for term in terms {
+                for word in term.split_whitespace() {
+                    if bare.contains(word) {
+                        bare = bare.replacen(word, " ", 1);
+                    } else {
+                        bad.push(format!("{}: {row_src:?} → {text:?} lacks {word:?} from the field {term:?}", l.code));
+                    }
                 }
             }
         };
-        uses("Reset Tracking and Kerning", &tracking);
-        uses("Reset Tracking and Kerning", &kerning);
-        uses("Size: {size}  Tracking: {tracking}", &tracking);
+        uses("Reset Tracking and Kerning", &[&tracking, &kerning]);
+        uses("Size: {size}  Tracking: {tracking}", &[&tracking]);
     }
     assert!(bad.is_empty(), "Character panel terms that disagree:\n{}", bad.join("\n"));
 }
