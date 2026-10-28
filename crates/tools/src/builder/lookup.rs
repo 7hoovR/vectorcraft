@@ -113,7 +113,7 @@ pub fn live_paint_at(doc: &Document, p: Point) -> Option<NodeId> {
 pub(super) fn live_paint_at_where(doc: &Document, p: Point, takes: impl Fn(NodeId) -> bool) -> Option<NodeId> {
     let mut hit = None;
     doc.walk(|n| {
-        if is_live_paint(n) && takes(n.id) && visible_face_at(n, p).is_some() {
+        if is_live_paint(n) && visible_face_at(n, p).is_some() && takes(n.id) {
             hit = Some(n.id);
         }
     });
