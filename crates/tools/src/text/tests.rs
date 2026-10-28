@@ -30,6 +30,8 @@ fn key(tool: &mut TypeTool, d: &Document, k: ToolKey, mods: Mods) -> Vec<Action>
 
 const SHIFT: Mods = Mods { shift: true, alt: false, cmd: false, ctrl: false, space: false };
 const CMD: Mods = Mods { shift: false, alt: false, cmd: true, ctrl: false, space: false };
+const ALT: Mods = Mods { shift: false, alt: true, cmd: false, ctrl: false, space: false };
+const SHIFT_ALT: Mods = Mods { shift: true, alt: true, cmd: false, ctrl: false, space: false };
 
 /// Apply the tool's previews like the engine would (on top of the session snapshot).
 fn apply(d: &mut Document, snapshot: &Document, acts: &[Action]) {
@@ -471,6 +473,147 @@ fn vertical_tools_preserve_their_ids_and_create_vertical_text() {
         assert_eq!(tool.id(), id);
         assert!(tool.vertical);
     }
+}
+
+/// A press from `tool` at `from` with `down` held, dragged to `to` (none for a click) and released
+/// with `up` held → the actions of the release.
+fn gesture(tool: &mut TypeTool, c: &ToolContext, from: (f64, f64), to: Option<(f64, f64)>, down: Mods, up: Mods) -> Vec<Action> {
+    tool.pointer(c, &PointerEvent::new(PointerKind::Down, from.0, from.1).with_mods(down));
+    let end = to.unwrap_or(from);
+    if to.is_some() {
+        tool.pointer(c, &PointerEvent::new(PointerKind::Drag, end.0, end.1).with_mods(down));
+    }
+    tool.pointer(c, &PointerEvent::new(PointerKind::Up, end.0, end.1).with_mods(up))
+}
+
+/// The command that makes new type among `acts`, with its params.
+fn made(acts: &[Action]) -> Option<(&str, &Value)> {
+    acts.iter().find_map(|a| match a {
+        Action::Exec(cmd, p) if cmd == "text.create" || cmd == "text.createInPath" => Some((cmd.as_str(), p)),
+        _ => None,
+    })
+}
+
+/// [`crate::testutil::doc_with_rect`] plus an open path from (100, 400) to (400, 400).
+fn doc_with_rect_and_line() -> (Document, NodeId, NodeId) {
+    let (mut d, rect) = crate::testutil::doc_with_rect();
+    let l = d.layers[0].id;
+    let line = d.alloc_id();
+    let path = vectorcraft_geom::PathData::from_bezpath(&BezPath::from_vec(vec![
+        vectorcraft_geom::PathEl::MoveTo(Point::new(100.0, 400.0)),
+        vectorcraft_geom::PathEl::LineTo(Point::new(400.0, 400.0)),
+    ]));
+    d.insert(Some(l), 1, Node::path(line, path, vectorcraft_doc::Appearance::default_art())).unwrap();
+    (d, rect, line)
+}
+
+/// Shift held at the press makes the new type as the horizontal or vertical counterpart of each
+/// Type tool would, for a click and for a drag; the keys at the release do not matter, and the
+/// next press without Shift acts as the tool chosen.
+#[test]
+fn shift_switches_between_the_horizontal_and_the_vertical_type_tool() {
+    let (d, rect) = crate::testutil::doc_with_rect();
+    let (sel, p) = (Selection::default(), paint());
+    let c = cx(&d, &sel, &p);
+    for (id, at, cmd) in [
+        ("type", (400.0, 400.0), "text.create"),
+        ("verticalType", (400.0, 400.0), "text.create"),
+        ("areaType", (100.0, 150.0), "text.createInPath"),
+        ("verticalAreaType", (100.0, 150.0), "text.createInPath"),
+        ("typeOnPath", (150.0, 100.0), "text.createInPath"),
+        ("verticalTypeOnPath", (150.0, 100.0), "text.createInPath"),
+    ] {
+        let vertical = id.starts_with("vertical");
+        let mut tool = TypeTool::new(id);
+        let acts = gesture(&mut tool, &c, at, None, SHIFT, Mods::default());
+        let (made_by, params) = made(&acts).unwrap_or_else(|| panic!("{id}: {acts:?}"));
+        assert_eq!(made_by, cmd, "{id}");
+        assert_eq!(params["vertical"], json!(!vertical), "{id} with Shift");
+        if cmd == "text.createInPath" {
+            assert_eq!(params["path"], json!(rect.0), "{id}");
+            assert_eq!(params["mode"], if id.contains("OnPath") { "onPath" } else { "area" }, "{id}");
+        }
+        assert_eq!(tool.id(), id, "the tool chosen stays");
+        let acts = gesture(&mut tool, &c, at, None, Mods::default(), SHIFT);
+        assert_eq!(made(&acts).map(|(_, p)| p["vertical"].clone()), Some(json!(vertical)), "{id} without Shift at the press");
+    }
+    // A frame dragged out with Shift held.
+    let mut tool = TypeTool::new("type");
+    let acts = gesture(&mut tool, &c, (300.0, 300.0), Some((400.0, 400.0)), SHIFT, Mods::default());
+    let (cmd, params) = made(&acts).unwrap_or_else(|| panic!("{acts:?}"));
+    assert_eq!((cmd, &params["area"], &params["vertical"]), ("text.create", &json!({"width": 100.0, "height": 100.0}), &json!(true)));
+}
+
+/// Alt held at the press makes the new type as Type on a Path would with the Area Type tools and
+/// as Area Type would with the Type on a Path tools, keeping their writing direction; with Shift
+/// too, the direction switches as well. The Type tools have no counterpart for Alt.
+#[test]
+fn alt_switches_between_area_type_and_type_on_a_path() {
+    let (d, rect, line) = doc_with_rect_and_line();
+    let (sel, p) = (Selection::default(), paint());
+    let c = cx(&d, &sel, &p);
+    let (on_line, on_rect) = ((250.0, 400.0), (100.0, 150.0));
+    for (id, at, mods, path, mode, vertical) in [
+        ("areaType", on_line, ALT, line, "onPath", false),
+        ("verticalAreaType", on_line, ALT, line, "onPath", true),
+        ("typeOnPath", on_rect, ALT, rect, "area", false),
+        ("verticalTypeOnPath", on_rect, ALT, rect, "area", true),
+        ("areaType", on_line, SHIFT_ALT, line, "onPath", true),
+        ("verticalTypeOnPath", on_rect, SHIFT_ALT, rect, "area", false),
+    ] {
+        let mut tool = TypeTool::new(id);
+        let acts = gesture(&mut tool, &c, at, None, mods, Mods::default());
+        let (cmd, params) = made(&acts).unwrap_or_else(|| panic!("{id} {mods:?}: {acts:?}"));
+        assert_eq!(cmd, "text.createInPath", "{id} {mods:?}");
+        assert_eq!((&params["path"], &params["mode"], &params["vertical"]), (&json!(path.0), &json!(mode), &json!(vertical)), "{id} {mods:?}");
+        assert_eq!(tool.id(), id);
+    }
+    // An open path is no frame for the Area Type tool without Alt, and Type on a Path keeps the
+    // rectangle as a baseline.
+    let acts = gesture(&mut TypeTool::new("areaType"), &c, on_line, None, Mods::default(), Mods::default());
+    assert_eq!(made(&acts).map(|(cmd, _)| cmd), Some("text.create"), "{acts:?}");
+    let acts = gesture(&mut TypeTool::new("typeOnPath"), &c, on_rect, None, Mods::default(), Mods::default());
+    assert_eq!(made(&acts).map(|(_, p)| p["mode"].clone()), Some(json!("onPath")), "{acts:?}");
+    for id in ["type", "verticalType"] {
+        let acts = gesture(&mut TypeTool::new(id), &c, (450.0, 450.0), None, ALT, Mods::default());
+        let (cmd, params) = made(&acts).unwrap_or_else(|| panic!("{id}: {acts:?}"));
+        assert_eq!((cmd, &params["vertical"]), ("text.create", &json!(id == "verticalType")), "{id} with Alt");
+    }
+}
+
+/// The pointer shows the Type tool that a press would act as with the keys held, and while a press
+/// is held, the one it acts as.
+#[test]
+fn the_pointer_shows_the_type_tool_shift_or_alt_switches_to() {
+    let (d, _, _) = doc_with_rect_and_line();
+    let (sel, p) = (Selection::default(), paint());
+    let c = cx(&d, &sel, &p);
+    let (away, on_line) = (Point::new(450.0, 450.0), Point::new(250.0, 400.0));
+    let cursor = |id: &str, at: Point, mods: Mods| TypeTool::new(id).cursor(&c, at, mods);
+    assert_eq!(cursor("type", away, SHIFT), Cursor::TypeVertical);
+    assert_eq!(cursor("verticalType", away, SHIFT), Cursor::Text);
+    assert_eq!(cursor("verticalAreaType", away, SHIFT), Cursor::Text);
+    assert_eq!(cursor("areaType", on_line, Mods::default()), Cursor::Text, "no frame for area type");
+    assert_eq!(cursor("areaType", on_line, ALT), Cursor::Crosshair, "a baseline for type on a path");
+    assert_eq!(cursor("typeOnPath", on_line, ALT), Cursor::Text);
+    let mut tool = TypeTool::new("type");
+    tool.pointer(&c, &PointerEvent::new(PointerKind::Down, away.x, away.y).with_mods(SHIFT));
+    assert_eq!(tool.cursor(&c, away, Mods::default()), Cursor::TypeVertical, "the press keeps the tool it acts as");
+    tool.pointer(&c, &PointerEvent::new(PointerKind::Up, away.x, away.y));
+    assert_eq!(tool.cursor(&c, away, Mods::default()), Cursor::Text);
+}
+
+/// While type is being edited, Shift and Alt switch no tool: a frame dragged out is the tool
+/// chosen's, and the pointer stays its own.
+#[test]
+fn shift_and_alt_switch_no_tool_while_type_is_edited() {
+    let (d, _, mut tool) = editing("Hello");
+    let (sel, p) = (Selection::default(), paint());
+    let c = cx(&d, &sel, &p);
+    assert_eq!(tool.cursor(&c, Point::new(400.0, 400.0), SHIFT), Cursor::Text);
+    let acts = gesture(&mut tool, &c, (300.0, 300.0), Some((400.0, 400.0)), SHIFT_ALT, SHIFT_ALT);
+    let (cmd, params) = made(&acts).unwrap_or_else(|| panic!("{acts:?}"));
+    assert_eq!((cmd, &params["vertical"]), ("text.create", &json!(false)));
 }
 
 #[test]

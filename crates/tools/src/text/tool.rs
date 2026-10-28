@@ -54,6 +54,7 @@ impl Tool for TypeTool {
                     return out;
                 }
                 self.press = Some((ev.pos, self.snap.press(cx, ev.pos, self.editing.as_slice(), None)));
+                self.held = Some(self.acting(ev.mods));
                 self.drag = None;
                 vec![]
             }
@@ -626,10 +627,16 @@ impl Tool for TypeTool {
         }
         o
     }
-    fn cursor(&self, cx: &ToolContext, p: Point, _m: Mods) -> Cursor {
-        if self.mode != Mode::Type && Self::path_at(cx, p, self.mode == Mode::Area).is_some() {
+    /// The pointer of the Type tool that a press would act as with the keys held, or, while a
+    /// press is held, of the one it acts as ([`TypeTool::acting`]).
+    fn cursor(&self, cx: &ToolContext, p: Point, m: Mods) -> Cursor {
+        let (mode, vertical) = match (self.press, self.held) {
+            (Some(_), Some(held)) => held,
+            _ => self.acting(m),
+        };
+        if mode != Mode::Type && Self::path_at(cx, p, mode == Mode::Area).is_some() {
             return Cursor::Crosshair;
         }
-        if self.vertical { Cursor::TypeVertical } else { Cursor::Text }
+        if vertical { Cursor::TypeVertical } else { Cursor::Text }
     }
 }
