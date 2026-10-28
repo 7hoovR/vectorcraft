@@ -509,6 +509,44 @@ fn pattern_options_keep_the_corner_art_a_corner_borrows() {
     assert_eq!(def["outer_source"], json!("none"));
 }
 
+/// OK leaves the corner fields of a corner tile the menus were not set to as they were: a corner
+/// without art keeps borrowing the other kind's art when it gets some, and a corner that borrows
+/// art still borrows it. A None picked from the menu is saved, after another choice too.
+#[test]
+fn pattern_options_ok_leaves_corner_tiles_the_menus_were_not_set_to() {
+    let mut app = app();
+    app.run("ui.brushOptions", json!({"name": "Diamonds"})).unwrap();
+    set(&mut app, json!({"scale": 150}));
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Diamonds"})).unwrap();
+    assert!(def.get("outer_source").is_none() && def.get("inner_source").is_none(), "{def}");
+    let art = app.run("brush.get", json!({"name": "Chain"})).unwrap()["outer_corner"].clone();
+    app.run("brush.options", json!({"name": "Diamonds", "params": {"outer_corner": art.clone()}})).unwrap();
+    app.run("ui.brushOptions", json!({"name": "Diamonds"})).unwrap();
+    assert_eq!(app.ui.dialog.as_ref().unwrap().str("innerCornerTile"), "original", "the inner corners draw the outer art");
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Diamonds"})).unwrap();
+    assert!(def["outer_corner"].is_object() && def.get("inner_corner").is_none(), "{def}");
+
+    app.run("brush.new", json!({"type": "pattern", "name": "Plain", "params": {"side": art}})).unwrap();
+    app.run("ui.brushOptions", json!({"name": "Plain"})).unwrap();
+    let d = app.ui.dialog.as_mut().unwrap();
+    crate::dialogs::brush_art_options::choose_corner(d, "outerCornerTile", "autoCentered");
+    crate::dialogs::brush_art_options::choose_corner(d, "outerCornerTile", "none");
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Plain"})).unwrap();
+    assert_eq!(def["outer_source"], json!("none"));
+    assert!(def.get("inner_source").is_none(), "{def}");
+    // None set through the control channel is saved too.
+    app.run("ui.brushOptions", json!({"name": "Plain"})).unwrap();
+    let (set, _) = crate::control::ControlRequest::new("ui.dialog.set", json!({"field": "innerCornerTile", "value": "none"}));
+    let crate::control::Outcome::Done(r) = crate::control::handle(&mut app, &egui::Context::default(), &set) else { panic!("not done") };
+    assert!(r.get("error").is_none(), "{r}");
+    super::super::confirm(&mut app).unwrap();
+    let def = app.run("brush.get", json!({"name": "Plain"})).unwrap();
+    assert_eq!(def["inner_source"], json!("none"));
+}
+
 /// Art Brush Options' Width and Pattern Brush Options' Scale each have a slider beside their
 /// field, which screen readers name as the row, with the field's number and text over the
 /// value's whole range.

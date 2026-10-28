@@ -63,6 +63,24 @@ fn corner_art_field<'a>(def: Option<&Value>, field: &'a str) -> Option<&'a str> 
     }
 }
 
+/// The dialog field that records that corner tile `key`'s menu was set.
+fn corner_set_key(key: &str) -> String {
+    format!("__{key}Set")
+}
+
+/// Sets corner tile `key` to `choice` from its menu.
+pub(super) fn choose_corner(d: &mut Dialog, key: &str, choice: &str) {
+    d.fields.insert(key.into(), json!(choice));
+    note_set(d, key);
+}
+
+/// Records that field `field` was set, from its menu or `ui.dialog.set`, when it is a corner tile.
+pub(super) fn note_set(d: &mut Dialog, field: &str) {
+    if CORNER_TILES.iter().any(|(key, ..)| *key == field) {
+        d.fields.insert(corner_set_key(field), json!(true));
+    }
+}
+
 /// The most key colours offered.
 const MAX_COLORS: usize = 16;
 
@@ -236,14 +254,21 @@ pub(super) fn params(d: &Dialog) -> Value {
             });
             // None or an automatic tile replaces the corner art. Original keeps the art the corner
             // draws, the other kind of corner's art included, so changing the other kind leaves it.
+            // A None the menu was not set to, on a corner without art or a source, leaves the
+            // definition as it is: that corner still draws the other kind's art when it gets some.
             let def = d.fields.get("__def");
-            for (key, art, source, _) in CORNER_TILES {
+            for (key, art, source, other) in CORNER_TILES {
                 let choice = d.str(key);
+                let unset = |f: &str| def.and_then(|d| d.get(f)).is_none_or(Value::is_null);
+                if choice == CornerSource::None.id() && !d.bool(&corner_set_key(key)) && unset(source) && corner_art_field(def, art).is_none() {
+                    continue;
+                }
                 if let Some(s) = CornerSource::parse(&choice) {
                     p[art] = Value::Null;
                     p[source] = json!(s.id());
                 } else if choice == "original"
                     && let Some(from) = corner_art_field(def, art).filter(|f| *f != art)
+                    && CORNER_TILES.iter().find(|(_, a, _, _)| *a == other).is_some_and(|(k, ..)| d.str(k) != "original")
                 {
                     p[art] = def.and_then(|d| d.get(from)).cloned().unwrap_or_default();
                 }
@@ -480,7 +505,7 @@ fn tiles(ui: &mut egui::Ui, d: &mut Dialog) {
                     if let Some((id, _)) =
                         widgets::dropdown_named(ui, ("brush-pattern-corner", key), Some(name), current, &labels, 76.0).and_then(|i| choices.get(i))
                     {
-                        d.fields.insert(key.into(), json!(id));
+                        choose_corner(d, key, id);
                     }
                 }
             });
