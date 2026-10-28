@@ -292,10 +292,10 @@ impl Targets {
                     let ahead = Vec2::new(g.angle.cos(), g.angle.sin());
                     let up = Vec2::new(ahead.y, -ahead.x);
                     let dir = along(t.xf, ahead);
-                    // The x-height in points (font units scaled as the glyph's height is) above the
-                    // baseline the glyph is drawn on, raised or lowered by its baseline shift.
-                    let shift = (g.xf * Point::ZERO - g.origin).dot(up);
-                    let at = to_doc(g.origin + up * (shift + face.x_height() * along(g.xf, Vec2::new(0.0, 1.0)).hypot()));
+                    // The x-height of the glyph as placed without its Character Rotation (raised or
+                    // lowered by its baseline shift), measured across the baseline.
+                    let top = g.xf * g.unturned * Point::new(0.0, -face.x_height());
+                    let at = to_doc(g.origin + up * (top - g.origin).dot(up));
                     let same = last_x_height.is_some_and(|(a, d)| {
                         let (l, k) = (d.hypot(), dir.hypot());
                         l > 1e-12 && k > 1e-12 && (d / l - dir / k).hypot() <= 1e-9 && ((at - a).cross(d / l)).abs() <= 1e-6

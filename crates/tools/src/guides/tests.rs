@@ -651,6 +651,13 @@ fn pen_click_near_a_glyph_anchor_lands_on_it() {
     };
     assert!(first_anchor(true).distance(anchor) < 1e-9, "{:?} vs {anchor:?}", first_anchor(true));
     assert!(first_anchor(false).distance(anchor) > 1e-3);
+    // Snap to Glyph works with Smart Guides on: Snap to Point alone does not land on glyph anchors.
+    let c = ToolContext { snap_to_glyph: true, smart_guides: false, snap_to_point: true, ..cx(&d, &s, &p) };
+    let mut pen = crate::pen::PenTool::default();
+    let acts = pen.pointer(&c, &PointerEvent::new(PointerKind::Down, click.x, click.y));
+    let Some(Action::Preview(_, v)) = acts.get(1) else { panic!("{acts:?}") };
+    let q = Point::new(v["anchors"][0]["x"].as_f64().unwrap(), v["anchors"][0]["y"].as_f64().unwrap());
+    assert!(q.distance(anchor) > 1e-3, "{q:?} landed on the glyph anchor with Smart Guides off");
 }
 
 /// Snap to Glyph: a single line of type has an x-height guide; a paragraph shows glyph bounds only.
@@ -673,6 +680,55 @@ fn drawn_points_line_up_with_the_x_height_of_a_single_line() {
     let (d, _) = glyph_doc_with("H", 0.0, vectorcraft_doc::CharStyle { size: 60.0, baseline_shift: 10.0, ..Default::default() });
     let (q, _) = Targets::for_drawing(&d, &[], None, true).snap_point(Point::new(400.0, x_height - 10.0 + 2.0), 4.0);
     assert!((q.y - (x_height - 10.0)).abs() < 1e-9, "{q:?}, shifted x-height {}", x_height - 10.0);
+    // Character Rotation turns the glyph, not its baseline shift.
+    let style = vectorcraft_doc::CharStyle { size: 60.0, baseline_shift: 10.0, rotation: 30.0, ..Default::default() };
+    let (d, _) = glyph_doc_with("H", 0.0, style);
+    let (q, _) = Targets::for_drawing(&d, &[], None, true).snap_point(Point::new(400.0, x_height - 10.0 + 2.0), 4.0);
+    assert!((q.y - (x_height - 10.0)).abs() < 1e-9, "{q:?}, shifted x-height {}", x_height - 10.0);
+    // Glyph Scaling widens a rotated glyph without raising its x-height.
+    let mut t =
+        vectorcraft_doc::TextObject::point(Point::ZERO, "HH HH", vectorcraft_doc::CharStyle { size: 60.0, rotation: 90.0, ..Default::default() });
+    let frame = kurbo::Shape::to_path(&kurbo::Rect::new(50.0, 100.0, 450.0, 400.0), 0.1);
+    t.kind = vectorcraft_doc::TextKind::Area { frame: vectorcraft_geom::PathData::from_bezpath(&frame) };
+    t.xf = Affine::IDENTITY;
+    t.para.justify = vectorcraft_doc::Justify::JustifyAll;
+    t.para.justification.glyph_scaling = [100.0, 100.0, 200.0];
+    let mut d = vectorcraft_doc::Document::new(500.0, 500.0);
+    let (l, id) = (d.layers[0].id, d.alloc_id());
+    d.insert(Some(l), 0, Node::new(id, NodeKind::Text(Box::new(t.clone())))).unwrap();
+    let lay = layout_text(FontDb::global(), &t);
+    assert_eq!(lay.lines.len(), 1);
+    let g = lay.glyphs.iter().find(|g| !g.outline.elements().is_empty()).expect("a glyph with an outline");
+    assert!(g.scale > 1.2, "Glyph Scaling widens the glyph: {}", g.scale);
+    let expected = (t.xf * g.origin).y - (300.0 - x_height);
+    let (q, _) = Targets::for_drawing(&d, &[], None, true).snap_point(Point::new(30.0, expected + 2.0), 4.0);
+    assert!((q.y - expected).abs() < 1e-9, "{q:?}, x-height {expected}");
+}
+
+/// Snap to Glyph: the x-height guide of type skewed along a slanted path runs through the glyph's
+/// x-height.
+#[test]
+fn the_x_height_guide_of_skewed_path_type_runs_through_the_glyphs_x_height() {
+    let mut path = kurbo::BezPath::new();
+    path.move_to((100.0, 400.0));
+    path.line_to((300.0, 54.0));
+    let mut t = vectorcraft_doc::TextObject::point(Point::ZERO, "H", vectorcraft_doc::CharStyle { size: 60.0, ..Default::default() });
+    t.kind = vectorcraft_doc::TextKind::OnPath { path: vectorcraft_geom::PathData::from_bezpath(&path), start: 0.0, end: None };
+    t.xf = Affine::IDENTITY;
+    t.path_effect = vectorcraft_doc::PathEffect::Skew;
+    let mut d = vectorcraft_doc::Document::new(500.0, 500.0);
+    let (l, id) = (d.layers[0].id, d.alloc_id());
+    d.insert(Some(l), 0, Node::new(id, NodeKind::Text(Box::new(t.clone())))).unwrap();
+    let lay = layout_text(FontDb::global(), &t);
+    let g = lay.glyphs.iter().find(|g| !g.outline.elements().is_empty()).expect("a glyph with an outline");
+    let face = FontDb::global().face_by_id(g.font_id).unwrap();
+    let top = t.xf * g.xf * Point::new(0.0, -face.x_height());
+    let ahead = Vec2::new(g.angle.cos(), g.angle.sin());
+    let normal = Vec2::new(ahead.y, -ahead.x);
+    // Beside the guide's line, past the glyph's end along it.
+    let p = top + ahead * 80.0 + normal * 1.5;
+    let (q, _) = Targets::for_drawing(&d, &[], None, true).snap_point(p, 4.0);
+    assert!((q - top).cross(ahead).abs() < 1e-6, "{q:?} is off the x-height line through {top:?}");
 }
 
 /// Snap to Glyph › Proximity Guides: the edges of each character's advance width are guides.
