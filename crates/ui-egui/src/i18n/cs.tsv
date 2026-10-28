@@ -4225,6 +4225,7 @@ imageTrace	Outline	Obrys
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` musí být mezi {min} a {max} (zadáno {x})
 @msg	`{key}` must be one of {_1}	`{key}` musí být jedno z {_1}
 @msg	`{key}` must be true or false	`{key}` musí být true nebo false
+@msg	`top` and `below` can't both be true	`top` a `below` nemohou být zároveň true
 @msg	`select` must be true or false	`select` musí být true nebo false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` a `maxAnchors` musí být celá čísla
 @msg	`{key}` must be a number not below 0	`{key}` musí být číslo nejméně 0

@@ -3958,6 +3958,7 @@ axis	Both	Оба
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` должно быть от {min} до {max} (получено {x})
 @msg	`{key}` must be one of {_1}	`{key}` должно быть одним из: {_1}
 @msg	`{key}` must be true or false	`{key}` должно быть true или false
+@msg	`top` and `below` can't both be true	`top` и `below` не могут одновременно быть true
 @msg	`select` must be true or false	`select` должно быть true или false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` и `maxAnchors` должны быть целыми числами
 @msg	`{key}` must be a number not below 0	`{key}` должно быть числом не меньше 0

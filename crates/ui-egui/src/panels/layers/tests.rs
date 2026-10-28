@@ -1040,6 +1040,50 @@ fn cmd_alt_l_opens_new_layer_options_as_alt_clicking_new_layer_does() {
     assert_eq!(names(&keyed).len(), 4);
 }
 
+/// Ctrl/Cmd+Alt-click on the New Layer button adds a layer directly below the current layer, and
+/// on the New Sublayer button a sublayer under the current layer's contents, without a dialog and
+/// in one undo step each. A plain click still adds the layer above the current layer and the
+/// sublayer on top, and an Alt-click still opens Layer Options.
+#[test]
+fn cmd_alt_click_puts_a_new_layer_below_and_a_new_sublayer_at_the_bottom() {
+    let (mut app, first, [a, b]) = two_rects();
+    app.session.execute("layer.new", &json!({"name": "Top"})).unwrap();
+    app.session.execute("layer.setCurrent", &json!({"id": first.0})).unwrap();
+    let ctx = egui::Context::default();
+    let names = |app: &VectorcraftApp| app.session.active().unwrap().doc.layers.iter().map(|l| l.display_name()).collect::<Vec<_>>();
+    let undos = |app: &VectorcraftApp| app.session.active().unwrap().history.undo.len();
+    let cmd_alt = egui::Modifiers::COMMAND | egui::Modifiers::ALT;
+    // Clicks the bottom bar's button `k` (1: New Layer, 2: New Sublayer) with `mods` held.
+    let click = |app: &mut VectorcraftApp, k: usize, mods: egui::Modifiers| {
+        let at = bar_buttons(app, &ctx)[k];
+        click_with(app, &ctx, at, mods);
+    };
+    let before = undos(&app);
+    click(&mut app, 1, cmd_alt);
+    assert!(app.ui.dialog.is_none(), "no dialog");
+    assert_eq!(names(&app), ["Layer 3", "Layer 1", "Top"]);
+    assert_eq!(undos(&app), before + 1);
+    app.session.execute("layer.setCurrent", &json!({"id": first.0})).unwrap();
+    click(&mut app, 2, cmd_alt);
+    assert!(app.ui.dialog.is_none(), "no dialog");
+    let d = &app.session.active().unwrap().doc;
+    let kids: Vec<NodeId> = d.node(first).unwrap().children().unwrap().iter().map(|n| n.id).collect();
+    assert_eq!(kids.len(), 3);
+    assert!(d.node(kids[0]).is_some_and(Node::is_layer), "the sublayer is under the rectangles");
+    assert_eq!(kids[1..], [a, b]);
+    assert_eq!(undos(&app), before + 2);
+    // A plain click: above the current layer, and the sublayer on top.
+    app.session.execute("layer.setCurrent", &json!({"id": first.0})).unwrap();
+    click(&mut app, 2, egui::Modifiers::NONE);
+    let d = &app.session.active().unwrap().doc;
+    assert!(d.node(first).unwrap().children().unwrap().last().is_some_and(|n| n.is_layer()), "a plain click puts it on top");
+    app.session.execute("layer.setCurrent", &json!({"id": first.0})).unwrap();
+    click(&mut app, 1, egui::Modifiers::NONE);
+    assert_eq!(names(&app), ["Layer 3", "Layer 1", "Layer 6", "Top"]);
+    click(&mut app, 1, egui::Modifiers::ALT);
+    assert!(app.ui.dialog.is_some(), "Alt-click opens Layer Options");
+}
+
 #[test]
 fn the_selected_art_square_drags_the_selection_to_another_layer() {
     let (mut app, [_, sub, g, _, a, c]) = nested();

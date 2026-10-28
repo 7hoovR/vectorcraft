@@ -29,7 +29,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "New Layer…",
             ["Window", "Layers"],
             Some("Cmd+L"),
-            "{name?, top?: bool, color?, template?, locked?, visible?, printable?, preview?, dimImages?} a layer directly above the current layer, at its level (a sublayer beside a current sublayer); `top`: above all layers (Ctrl-click the button). Options as layer.setProps → {id}",
+            "{name?, top?: bool, below?: bool, color?, template?, locked?, visible?, printable?, preview?, dimImages?} a layer directly above the current layer, at its level (a sublayer beside a current sublayer); `top`: above all layers (Ctrl/Cmd-click the button); `below`: directly below the current layer, at its level (Ctrl/Cmd+Alt-click the button), not with `top`. Options as layer.setProps → {id}",
             has_doc,
             new_layer
         ),
@@ -38,7 +38,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "New Sublayer…",
             ["Window", "Layers"],
             None,
-            "{parent?: layer id (default: the highlighted row's layer, else the current layer), name?, …options as layer.new} a sublayer on top of the parent's contents → {id}",
+            "{parent?: layer id (default: the highlighted row's layer, else the current layer), bottom?: bool, name?, …options as layer.new} a sublayer on top of the parent's contents; `bottom`: under the parent's contents, above a clipping layer's clipping path (Ctrl/Cmd+Alt-click the button) → {id}",
             has_doc,
             new_sublayer
         ),
@@ -485,7 +485,11 @@ fn add_layer(s: &mut Session, p: &Value, cmd: &str, label: &str, place: impl FnO
     check_options(cmd, p, xml_id)?;
     let name = str_param(p, "name").filter(|n| !n.trim().is_empty()).map(str::to_string);
     let id = s.edit(label, |d, _| {
-        let (parent, index) = place(d)?;
+        let (parent, mut index) = place(d)?;
+        // The clipping path stays at the bottom of a clipping layer.
+        if d.children(parent).is_some_and(|c| !c.is_empty()) && parent.and_then(|p| d.node(p)).is_some_and(Node::clips) {
+            index = index.max(1);
+        }
         let mut n = make_layer(d, name.as_deref());
         apply_options(&mut n, p, xml_id);
         Ok(d.insert(parent, index, n)?)
@@ -497,12 +501,17 @@ fn add_layer(s: &mut Session, p: &Value, cmd: &str, label: &str, place: impl FnO
 }
 
 fn new_layer(s: &mut Session, p: &Value) -> Result<Value> {
+    const C: &str = "layer.new";
+    let below = switch_or(p, "below", false, C)?;
+    if below && bool_or(p, "top", false) {
+        return Err(bad(C, "`top` and `below` can't both be true"));
+    }
     let st = s.doc()?;
-    // Above the current layer, at its level; on top of everything with `top`.
+    // Above the current layer, at its level; below it with `below`; on top of everything with `top`.
     let cur = st.current_layer().filter(|_| !bool_or(p, "top", false));
-    add_layer(s, p, "layer.new", "New Layer", |d| match cur.and_then(|c| d.position(c)) {
-        Some((parent, i, _)) => Ok((parent, i + 1)),
-        None => Ok((None, usize::MAX)),
+    add_layer(s, p, C, "New Layer", |d| match cur.and_then(|c| d.position(c)) {
+        Some((parent, i, _)) => Ok((parent, if below { i } else { i + 1 })),
+        None => Ok((None, if below { 0 } else { usize::MAX })),
     })
 }
 
@@ -514,7 +523,8 @@ fn new_sublayer(s: &mut Session, p: &Value) -> Result<Value> {
     if !st.doc.node(parent).is_some_and(Node::is_layer) {
         return Err(bad(C, "the parent must be a layer or sublayer"));
     }
-    add_layer(s, p, C, "New Sublayer", |_| Ok((Some(parent), usize::MAX)))
+    let index = if switch_or(p, "bottom", false, C)? { 0 } else { usize::MAX };
+    add_layer(s, p, C, "New Sublayer", |_| Ok((Some(parent), index)))
 }
 
 fn delete_rows(s: &mut Session, p: &Value) -> Result<Value> {
