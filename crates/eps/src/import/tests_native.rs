@@ -290,6 +290,32 @@ fn an_ai_file_that_comes_in_as_its_pdf_part_keeps_the_swatches_of_its_palette() 
     assert!(d.swatch("Red ink").is_some_and(|s| s.spot));
 }
 
+/// A `.ai` pattern library (a palette of pattern swatches and no layers) whose PDF part defines no
+/// pattern gets the patterns its editing data defines with the palette's pattern swatches.
+#[test]
+fn an_ai_file_without_layers_keeps_the_patterns_of_its_palette() {
+    let dots = "%AI3_BeginPattern: (Dots)\n(Dots) 0 0 4 4\n%_0 0 0 1 k\n%_1 1 m\n%_3 1 L\n%_3 3 L\n%_1 3 L\n%_f\nE\n%AI3_EndPattern\n";
+    let palette =
+        "%AI5_BeginPalette\n0 0 Pb\n0 0 0 0 1 1 1 Xa\n(White)\nPc\n(Dots) 0 0 1 1 0 0 0 0 0 [1 0 0 1 0 0] p\n(Dots)\nPc\nPB\n%AI5_EndPalette\n";
+    let art = native(&format!("{dots}{palette}"));
+    let (d, warnings, read) = crate::layered_ai(&private(&art), pdf_part(10.0, 86.0), vec![], false, true, 1.0);
+    assert!(!read, "{warnings:?}");
+    let swatches: Vec<&str> = d.swatches.iter().map(|s| s.name.as_str()).collect();
+    assert_eq!(swatches, ["[None]", "White", "Dots"], "{warnings:?}");
+    assert!(matches!(&d.swatch("Dots").map(|s| &s.paint), Some(vectorcraft_color::Paint::Pattern { pattern, .. }) if pattern == "Dots"));
+    assert!(d.pattern("Dots").is_some_and(|p| !p.art.is_empty()));
+
+    // A pattern that shows an image brings the image's data with it.
+    let pic = "%AI3_BeginPattern: (Pic)\n(Pic) 0 0 4 4\n%AI5_File:\n%AI5_BeginRaster\n() 1 XG\n/DeviceGray XN\n[ 4 0 0 4 0 4 ] 1 1 0 Xh\n\
+               [ 4 0 0 4 0 4 ] 0 0 1 1 1 1 8 1 0 0 1 0 4 4 0 0\n%%BeginData: 1\rXI\n\u{0}%%EndData\r\nXH\r\n%AI5_EndRaster\r\nN\nE\n%AI3_EndPattern\n";
+    let art = native(&format!("{pic}{}", palette.replace("(Dots)", "(Pic)")));
+    let (d, warnings, _) = crate::layered_ai(&private(&art), pdf_part(10.0, 86.0), vec![], false, true, 1.0);
+    let mut keys = vec![];
+    d.visit_images(|_, im| keys.push(im.key.clone()));
+    assert_eq!(keys.len(), 1, "{warnings:?}");
+    assert!(keys.iter().all(|k| d.images.contains_key(k)), "{keys:?}");
+}
+
 /// An EPS whose editing data can't be used, a palette with no layers among others, comes in as its
 /// page with the swatches and color groups of that palette in place of the defaults.
 #[test]

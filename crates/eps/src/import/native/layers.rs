@@ -89,9 +89,18 @@ pub fn layered_ai(private: &[u8], visible: Document, warnings: Vec<String>, outl
 /// `doc` (a `.ai` read as its PDF part, in place of its layers) with the swatches and color groups
 /// of the palette of its editing data `data` in place of the default ones, as [`build`] gives a
 /// document read from the layers. The spot and pattern swatches of the PDF part's art that the
-/// palette doesn't have follow the palette's swatches. Left as it is when the palette is empty.
+/// palette doesn't have follow the palette's swatches. The patterns that the editing data defines and
+/// the PDF part lacks come in for the palette's pattern swatches, with the images they show. Left as
+/// it is when the palette is empty.
 fn use_palette(data: &[u8], doc: &mut Document) {
-    let Some((swatches, groups)) = ai::palette(data, &doc.patterns) else { return };
+    let Some(ai::PaletteSwatches { swatches, groups, patterns, images }) = ai::palette(data, &doc.patterns) else { return };
+    for (key, blob) in images {
+        doc.images.entry(key).or_insert(blob);
+    }
+    for mut p in patterns {
+        p.art = p.art.iter().map(|n| Arc::new(doc.reid(n))).collect();
+        doc.patterns.push(p);
+    }
     let named = |name: &str| swatches.iter().chain(groups.iter().flat_map(|g| &g.swatches)).any(|s| s.name == name);
     let art: Vec<_> =
         doc.swatches.iter().filter(|s| (s.spot || matches!(s.paint, vectorcraft_color::Paint::Pattern { .. })) && !named(&s.name)).cloned().collect();

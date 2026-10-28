@@ -72,15 +72,42 @@ fn artboard_array(data: &[u8]) -> Option<&[u8]> {
     }
 }
 
+/// The palette of a `.ai` file's editing data, as [`palette`] reads it.
+pub struct PaletteSwatches {
+    pub swatches: Vec<Swatch>,
+    pub groups: Vec<vectorcraft_color::swatch::SwatchGroup>,
+    /// The patterns the editing data defines that the given patterns lack and a swatch paints with.
+    pub patterns: Vec<PatternDef>,
+    /// The image blobs the art of `patterns` shows, by key.
+    pub images: std::collections::BTreeMap<String, ImageBlob>,
+}
+
 /// The swatches and color groups of the palette of the editing data `data`, for a file whose
 /// layers aren't read: the swatches its PDF part has are the defaults (#4036). They come as
-/// [`read`] makes them, with pattern swatches only for the patterns in `patterns`; `None` when the
-/// palette is empty or reading stops before it.
-pub fn palette(data: &[u8], patterns: &[PatternDef]) -> Option<(Vec<Swatch>, Vec<vectorcraft_color::swatch::SwatchGroup>)> {
+/// [`read`] makes them, with pattern swatches only for the patterns in `patterns` and those the
+/// editing data defines; `None` when the palette is empty or reading stops before it.
+pub fn palette(data: &[u8], patterns: &[PatternDef]) -> Option<PaletteSwatches> {
     let mut r = Reader::new(data);
-    // The palette and the gradients it names come before the art, so an error in the art leaves them read.
+    // The palette, the gradients and the patterns it names come before the art, so an error in the
+    // art leaves them read.
     let _ = r.run();
-    r.palette_swatches(patterns)
+    let mut known = patterns.to_vec();
+    let defined = std::mem::take(&mut r.doc.patterns);
+    known.extend(defined.iter().filter(|d| !patterns.iter().any(|p| p.name == d.name)).cloned());
+    let (swatches, groups) = r.palette_swatches(&known)?;
+    let painted = |name: &str| {
+        swatches.iter().chain(groups.iter().flat_map(|g| &g.swatches)).any(|s| matches!(&s.paint, Paint::Pattern { pattern, .. } if pattern == name))
+    };
+    let added: Vec<PatternDef> = defined.into_iter().filter(|d| !patterns.iter().any(|p| p.name == d.name) && painted(&d.name)).collect();
+    let mut shown = Document::new(1.0, 1.0);
+    shown.patterns.clone_from(&added);
+    let mut images = std::collections::BTreeMap::new();
+    shown.visit_images(|_, im| {
+        if let Some(blob) = r.doc.images.get(&im.key) {
+            images.insert(im.key.clone(), blob.clone());
+        }
+    });
+    Some(PaletteSwatches { swatches, groups, patterns: added, images })
 }
 
 /// [`artboards`] as far as reading `data` from its start gets: those read before an error, and
