@@ -1524,7 +1524,7 @@ font-technology	Variable	Değişken
 	Layers Panel Options	Katmanlar Paneli Seçenekleri
 	Layout:	Düzen:
 	Leader:	Lider:
-	Leading	Lider
+	Leading	Satır Aralığı
 	Left	Sol
 	Left Grid:	Sol Izgara:
 	Left in Front	Sol Önde
@@ -2897,7 +2897,7 @@ font-technology	Variable	Değişken
 	Sixth Space	Altıncı Uzay
 	Size	Boyut
 	Size Tile to Art	Sanata Boyut Döşeme
-	Size/Leading	Boyut/Öncülük
+	Size/Leading	Boyut/Satır Aralığı
 	Size:	Boyut:
 	Ridges per segment:	Segment başına sırtlar:
 	Size: {size}  Tracking: {tracking}	Boyut: {size} Takip: {tracking}
@@ -3557,8 +3557,8 @@ imageTrace	Outline	Kontur
 	  — {n} characters from another font	  — Başka bir yazı tipinden {n} karakterler
 	[Normal Character Style]	[Normal Karakter Stili]
 	[Normal Paragraph Style]	[Normal Paragraf Stili]
-	Top-to-Top Leading	Tepeden Tepeye Liderlik
-	Bottom-to-Bottom Leading	Aşağıdan Aşağıya Öncülük
+	Top-to-Top Leading	Tepeden Tepeye Satır Aralığı
+	Bottom-to-Bottom Leading	Aşağıdan Aşağıya Satır Aralığı
 	Burasagari	Burasagari
 	Force	kuvvet
 	About	Hakkında
