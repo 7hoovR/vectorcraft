@@ -491,13 +491,19 @@ impl FaceMerger {
             }
             picks.push((mask, crate::planar::interior_point(&r.path)?));
         }
-        // `masks` holds the coverages in the order they were first picked, and `found` holds the
-        // faces of each that contain a picked point.
+        // `masks` holds the coverages in the order they were first picked, `points` the picked
+        // points of each, and `found` the faces of each that contain one of its points.
         let mut masks: Vec<&[bool]> = vec![];
-        let mut seen = HashSet::new();
-        for (mask, _) in &picks {
-            if seen.insert(mask.as_slice()) {
+        let mut points: Vec<Vec<Point>> = vec![];
+        let mut index: HashMap<&[bool], usize> = HashMap::new();
+        for (mask, p) in &picks {
+            let m = *index.entry(mask.as_slice()).or_insert_with(|| {
                 masks.push(mask);
+                points.push(Vec::new());
+                masks.len() - 1
+            });
+            if let Some(at) = points.get_mut(m) {
+                at.push(*p);
             }
         }
         let mut found: Vec<Vec<BezPath>> = vec![Vec::new(); masks.len()];
@@ -506,8 +512,8 @@ impl FaceMerger {
             for &i in group {
                 face.extend(c[i].path.iter());
             }
-            if let (Some(&mask), Some(out)) = (masks.get(m), found.get_mut(m))
-                && picks.iter().any(|(k, p)| k.as_slice() == mask && face.winding(*p) != 0)
+            if let (Some(at), Some(out)) = (points.get(m), found.get_mut(m))
+                && at.iter().any(|p| face.winding(*p) != 0)
             {
                 out.push(face);
             }
