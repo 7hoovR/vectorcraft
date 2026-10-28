@@ -1247,7 +1247,7 @@ mod tests {
         let none = Overrides::new();
         let dropped: Vec<&str> = entries().iter().filter(|e| default_of(&e.key).is_some() && !listed(&none, e)).map(|e| e.key.as_str()).collect();
         assert!(dropped.is_empty(), "{dropped:?}");
-        for id in ["edit.duplicate", "object.pathfinder.unite", "object.rotate", "variable.define"] {
+        for id in ["edit.duplicate", "object.pathfinder.unite", "object.rotate", "variable.define", "object.distributeSpacing"] {
             assert!(entry(id).is_some_and(|e| listed(&none, e)), "{id}");
         }
         for (doc, required) in [
