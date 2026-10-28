@@ -47,8 +47,8 @@ impl Exporter<'_> {
     /// on the image's own pixel grid (an image's soft mask as it opens): the alpha is written as the
     /// image's soft mask, as an RGBA image's is, rather than as a luminosity soft mask over it,
     /// through which CoreGraphics draws CMYK images on black boxes (#2159). `None` for other
-    /// images and masks; cached like [`Self::load_image`].
-    pub(super) fn masked_image(&mut self, im: &vectorcraft_doc::ImageObject, m: &vectorcraft_doc::OpacityMask) -> Option<Image> {
+    /// images and masks; cached like [`Self::load_image`], `interpolate` as there.
+    pub(super) fn masked_image(&mut self, im: &vectorcraft_doc::ImageObject, m: &vectorcraft_doc::OpacityMask, interpolate: bool) -> Option<Image> {
         let art = &m.art;
         let NodeKind::Image(mi) = &art.kind else { return None };
         let plain =
@@ -57,14 +57,18 @@ impl Exporter<'_> {
             return None;
         }
         let size = placed_size(im);
-        let cache = format!("{}\u{0}{}\u{0}{}\u{0}{:.3}x{:.3}", im.key, mi.key, m.clip, size.0, size.1);
+        let interpolate = interpolate && self.interpolate;
+        let mut cache = format!("{}\u{0}{}\u{0}{}\u{0}{:.3}x{:.3}", im.key, mi.key, m.clip, size.0, size.1);
+        if !interpolate && self.interpolate {
+            cache.push_str("\u{0}pixelated");
+        }
         if let Some(i) = self.images.get(&cache) {
             return i.clone();
         }
         let doc = self.doc;
         let img = doc.image_blob(im).filter(|b| b.is_cmyk()).and_then(|blob| {
             let alpha = crate::images::mask_alpha(doc.image_blob(mi)?, im.width, im.height, m.clip)?;
-            let r = crate::images::recode_cmyk(blob, size, self.compression, self.interpolate, self.out.cmyk_pixels(), Some(alpha));
+            let r = crate::images::recode_cmyk(blob, size, self.compression, interpolate, self.out.cmyk_pixels(), Some(alpha));
             if let (Some(w), Some(_)) = (r.warning, &r.image) {
                 self.warn(w);
             }

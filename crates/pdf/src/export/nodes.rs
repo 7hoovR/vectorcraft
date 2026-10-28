@@ -137,7 +137,7 @@ impl Exporter<'_> {
         }
         let mask = n.extras().mask.as_deref().filter(|m| !m.disabled);
         let alpha = match (&n.kind, mask) {
-            (NodeKind::Image(im), Some(m)) => self.masked_image(im, m),
+            (NodeKind::Image(im), Some(m)) => self.masked_image(im, m, !n.extras().pixelated),
             _ => None,
         };
         if let Some(m) = mask
