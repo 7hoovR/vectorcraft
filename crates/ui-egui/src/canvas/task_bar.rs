@@ -141,8 +141,9 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
         }
         items.push((tl!("Duplicate"), "copy", "edit.duplicate", none()));
     }
-    let fill = first.as_ref().map(|f| f.appearance.fill_paint()).unwrap_or_default();
-    let stroke = first.as_ref().map(|f| f.appearance.stroke_paint()).unwrap_or_default();
+    // The paints the Fill and Stroke proxies show, "?" when the selected objects' paints differ.
+    let (fill, stroke) = crate::panels::current_paints(app);
+    let (fill_mixed, stroke_mixed) = crate::panels::mixed_paints(app, ui.ctx());
     let colored = has_colors(&st.doc, &st.selection.objects);
     let doc = st.uid;
     // Under the selection's lowest corner on screen, centered on the selection (the view may be
@@ -176,6 +177,7 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
     let pinned = place.pinned;
     let mut moved = Vec2::ZERO;
     let mut run: Option<(&str, serde_json::Value)> = None;
+    let mut show_swatches = false;
     egui::Area::new(id).order(egui::Order::Middle).fixed_pos(pos).show(ui.ctx(), |ui| {
         egui::Frame::NONE
             .fill(t.panel)
@@ -211,25 +213,21 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
                     // The selected objects' Fill, Stroke, Recolor Artwork and Lock, left out with the Artboard tool.
                     if !on_artboards {
                         let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
-                        widgets::paint_chip(ui, egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)), &fill);
-                        ui.painter().rect_stroke(
-                            egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)),
-                            0.0,
-                            Stroke::new(1.0, t.button_border),
-                            StrokeKind::Outside,
-                        );
+                        let chip = egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0));
+                        widgets::proxy_chip(ui, chip, &fill, fill_mixed, None);
+                        ui.painter().rect_stroke(chip, 0.0, Stroke::new(1.0, t.button_border), StrokeKind::Outside);
                         if resp.on_hover_text(tl!("Fill")).clicked() {
                             app.session.fill_active = true;
-                            app.ui.open_panel = Some("swatches".into());
+                            show_swatches = true;
                         }
                         // The Stroke chip, drawn as a ring as the Control bar's is.
                         let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
                         let chip = egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0));
-                        widgets::proxy_chip(ui, chip, &stroke, false, Some(4.0));
+                        widgets::proxy_chip(ui, chip, &stroke, stroke_mixed, Some(4.0));
                         ui.painter().rect_stroke(chip, 0.0, Stroke::new(1.0, t.button_border), StrokeKind::Outside);
                         if resp.on_hover_text(tl!("Stroke")).clicked() {
                             app.session.fill_active = false;
-                            app.ui.open_panel = Some("swatches".into());
+                            show_swatches = true;
                         }
                         // Recolor Artwork, when the selection has colours to recolour.
                         if colored && widgets::icon_button(ui, "palette", tl!("Recolor Artwork"), false, 30.0).clicked() {
@@ -271,6 +269,14 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
             place.offset = Some((doc, to - under));
         }
         ui.ctx().request_repaint();
+    }
+    // The Swatches panel shows where it is docked, floating or closed. A panel in an icon column
+    // toggles when activated, so an open flyout stays as it is.
+    if show_swatches
+        && app.ui.open_panel.as_deref() != Some("swatches")
+        && let Err(e) = app.run("window.panel.activate", json!({ "panel": "swatches" }))
+    {
+        app.ui.status = e;
     }
     match run {
         // Image Trace traces the image at once with the Default preset. As a quick trace from
