@@ -2154,6 +2154,12 @@ and `layerRows`, the rows highlighted in the panel.
   stays. A key left out keeps its list. The filter lasts the session and does not change the document, its open rows
   or the selection. `ui.layersFilter` answers `{objects, layers}`.
 
+These Layers panel commands refuse a string, a number or another value that is not true or false with
+`` `copy` must be true or false ``, naming the key, and leave the document, the selection, the highlighted rows and
+the undo history as they were: `top` in `layer.new` and `layer.newSublayer`, `add` in `layer.selectAll` and
+`layer.target`, `copy` in `layer.move`, `on` in `layer.template` and `layer.pasteRemembersLayers`, and `build` in
+`layer.releaseToLayers`. A null is read as a key left out.
+
 ```json
 {"name":"run_command","arguments":{"command":"layer.newSublayer","params":{"name":"Shadows"}}}
 {"name":"run_command","arguments":{"command":"layer.move","params":{"ids":[12,15],"target":7,"place":"inside"}}}
@@ -3187,8 +3193,9 @@ Every artboard command that takes an `index` fails with `no such artboard` when 
 clipboard stay as they were.
 These artboard commands refuse a string, a number or another value that is not true or false with
 `` `art` must be true or false ``, naming the key, and leave the document, its undo history and the clipboard as they
-were: `moveArt`, `scaleArt`, `strokes`, `corners`, `patterns`, `lockedAndHidden` and an artboard's `locked` in
-`artboard.setProps`; `moveArt`, `copy` and `patterns` in `artboard.move`; `art` and `patterns` in `artboard.duplicate`;
+were: `moveArt`, `scaleArt`, `strokes`, `corners`, `patterns`, `lockedAndHidden` and an artboard's `locked`,
+`showCenterMark`, `showCrossHairs` and `showVideoSafeAreas` in `artboard.setProps`; `showCenterMark`, `showCrossHairs`
+and `showVideoSafeAreas` in `artboard.new`; `moveArt`, `copy` and `patterns` in `artboard.move`; `art` and `patterns` in `artboard.duplicate`;
 and `art` in `artboard.copy` and `artboard.cut`. `artboard.setProps` refuses an artboard's `x`, `y`, `width` or
 `height` that is not a number, and `artboard.move` refuses such a `dx` or `dy`, with
 `` `dx` must be a number, not "10" ``. A null is read as a key left out.
