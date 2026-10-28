@@ -64,6 +64,116 @@ fn styles_made_from_type_mark_only_real_overrides() {
     }
 }
 
+/// A document with type that both kinds' style `Body` is applied to, the type selected.
+fn drag_app() -> (VectorcraftApp, NodeId) {
+    let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
+    app.run("file.new", json!({"width": 300, "height": 200})).unwrap();
+    let id = NodeId(app.run("text.create", json!({"x": 20, "y": 50, "text": "Hi", "size": 18})).unwrap()["id"].as_u64().unwrap());
+    app.run("select.set", json!({"ids": [id.0]})).unwrap();
+    for kind in [Kind::Char, Kind::Para] {
+        app.run(&format!("{}.new", kind.prefix()), json!({"name": "Body"})).unwrap();
+        app.run(&format!("{}.apply", kind.prefix()), json!({"name": "Body"})).unwrap();
+    }
+    (app, id)
+}
+
+/// Drag the row labeled `label` in `kind`'s panel onto the footer button whose center is
+/// `from_right` points left of the panel's right edge (Create New Style: 40, Delete: 12), and
+/// release it there. `other`: once the drag has started, a row of the other panel is dragged in its
+/// place. → whether the button was outlined while the row was held over it.
+fn drag_row_onto_footer(ctx: &egui::Context, app: &mut VectorcraftApp, kind: Kind, label: &str, from_right: f32, other: bool) -> bool {
+    let button = std::cell::Cell::new(egui::Pos2::ZERO);
+    let mut draw = |app: &mut VectorcraftApp, ui: &mut egui::Ui| {
+        ui.set_width(280.0);
+        let right = ui.max_rect().right();
+        show(app, ui, kind);
+        button.set(egui::pos2(right - from_right, ui.min_rect().bottom() - 12.0));
+    };
+    frame_events(ctx, app, vec![], &mut draw);
+    let row = text_rect(&frame_events(ctx, app, vec![], &mut draw), label).center();
+    let press = |pos, pressed| egui::Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+    frame_events(ctx, app, vec![egui::Event::PointerMoved(row), press(row, true)], &mut draw);
+    frame_events(ctx, app, vec![egui::Event::PointerMoved(row + vec2(0.0, 12.0))], &mut draw);
+    assert!(egui::DragAndDrop::payload::<RowDrag>(ctx).is_some_and(|d| d.kind == kind && d.name == label), "the row is dragged");
+    if other {
+        let kind = if kind == Kind::Char { Kind::Para } else { Kind::Char };
+        egui::DragAndDrop::set_payload(ctx, RowDrag { kind, name: label.to_string() });
+    }
+    let to = button.get();
+    frame_events(ctx, app, vec![egui::Event::PointerMoved(to)], &mut draw);
+    let accent = Tokens::get(ctx).accent;
+    let mut out = ctx.run_ui(egui::RawInput { events: vec![egui::Event::PointerMoved(to)], ..Default::default() }, |ui| draw(app, ui));
+    out.textures_delta.clear();
+    let outlined = out.shapes.iter().any(|c| matches!(&c.shape, egui::Shape::Rect(r) if r.stroke.color == accent && r.rect.contains(to)));
+    frame_events(ctx, app, vec![press(to, false)], &mut draw);
+    frame_events(ctx, app, vec![], &mut draw);
+    assert!(egui::DragAndDrop::payload::<RowDrag>(ctx).is_none(), "the drag ended");
+    outlined
+}
+
+/// A style row dropped on Create New Style is duplicated as `<name> copy` in one undo step, the
+/// button is outlined while the row is held over it, and the panel then highlights the copy. A row
+/// of the other panel is not accepted.
+#[test]
+fn dragging_a_style_onto_create_new_style_duplicates_it() {
+    for kind in [Kind::Char, Kind::Para] {
+        let (mut app, _) = drag_app();
+        let ctx = egui::Context::default();
+        let before = styles(&mut app, kind);
+        let undo = app.session.doc().unwrap().history.undo.len();
+        let commands = app.run_count;
+        assert!(
+            !drag_row_onto_footer(&ctx, &mut app, kind, "Body", 40.0, true),
+            "{} Styles: New is not outlined for the other panel's row",
+            kind.what()
+        );
+        assert_eq!((app.run_count, styles(&mut app, kind)), (commands, before.clone()), "New accepts no row of the other panel");
+        assert!(drag_row_onto_footer(&ctx, &mut app, kind, "Body", 40.0, false), "{} Styles: New is outlined", kind.what());
+        let after = styles(&mut app, kind);
+        let body = before.iter().find(|s| s.0 == "Body").unwrap();
+        let copy = after.iter().find(|s| s.0 == "Body copy");
+        assert_eq!(copy.map(|s| &s.1), Some(&body.1), "{} Styles: the copy has Body's attributes: {after:?}", kind.what());
+        assert_eq!(after.len(), before.len() + 1);
+        assert_eq!(app.session.doc().unwrap().history.undo.len(), undo + 1, "one undo step");
+        let selected: Option<String> = pstate(&ctx, kind.key());
+        assert_eq!(selected.as_deref(), Some("Body copy"));
+        app.run("edit.undo", json!({})).unwrap();
+        assert_eq!(styles(&mut app, kind), before);
+    }
+}
+
+/// A style row dropped on Delete deletes that style in one undo step, also while no style is
+/// selected in the panel and the button is dimmed; the type keeps its look. Normal dropped on
+/// Delete stays, and Delete is not outlined for it or for a row of the other panel.
+#[test]
+fn dragging_a_style_onto_delete_deletes_it() {
+    for kind in [Kind::Char, Kind::Para] {
+        let (mut app, id) = drag_app();
+        let ctx = egui::Context::default();
+        let before = styles(&mut app, kind);
+        let undo = app.session.doc().unwrap().history.undo.len();
+        assert_eq!(pstate::<Option<String>>(&ctx, kind.key()), None, "no style is selected in the panel");
+        let commands = app.run_count;
+        assert!(
+            !drag_row_onto_footer(&ctx, &mut app, kind, "Body", 12.0, true),
+            "{} Styles: Delete is not outlined for the other panel's row",
+            kind.what()
+        );
+        assert_eq!((app.run_count, styles(&mut app, kind)), (commands, before.clone()), "Delete accepts no row of the other panel");
+        assert!(drag_row_onto_footer(&ctx, &mut app, kind, "Body", 12.0, false), "{} Styles: Delete is outlined", kind.what());
+        let after = styles(&mut app, kind);
+        assert_eq!(after.iter().map(|s| s.0.as_str()).collect::<Vec<_>>(), [before[0].0.as_str()], "{} Styles: Body is deleted", kind.what());
+        assert_eq!(app.session.doc().unwrap().history.undo.len(), undo + 1, "one undo step");
+        assert_eq!(text_runs(&app, id)[0].1, 18.0, "the type keeps its look");
+        let normal = super::super::label_or_name(&before[0].0, true).to_string();
+        let commands = app.run_count;
+        assert!(!drag_row_onto_footer(&ctx, &mut app, kind, &normal, 12.0, false), "{} Styles: Delete is not outlined for Normal", kind.what());
+        assert_eq!((app.run_count, styles(&mut app, kind)), (commands, after), "Normal stays");
+        app.run("edit.undo", json!({})).unwrap();
+        assert_eq!(styles(&mut app, kind), before);
+    }
+}
+
 fn capture_app() -> (VectorcraftApp, NodeId, egui::Context) {
     let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
     app.run("file.new", json!({"width": 300, "height": 200})).unwrap();
