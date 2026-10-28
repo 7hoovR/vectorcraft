@@ -336,9 +336,9 @@ fn runs_without_params(params: &str) -> bool {
 }
 
 /// Does the editor list `e` under `overrides`? An entry that [`needs_a_value`] is listed only while
-/// the user has changed its shortcut.
+/// the user has given it a shortcut.
 fn listed(overrides: &Overrides, e: &Entry) -> bool {
-    !needs_a_value(&e.key) || crate::keymap::has_override(overrides, &e.key)
+    !needs_a_value(&e.key) || overrides.get(&crate::keymap::stored_key(&e.key)).is_some_and(|t| !t.is_empty())
 }
 
 /// Is `key` a command with a menu path and no default shortcut that a key press can't run: no
@@ -1241,6 +1241,10 @@ mod tests {
             (Some("document.setUnits"), Some("Cmd+Alt+Shift+F12"), Some(true))
         );
         assert!(menu_rows(&mut app, "units").iter().any(|r| r == "File › Document Setup › Units"));
+        // An empty saved shortcut (as an imported set can hold) gives it no key, so it is not listed.
+        crate::keymap::set_override(&mut app.ui.shortcut_overrides, "document.setUnits", "");
+        let list = run_command(&mut app, "shortcuts.list", &json!({"query": "document.setUnits"})).unwrap().unwrap();
+        assert_eq!(list, json!([]));
         // Every entry with a default shortcut is listed, and so are commands a key press runs: one
         // whose params are all optional, one the menu bar runs without params (Rotate… opens its
         // dialog) and one that opens a dialog for its values (New Variable).
