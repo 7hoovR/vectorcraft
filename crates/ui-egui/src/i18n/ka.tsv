@@ -3960,6 +3960,7 @@ font-technology	Variable	ცვლადი
 @msg	not in pattern editing mode	პატერნის რედაქტირების რეჟიმი არ არის ჩართული
 @msg	nothing encoded	არაფერია კოდირებული
 @msg	nothing selected	არაფერია მონიშნული
+@msg	nothing selected is in a group	მონიშნულთაგან არაფერია ჯგუფში
 @msg	nothing to align	გასასწორებელი არაფერია
 @msg	nothing to distort	დასადეფორმირებელი არაფერია
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	ექსპორტისთვის არაფერია: დოკუმენტს ხილული ნახატი არ აქვს (ან ჩართეთ სამუშაო დაფების გამოყენება)

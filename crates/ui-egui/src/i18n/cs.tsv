@@ -4488,6 +4488,7 @@ imageTrace	Outline	Obrys
 @msg	not in pattern editing mode	není aktivní režim úprav vzorku
 @msg	nothing encoded	nic nebylo zakódováno
 @msg	nothing selected	nic není vybráno
+@msg	nothing selected is in a group	nic z výběru není ve skupině
 @msg	nothing to align	není co zarovnat
 @msg	nothing to distort	není co deformovat
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	není co exportovat: dokument nemá žádnou viditelnou kresbu (nebo zapněte Použít pracovní plochy)

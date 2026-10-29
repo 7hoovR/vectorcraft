@@ -3959,6 +3959,7 @@ axis	Both	Her İkisi
 @msg	not in pattern editing mode	desen düzenleme modunda değil
 @msg	nothing encoded	kodlanmış hiçbir şey yok
 @msg	nothing selected	hiçbir şey seçilmedi
+@msg	nothing selected is in a group	seçilenlerin hiçbiri bir grupta değil
 @msg	nothing to align	hizalanacak hiçbir şey yok
 @msg	nothing to distort	çarpıtılacak hiçbir şey yok
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	dışa aktarılacak bir şey yok: belgede görünür resim yok (veya Çalışma Yüzeylerini Kullan'ı açın)

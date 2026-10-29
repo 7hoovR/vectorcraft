@@ -4193,6 +4193,7 @@ imageTrace	Outline	Kontur
 @msg	not in pattern editing mode	ikke i mønsterredigeringstilstand
 @msg	nothing encoded	intet kodet
 @msg	nothing selected	intet markeret
+@msg	nothing selected is in a group	intet af det markerede er i en gruppe
 @msg	nothing to align	intet at justere
 @msg	nothing to distort	intet at forvrænge
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	intet at eksportere: dokumentet har ingen synlig grafik (eller aktivér Brug artboards)

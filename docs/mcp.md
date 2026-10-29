@@ -1345,6 +1345,14 @@ that were already hidden or locked. The key object is cleared when it is one of 
 them again with the key object. When the call changes nothing, it records no undo step and still deselects them.
 Other `object.setProps` calls leave the selection unchanged.
 
+`object.unlockAll` and `object.showAll` unlock or show every locked or hidden object in the document and select
+them → `{count}`. With `scope: "group"` they take only the objects inside the groups that hold the selected objects:
+for each selected object, the group nearest above it, or the object itself when it is a group. The objects of a
+group inside another such group are counted once. With no selected object in a group, the call returns the error
+"nothing selected is in a group" and changes nothing. `scope: "document"` is the default, and any other value is
+refused. Object › Unlock All and Object › Show All clicked in the in-window menu bar with Shift+Alt (Shift+Option)
+held run with `scope: "group"`.
+
 `layer.move`, `node.move`, `layer.merge`, `layer.flatten`, `layer.collectInNew`, `dataset.select`, `dataset.next`
 and `dataset.prev` also deselect every selected object that is hidden or locked after the call, such as objects
 moved into a hidden or locked layer or group, or objects that a data set hides. The key object is cleared when it

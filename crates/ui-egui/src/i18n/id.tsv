@@ -4193,6 +4193,7 @@ imageTrace	Outline	Kontur
 @msg	not in pattern editing mode	tidak dalam mode pengeditan pola
 @msg	nothing encoded	tidak ada yang dikodekan
 @msg	nothing selected	tidak ada yang dipilih
+@msg	nothing selected is in a group	tidak ada yang dipilih yang berada dalam grup
 @msg	nothing to align	tidak ada yang dapat disejajarkan
 @msg	nothing to distort	tidak ada yang dapat didistorsi
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	tidak ada yang dapat diekspor: dokumen tidak memiliki karya seni yang terlihat (atau aktifkan Gunakan Artboard)
