@@ -5136,8 +5136,8 @@ leaves a click's `x` and `y` unchanged and keeps the dialog open; `ui.dialogRese
 same dialog, and its OK also draws a flare there. While the center is dragged out, each drag update in which the
 pointer's document y grows adds one degree per document point to `shape.flare`'s `rotation` (it turns
 only the rays), decreasing y subtracts the same rate, and unchanged y leaves it. This application rate is independent of event frequency; Shift held keeps
-the turn as it is. Space held during the center drag or the drag that
-places the rings' end point moves the flare at its current size. The Artboard tool's are the active artboard's Artboard Options
+the turn as it is. Space held keeps the turn as well. Once the center drag has passed its starting distance, and in the
+drag that places the rings' end point, Space held moves the flare at its current size. The Artboard tool's are the active artboard's Artboard Options
 (dialog `artboardOptions`; the Artboard tool's active artboard while it is in use, else the window's; its `x` and `y`
 are the artboard's top-left corner in document points, while the dialog shows X and Y at the reference point the
 Transform panel uses, counted from the ruler origin), a graph tool's
