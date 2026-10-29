@@ -4088,6 +4088,7 @@ axis	Both	И двете
 @msg	not in pattern editing mode	не е в режим на редактиране на мостра
 @msg	nothing encoded	нищо не е кодирано
 @msg	nothing selected	нищо не е избрано
+@msg	nothing selected is in a group	нищо от избраното не е в група
 @msg	nothing to align	няма нищо за подравняване
 @msg	nothing to distort	няма нищо за изкривяване
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	няма нищо за експортиране: документът няма видима графика (или включете „Използване на работни области“)

@@ -13,6 +13,16 @@ pub fn click_target(label: &str, id: &str, p: &Value) -> (String, Value) {
     (id.to_string(), if p.is_null() { json!({}) } else { p.clone() })
 }
 
+/// What an in-window menu click on `target` (a [`click_target`]) runs with `held` held: Object ›
+/// Unlock All and Object › Show All chosen with Shift+Alt (Shift+Option) act only inside the groups
+/// that hold the selected objects (`scope: "group"`).
+pub(super) fn with_held_keys(target: (String, Value), held: egui::Modifiers) -> (String, Value) {
+    match target.0.as_str() {
+        "object.unlockAll" | "object.showAll" if held.shift && held.alt => (target.0, json!({"scope": "group"})),
+        _ => target,
+    }
+}
+
 /// The dialog of command `id` that shows the selection's current values (its query): its heading
 /// and the queried values it doesn't show. Type on a Path Options leaves the brackets where they
 /// are.

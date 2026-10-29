@@ -4183,6 +4183,7 @@ axis	Both	Les deux
 @msg	not in pattern editing mode	pas en mode d’édition de motif
 @msg	nothing encoded	rien n’a été encodé
 @msg	nothing selected	aucune sélection
+@msg	nothing selected is in a group	aucun élément sélectionné ne se trouve dans un groupe
 @msg	nothing to align	rien à aligner
 @msg	nothing to distort	rien à déformer
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	rien à exporter : le document n’a aucune illustration visible (ou activez Utiliser les plans de travail)

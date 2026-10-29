@@ -4278,6 +4278,7 @@ imageTrace	Outline	轮廓
 @msg	Couldn't copy to the system clipboard: {e}	无法复制到系统剪贴板：{e}
 @msg	Couldn't paste from the clipboard: {e}	无法从剪贴板粘贴：{e}
 @msg	nothing selected	未选择任何对象
+@msg	nothing selected is in a group	所选对象均不在编组中
 @msg	the {tool} tool has no options	{tool} 工具没有选项
 @msg	unknown tool `{tool}`	未知工具 `{tool}`
 @msg	{tool} isn't in a toolbar group of several tools	{tool} 不在包含多个工具的工具栏组中

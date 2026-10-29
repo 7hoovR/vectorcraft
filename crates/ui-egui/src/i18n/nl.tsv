@@ -4205,6 +4205,7 @@ imageTrace	Outline	Contour
 @msg	not in pattern editing mode	niet in patroonbewerkingsmodus
 @msg	nothing encoded	niets gecodeerd
 @msg	nothing selected	niets geselecteerd
+@msg	nothing selected is in a group	niets van de selectie zit in een groep
 @msg	nothing to align	niets om uit te lijnen
 @msg	nothing to distort	niets om te vervormen
 @msg	nothing to export: the document has no visible art (or turn on Use Artboards)	niets om te exporteren: het document heeft geen zichtbare illustratie (of schakel Tekengebieden gebruiken in)
