@@ -36,7 +36,15 @@ fn compose_para(
     // can't follow: such a paragraph is broken line by line ([`break_line`] measures its tabs).
     // The tab after a list marker always starts the first line and has a fixed width.
     let has_tab = sg.iter().any(|g| g.ch == '\t' && g.len > 0);
-    if composer != Composer::EveryLine || pen.regions.is_none() || sg.len() < 2 || sg.len() > MAX_COMPOSE_GLYPHS || may_hang || has_tab {
+    let has_soft_break = sg.iter().any(|g| g.ch == '\u{2028}');
+    if composer != Composer::EveryLine
+        || pen.regions.is_none()
+        || sg.len() < 2
+        || sg.len() > MAX_COMPOSE_GLYPHS
+        || may_hang
+        || has_tab
+        || has_soft_break
+    {
         return None;
     }
     let m = Metrics::of(&sg[0]);
@@ -422,7 +430,7 @@ fn prepare_line_geometry(cx: &Ctx<'_>, t: &TextObject, paragraph: &ParagraphData
         if paragraph.regions.is_some() { (position.x0 + position.ind_l, position.x1 - position.ind_r) } else { (position.x0, position.x1) };
     let width = ax1 - ax0;
     let mut trimmed = position.end;
-    while trimmed > index && sg[trimmed - 1].is_space() {
+    while trimmed > index && (sg[trimmed - 1].is_space() || sg[trimmed - 1].ch == '\u{2028}') {
         trimmed -= 1;
     }
     let hyphen = (position.hyph && position.end > index).then(|| hyphen_glyph(&sg[position.end - 1]));
@@ -521,7 +529,7 @@ fn prepare_line_geometry(cx: &Ctx<'_>, t: &TextObject, paragraph: &ParagraphData
     // Justification adds nothing to the list marker's glyphs.
     let mut held = held;
     held.extend(index..paragraph.marker.min(body));
-    let last_of_para = position.end >= n;
+    let last_of_para = position.end >= n || sg.get(position.end - 1).is_some_and(|g| g.ch == '\u{2028}');
     LineGeometry {
         position,
         index,
@@ -787,7 +795,7 @@ fn emit_flow_line(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, paragraph: &ParagraphData
             position.m.first_baseline(pen.fb, pen.fb_min)
         },
         start: if index < sg.len() { sg[index].byte } else { paragraph.pr.start },
-        end: if line.last_of_para { paragraph.pr.end } else { sg[position.end].byte },
+        end: if position.end >= sg.len() { paragraph.pr.end } else { sg[position.end].byte },
         glyph_start,
         glyph_end: cx.out.glyphs.len(),
         avail: if paragraph.regions.is_some() { (ax0, ax1) } else { (start_x, x_end) },

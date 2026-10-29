@@ -524,7 +524,7 @@ fn drawn_chars(cluster: &str, digits: Digits) -> impl Iterator<Item = char> + '_
     cluster
         .chars()
         .map(move |c| digits.map(c))
-        .filter(|&c| !(c.is_control() || matches!(c, '\u{200C}' | '\u{200D}' | '\u{FE00}'..='\u{FE0F}' | '\u{E0100}'..='\u{E01EF}')))
+        .filter(|&c| !(c.is_control() || matches!(c, '\u{200C}' | '\u{200D}' | '\u{2028}' | '\u{FE00}'..='\u{FE0F}' | '\u{E0100}'..='\u{E01EF}')))
 }
 
 /// Does the face with charmap `map` have a glyph for `c` (any face does when it has no charmap)?
@@ -838,7 +838,7 @@ fn shape_segment(text: &str, context: &Range<usize>, seg: &Segment, feats: &OtFe
         let last_in_cluster = gi + 1 == n || raw[gi + 1].1 as usize != cl;
         let ch = first_char(cl);
         let mut adv = xa as f64 * k * hs;
-        if ch == SOFT_HYPHEN {
+        if ch == SOFT_HYPHEN || ch == '\u{2028}' {
             adv = 0.0;
         } else if last_in_cluster {
             let tracking = gst.tracking / 1000.0 * size;

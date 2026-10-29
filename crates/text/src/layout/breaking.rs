@@ -282,6 +282,9 @@ pub(super) fn break_line(
     kinsoku: Kinsoku,
 ) -> (usize, bool) {
     if !width.is_finite() {
+        if let Some(pos) = g[i..].iter().position(|gl| gl.ch == '\u{2028}') {
+            return (i + pos + 1, false);
+        }
         return (g.len(), false);
     }
     let mut x = 0.0;
@@ -314,6 +317,9 @@ pub(super) fn break_line(
         } else {
             g[j..cluster_end].iter().map(|glyph| glyph.adv).sum()
         };
+        if gl.ch == '\u{2028}' {
+            return (cluster_end, false);
+        }
         if j > first && !gl.is_space() && x + cluster_width > width + EPS {
             // It ends the line with the spaces after it.
             if burasagari != Burasagari::None && hangs(gl) && kinsoku_allows(g, cluster_end - 1, kinsoku) {
