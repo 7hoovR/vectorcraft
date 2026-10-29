@@ -774,6 +774,26 @@ fn scissors_opens_closed_path() {
     assert!(near(p.subpaths[0].anchors[5].p, Point::new(200.0, 150.0)));
 }
 
+/// Alt held with the Scissors tool switches it to the Add Anchor Point tool: a click adds an anchor
+/// in one undo step and the path stays closed. Once Alt is let go, a click cuts again.
+#[test]
+fn scissors_with_alt_adds_an_anchor_point() {
+    let mut s = session();
+    let id = rect(&mut s, 100.0, 100.0, 100.0, 100.0);
+    s.select_tool("scissors", view()).unwrap();
+    assert_eq!(gesture(&mut s, &[(200.0, 150.0)], Mods { alt: true, ..Mods::default() }), 1);
+    let p = path(&s, id);
+    assert_eq!(paths(&s).len(), 1);
+    assert!(p.is_closed());
+    assert_eq!(p.anchor_count(), 5);
+    assert!(near(p.subpaths[0].anchors[2].p, Point::new(200.0, 150.0)));
+    assert_eq!(s.tool_id(), "scissors");
+    gesture(&mut s, &[(150.0, 200.0)], Mods::default());
+    let p = path(&s, id);
+    assert!(!p.is_closed());
+    assert_eq!(p.anchor_count(), 7);
+}
+
 #[test]
 fn scissors_splits_open_path_in_two() {
     let mut s = session();
