@@ -17,6 +17,8 @@
 //! scaling its type: the text reflows at its size.
 //! E pressed during a marquee drag makes the marquee take only the objects entirely inside it, and
 //! E pressed again makes it take the objects it touches.
+//! Escape during a drag (a move or an Alt-drag copy, a scale, a rotation, a marquee, a widget or
+//! bracket drag) cancels it: the art returns to its state at the press.
 //! Selected area type and type on a path show an in port and an out port. A click on the out port
 //! loads the pointer with the text ([`Cursor::LoadedText`]): the next click threads it into the
 //! closed path, area type or type on a path under the pointer, or into a new frame of the same
@@ -559,7 +561,11 @@ impl Tool for SelectionTool {
     }
 
     /// E during a marquee drag switches the marquee between the objects it touches and only the
-    /// objects inside it.
+    /// objects inside it. Escape during a drag (a move or an Alt-drag copy, a bounding-box scale or
+    /// rotation, a marquee, a corner widget, a pie widget, the brackets of type on a path, a mirror
+    /// axis, a grid repeat's handles, a ruler guide) cancels it: what it changed goes back, no copy
+    /// is left, and the tool waits for the next press. With the pointer loaded with text, Escape
+    /// drops the text.
     fn key(&mut self, _cx: &ToolContext, key: ToolKey, _mods: Mods) -> Vec<Action> {
         if key == ToolKey::Letter('e')
             && let State::Marquee { enclosed, .. } = &mut self.state
@@ -582,6 +588,13 @@ impl Tool for SelectionTool {
         if key == ToolKey::Escape && matches!(self.state, State::Loaded { .. }) {
             self.state = State::Idle;
             return vec![];
+        }
+        if key == ToolKey::Escape && !matches!(self.state, State::Idle) {
+            self.state = State::Idle;
+            self.measure = None;
+            self.guides.clear();
+            (self.targets, self.moving, self.snapped) = (None, None, false);
+            return vec![Action::Cancel];
         }
         if key == ToolKey::Escape { self.guide.cancel() } else { vec![] }
     }

@@ -41,6 +41,7 @@ mod screenshots;
 mod script_check;
 mod scrub;
 mod selectall;
+mod selectescape;
 mod slices;
 pub(super) mod svg;
 mod svgsave;

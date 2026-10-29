@@ -470,6 +470,10 @@ mode. To press the key during a drag, end one
 {"name":"pointer_gesture","arguments":{"tool":"selection","events":[{"kind":"drag","x":230,"y":170},{"kind":"up","x":230,"y":170}]}}
 ```
 
+`press_key {key: "Escape"}` between two `pointer_gesture` calls of a Selection tool drag (a move or an Alt-drag copy, a
+bounding-box scale or rotation, a marquee, a corner widget, pie widget or bracket drag) cancels it: the art goes back,
+no copy is left, no undo step is added, and the `up` event that follows does nothing.
+
 With nothing being dragged, `e` chooses the tool bound to E.
 
 While an arc is being dragged out with the Arc tool, `press_key {key: "c"}` switches it between an open and a closed
