@@ -44,6 +44,7 @@ impl Session {
             menu: Default::default(),
             gradient_stop: None,
             active_appearance_item: None,
+            eyedropper_sample: None,
             last_solid: Color::WHITE,
             last_gradient: GradientPaint::new(Default::default()),
             recent_colors: vec![],

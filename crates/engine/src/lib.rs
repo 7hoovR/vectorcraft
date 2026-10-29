@@ -90,6 +90,9 @@ pub struct Session {
     /// The Appearance panel's active fill/stroke row (`appearance.setActiveItem`); not saved. Read
     /// it through [`Session::appearance_item`], which drops it once the selection changes.
     pub(crate) active_appearance_item: Option<cmd::appearance::ActiveItem>,
+    /// What the Eyedropper picked up last (`appearance.copyFrom`): an Alt-click with nothing
+    /// selected puts it on the object clicked (#4382). Not saved.
+    pub(crate) eyedropper_sample: Option<Arc<vectorcraft_doc::Node>>,
     /// The last solid colour applied (the toolbar's Color button; `,` applies it again).
     pub last_solid: Color,
     /// The last gradient applied (the toolbar's Gradient button; `.` applies it again).
