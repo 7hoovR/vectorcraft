@@ -91,6 +91,15 @@ pub(super) fn tool_name_rect(painter: &egui::Painter, xf: &Xf, rect: Rect, index
     egui::Rect::from_min_size(sp, galley.size()).expand(2.0)
 }
 
+/// The artboards the Artboard tool labels itself, following a move or resize (its selected
+/// ones): the canvas doesn't name them again. Empty with another tool.
+pub(super) fn tool_labelled(app: &VectorcraftApp) -> Vec<u64> {
+    if app.session.tool_id() != "artboard" {
+        return vec![];
+    }
+    app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
+}
+
 /// The artboard whose on-canvas name contains `screen`, if that name is being drawn.
 pub(super) fn artboard_name_at(app: &VectorcraftApp, ui: &Ui, xf: &Xf, screen: Pos2) -> Option<usize> {
     let st = app.session.active()?;
@@ -98,11 +107,7 @@ pub(super) fn artboard_name_at(app: &VectorcraftApp, ui: &Ui, xf: &Xf, screen: P
     if !artboard_tool && st.doc.artboards.len() <= 1 {
         return None;
     }
-    let tool_selected: Vec<u64> = if artboard_tool {
-        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
-    } else {
-        vec![]
-    };
+    let tool_selected = tool_labelled(app);
     let painter = ui.painter();
     let mut hit = None;
     for (i, ab) in st.doc.artboards.iter().enumerate() {
@@ -207,12 +212,7 @@ pub(super) fn artboard_name_editor(app: &mut VectorcraftApp, ui: &mut Ui, xf: &X
 pub(super) fn artboard_name_field_rect(app: &VectorcraftApp, ui: &Ui, xf: &Xf, index: usize) -> Option<egui::Rect> {
     let st = app.session.active()?;
     let ab = st.doc.artboards.get(index)?;
-    let artboard_tool = app.session.tool_id() == "artboard";
-    let tool_selected: Vec<u64> = if artboard_tool {
-        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
-    } else {
-        vec![]
-    };
+    let tool_selected = tool_labelled(app);
     let painter = ui.painter();
     let is_tool_labelled = u64::try_from(index).ok().is_some_and(|idx| tool_selected.contains(&idx));
     let rect = if is_tool_labelled {

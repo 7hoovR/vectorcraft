@@ -3,7 +3,7 @@
 
 use egui::emath::GuiRounding as _;
 use egui::{Color32, CornerRadius, Pos2, Sense, Shape, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
-use serde_json::{Value, json};
+use serde_json::json;
 use vectorcraft_doc::text::TextKind;
 use vectorcraft_doc::{Node, NodeKind, SymbolBoxes, Unit};
 use vectorcraft_geom::{Affine, BezPath, PathEl, Point, Rect};
@@ -713,15 +713,11 @@ fn reproject_frame(app: &VectorcraftApp, painter: &egui::Painter, xf: &Xf, rect:
 fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf: &Xf, t: &Tokens) {
     let Some(st) = app.session.active() else { return };
     let doc = &st.doc;
-    // Artboard edges and names. The Artboard tool labels its active artboard itself (following
-    // a move or resize): that one isn't named twice.
+    // Artboard edges and names. The Artboard tool labels its selected artboards itself (following
+    // a move or resize): those aren't named twice.
     let active_ab = crate::panels::artboards::selected(app, doc.artboards.len());
     let artboard_tool = app.session.tool_id() == "artboard";
-    let tool_selected: Vec<u64> = if artboard_tool {
-        app.session.tool_options()["selected"].as_array().map(|a| a.iter().filter_map(Value::as_u64).collect()).unwrap_or_default()
-    } else {
-        vec![]
-    };
+    let tool_selected = artboards::tool_labelled(app);
     let editing_name = ui.data(|d| d.get_temp::<ArtboardNameEdit>(name_edit_id()).map(|e| e.index));
     for (i, ab) in doc.artboards.iter().enumerate() {
         let c = if i == active_ab { Color32::from_gray(0) } else { Color32::from_gray(120) };
