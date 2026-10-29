@@ -1428,6 +1428,7 @@ applies to fills). Tests: `color::gradient::tests` (perceptual midpoint, expansi
 | 2026-10-10 | major | Full re-measure against Illustrator 2026 30.x from code counts, open issues and public docs; added breadth/depth/ready-for-real-work numbers, generative-AI row, calibration from PR timestamps; merged the ROADMAP's parity estimate, honest assessment and "Shipped so far" into this file |
 | 2026-10-05 | major | (in ROADMAP.md) M3 and M4 rows re-derived after the paint and files milestones |
 | 2026-10-02 | major | (in ROADMAP.md) First 22-area weighted estimate |
+| 2026-10-28 | minor | Blob Brush Shift locks after clear axial movement, keeps earlier samples fixed, and waits without an off-axis trail. Activation uses raw press displacement in logical screen pixels, with exact quarter-turn boundaries. Explicit application rule; scores and estimates unchanged. |
 | 2026-10-28 | minor | Flare Tool Options opened by a canvas click previews its settings at that click. Reset refreshes the enabled preview while keeping the dialog open. Cancel discards preview art and tentative options; OK accepts one flare in one Undo step. Editing existing flare artwork remains outside this dialog scope. Scores and estimates unchanged. |
 
 > **Tab-drag status (2026-10-22):** updated from upstream, including the Turkish catalog and all three tab-drag translations requested in #3479; Selection-tool reset regression-checked and clipboard evidence scoped to internal state; drag lifecycle, insertion and regression contracts documented; behavior, scores and estimates unchanged.
