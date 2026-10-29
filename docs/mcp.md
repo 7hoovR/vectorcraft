@@ -2683,8 +2683,10 @@ changes size, and type keeps its character strokes' weight. With Scale Corners o
 size. The journal entry of a scaling command records the `strokes` and `corners` it used, so actions replay alike.
 `object.transformAgain` applies the last transform's matrix with the `copy`, `strokes`, `corners`, `patterns` and
 `typeAreas` values that transform used, and a true or false value given in its own params takes precedence. After a
-drag of art without a pattern, `patterns` follows the preference `transformPatternTiles`. Its journal entry records
-the `strokes`, `corners` and `patterns` it used, as a transform's does.
+drag of art without a pattern, `patterns` follows the preference `transformPatternTiles`. After a Direct Selection or
+Group Selection drag that moved direct-selected anchors (`path.moveAnchors`), it moves the selected anchors and the
+objects selected whole by the same distance. Its journal entry records the `strokes`, `corners` and `patterns` it
+used, as a transform's does.
 
 ```json
 {"name":"run_command","arguments":{"command":"object.scale","params":{"sx":200,"strokes":true}}}
@@ -2906,7 +2908,8 @@ The Selection & Anchor Display and General preferences apply to `pointer_gesture
   Transform Patterns) and of the same param on the commands that move or duplicate art with an artboard (`artboard.move`
   and the Artboard tool, `artboard.duplicate`, `artboard.rearrange`, `artboard.setProps`): pattern fills and strokes
   move with the art. `object.nudge` (the arrow keys) and `path.moveAnchors` (a Direct Selection drag of selected
-  anchors) take the same param, with the same default, for the objects they move whole.
+  anchors, and a Direct Selection or Group Selection drag from an object while anchors are selected) take the same
+  param, with the same default, for the objects they move whole.
 - `selectSameTintPercent` (off by default): `select.same.fillColor`, `strokeColor` and `fillAndStroke` take every tint
   of a global or spot swatch; on, only the same tint.
 

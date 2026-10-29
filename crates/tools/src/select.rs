@@ -197,6 +197,12 @@ impl MoveSnap {
         }
     }
 
+    /// Snap to Grid and Snap to Pixel alone, for a move whose box is `bounds`: the grid lands an
+    /// edge of the box on a gridline, and pixels put its top-left on whole pixels.
+    pub(crate) fn grid_only(bounds: Option<Rect>) -> Self {
+        Self { bounds, targets: None, points: None, copy_targets: None, copy_points: None, rulers: None }
+    }
+
     /// The move (`copy`: the copy) by `d` of the selection grabbed at `start`, snapped, and its
     /// guides.
     pub(crate) fn snap(&self, cx: &ToolContext, start: Point, mut d: Vec2, copy: bool) -> (Vec2, Vec<Overlay>) {
