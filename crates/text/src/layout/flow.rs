@@ -392,6 +392,13 @@ fn run_paragraph_lines(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, t: &TextObject, mut 
     let mut index = 0;
     let mut emitted_empty_continuation = false;
     loop {
+        let pm = if index >= n
+            && let Some(last) = paragraph.sg.last()
+        {
+            Metrics::of(last)
+        } else {
+            paragraph.pm
+        };
         let mut placement = PlacementContext {
             para: paragraph.para,
             pr: &paragraph.pr,
@@ -399,7 +406,7 @@ fn run_paragraph_lines(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, t: &TextObject, mut 
             continued: paragraph.continued,
             rtl: paragraph.rtl,
             mirror: paragraph.mirror,
-            pm: paragraph.pm,
+            pm,
             composed: &paragraph.composed,
             hyphen_run,
             hyphen_limit: paragraph.hyphen_limit,
