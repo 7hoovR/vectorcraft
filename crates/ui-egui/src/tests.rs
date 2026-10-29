@@ -50,5 +50,6 @@ mod sysclip_emf;
 mod sysclip_probe;
 mod tab_overflow;
 mod taskbar;
+mod toolescape;
 mod transparencygrid;
 mod widthtool;

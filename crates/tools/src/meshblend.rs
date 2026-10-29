@@ -9,7 +9,8 @@
 //!   new point takes the current fill color in its own model, unless Shift); drag a mesh point,
 //!   or a handle of the point last clicked → `object.mesh.movePoint` previews ([`MeshEdit`]);
 //!   Alt-click a mesh point → `object.mesh.deletePoint`. Clicking a gradient mesh's point selects
-//!   the mesh, and the next solid fill color recolors just that point.
+//!   the mesh, and the next solid fill color recolors just that point. Escape during a drag
+//!   cancels it.
 
 use serde_json::json;
 use vectorcraft_color::Paint;
@@ -17,7 +18,7 @@ use vectorcraft_doc::{NodeId, NodeKind};
 use vectorcraft_geom::Point;
 
 use crate::meshedit::{MeshEdit, grid_of};
-use crate::{Action, Cursor, Mods, Overlay, PointerEvent, PointerKind, Tool, ToolContext};
+use crate::{Action, Cursor, Mods, Overlay, PointerEvent, PointerKind, Tool, ToolContext, ToolKey};
 
 const FEEDBACK: [u8; 3] = [0x4f, 0x9d, 0xff];
 
@@ -251,6 +252,14 @@ impl Tool for MeshTool {
     }
     fn busy(&self) -> bool {
         self.edit.dragging()
+    }
+    /// Escape during a drag of a mesh point or handle cancels it: the point goes back and the
+    /// release does nothing.
+    fn key(&mut self, _cx: &ToolContext, key: ToolKey, _mods: Mods) -> Vec<Action> {
+        if key != ToolKey::Escape {
+            return vec![];
+        }
+        self.edit.cancel().unwrap_or_default()
     }
     fn deactivate(&mut self, _cx: &ToolContext) -> Vec<Action> {
         self.edit.unfocus();
