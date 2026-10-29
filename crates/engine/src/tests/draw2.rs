@@ -508,16 +508,16 @@ fn blob_brush_size_follows_the_pen_pressure() {
 #[test]
 fn eraser_size_follows_the_pen_pressure() {
     let pressed = |y: f64| (0..=20).map(|i| json!([100.0 + f64::from(i) * 10.0, y, f64::from(i) / 20.0])).collect::<Vec<_>>();
-    for (mode, thin_end_erased) in [("pressure", false), ("fixed", true)] {
+    // (mode, erased 3 pt off the stroke at the light end, erased 7 pt off it at the hard end).
+    for (mode, light, hard) in [("pressure", false, true), ("fixed", true, false)] {
         let mut s = session();
         rect(&mut s, 0.0, 0.0, 400.0, 200.0);
         s.execute("path.eraseRegion", &json!({"points": pressed(100.0), "size": 10, "sizeMode": mode, "sizeVariation": 8})).unwrap();
         let filled = |x: f64, y: f64| {
             paths(&s).iter().any(|(_, pd)| vectorcraft_geom::hit::fill_contains(&pd.to_bezpath(), FillRule::NonZero, Point::new(x, y)))
         };
-        assert!(!filled(290.0, 107.0), "{mode}: erased where the pen pressed hard");
-        assert_eq!(!filled(110.0, 103.0), thin_end_erased, "{mode}: the light end");
-        assert!(filled(110.0, 150.0), "{mode}: the rest stays");
+        assert_eq!((!filled(110.0, 103.0), !filled(290.0, 107.0)), (light, hard), "{mode}");
+        assert!(!filled(200.0, 100.0) && filled(110.0, 150.0), "{mode}: the stroke is erased, the rest stays");
     }
     let mut s = session();
     let err = s.execute("path.eraseRegion", &json!({"points": [[0, 0], [10, 0]], "sizeMode": 5})).unwrap_err();
