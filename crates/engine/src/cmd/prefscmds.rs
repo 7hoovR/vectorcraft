@@ -376,7 +376,8 @@ pub const PREF_SPECS: &[PrefSpec] = &[
         "Transform",
         choice(&[("default", "Default"), ("object", "Transform Object Only"), ("pattern", "Transform Pattern Only"), ("both", "Transform Both")])
     ),
-    p!("useRegistrationPointForSymbol", "General", "Transform Panel", "Use Registration Point for Symbol", bool), // The Align panel menu: Align and Distribute measure type by its glyphs' ink
+    p!("useRegistrationPointForSymbol", "General", "Transform Panel", "Use Registration Point for Symbol", bool),
+    // The Align panel menu's Align to Glyph Bounds: Align and Distribute measure type by its glyphs' ink.
     p!("alignGlyphBoundsPoint", "Type", "Align to Glyph Bounds", "Point Text", bool),
     p!("alignGlyphBoundsArea", "Type", "Align to Glyph Bounds", "Area Text", bool),
 ];
