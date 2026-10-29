@@ -2225,7 +2225,8 @@ and `layerRows`, the rows highlighted in the panel.
 - **Buttons**: `layer.new {name?, top?, below?, …options}` (above the current layer at its level; `top` with
   Ctrl/Cmd; `below`, directly below the current layer at its level, with Ctrl/Cmd+Alt),
   `layer.newSublayer {parent?, bottom?, name?, …options}` (on top of the parent's contents; `bottom`, under them but
-  above a clipping layer's clipping path, with Ctrl/Cmd+Alt), `layer.delete {ids?}` (rows with what they hold; the
+  above a clipping layer's clipping path, with Ctrl/Cmd+Alt; both refused while an opacity mask is edited),
+  `layer.delete {ids?}` (rows with what they hold; the
   last layer stays), `layer.locate {id?}` (highlights the selected object's row; the panel opens the rows around it)
   and `layer.clippingMask.toggle`.
 - **Panel menu**: `layer.duplicate {ids?}`, `layer.merge {ids?}` (into the layer highlighted last, keeping the
