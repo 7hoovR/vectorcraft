@@ -1,3 +1,4 @@
+use super::align::choice;
 use super::{Document, EngineError, Node, NodeId, NodeKind, Result, Session, Value, bad, id_param, json, ok, selected_roots};
 
 pub(super) enum Arrange {
