@@ -34,6 +34,16 @@ impl Kind {
     fn key(self) -> &'static str {
         if self == Kind::Char { "char-style-sel" } else { "para-style-sel" }
     }
+    /// The style row the panel scrolls into view the next time it draws.
+    fn scroll_key(self) -> &'static str {
+        if self == Kind::Char { "char-style-scroll" } else { "para-style-scroll" }
+    }
+}
+
+/// Highlights a style the panel just made and scrolls its row into view the next time it draws.
+fn highlight_made(ctx: &egui::Context, kind: Kind, name: Option<String>) {
+    set_pstate(ctx, kind.scroll_key(), name.clone());
+    set_pstate(ctx, kind.key(), name);
 }
 
 /// A row dragged in the list: the style's kind and name. Dropped on Create New Style it is
@@ -104,6 +114,7 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
     let cur_name = cur.as_ref().map(|(n, _)| n.clone().unwrap_or_else(|| normal.clone()));
     let mut clicked: Option<(String, bool)> = None;
     let mut sel: Option<String> = pstate(ui.ctx(), kind.key());
+    let scroll_to: Option<String> = pstate(ui.ctx(), kind.scroll_key());
     widgets::list_box(ui, |ui| {
         for (name, attrs, _) in &all {
             let is_cur = cur_name.as_deref() == Some(name.as_str());
@@ -112,6 +123,9 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
             let (r, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::click_and_drag());
             if resp.drag_started() {
                 egui::DragAndDrop::set_payload(ui.ctx(), RowDrag { kind, name: name.clone() });
+            }
+            if scroll_to.as_deref() == Some(name.as_str()) {
+                ui.scroll_to_rect(r, None);
             }
             if is_cur || sel.as_deref() == Some(name.as_str()) {
                 ui.painter().rect_filled(r, 0.0, if is_cur { t.row_selected } else { t.hover });
@@ -128,6 +142,9 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
             }
         }
     });
+    if scroll_to.is_some() {
+        set_pstate::<Option<String>>(ui.ctx(), kind.scroll_key(), None);
+    }
     let has_text = cur.is_some();
     if let Some((name, clear)) = clicked {
         sel = Some(name.clone());
@@ -135,6 +152,11 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
             let p = target(app, kind, json!({ "name": name, "clearOverrides": clear }));
             app.run(&format!("{}.apply", kind.prefix()), p).ok();
         }
+    }
+    // A highlighted style that is no longer listed (renamed in Style Options, deleted by a command
+    // or undone) is no longer highlighted.
+    if sel.as_ref().is_some_and(|s| !all.iter().any(|(n, ..)| n == s)) {
+        sel = None;
     }
     set_pstate(ui.ctx(), kind.key(), sel.clone());
     let deletable = sel.as_ref().is_some_and(|s| *s != normal);
@@ -150,12 +172,12 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
         );
         if let Some(name) = row_dropped(ui, &new, kind, |_| true) {
             if let Ok(r) = app.run(&format!("{}.duplicate", kind.prefix()), json!({ "name": name })) {
-                set_pstate(ui.ctx(), kind.key(), r["name"].as_str().map(str::to_string));
+                highlight_made(ui.ctx(), kind, r["name"].as_str().map(str::to_string));
             }
         } else if new.clicked() {
             end_typing(app);
             if let Ok(r) = app.run(&format!("{}.new", kind.prefix()), target(app, kind, json!({}))) {
-                set_pstate(ui.ctx(), kind.key(), r["name"].as_str().map(str::to_string));
+                highlight_made(ui.ctx(), kind, r["name"].as_str().map(str::to_string));
             }
         }
         let delete = widgets::icon_button_enabled(
@@ -192,13 +214,15 @@ pub fn menu(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
     }
     if menu_item(ui, &crate::i18n::fmt(tl!("Duplicate {kind} Style"), &[("kind", kind.what_label())]), sel.is_some(), false)
         && let Some(n) = &sel
+        && let Ok(r) = app.run(&format!("{p}.duplicate"), json!({ "name": n }))
     {
-        app.run(&format!("{p}.duplicate"), json!({ "name": n })).ok();
+        highlight_made(ui.ctx(), kind, r["name"].as_str().map(str::to_string));
     }
     if menu_item(ui, &crate::i18n::fmt(tl!("Delete {kind} Style"), &[("kind", kind.what_label())]), user, false)
         && let Some(n) = &sel
+        && app.run(&format!("{p}.delete"), json!({ "name": n })).is_ok()
     {
-        app.run(&format!("{p}.delete"), json!({ "name": n })).ok();
+        set_pstate::<Option<String>>(ui.ctx(), kind.key(), None);
     }
     ui.separator();
     if menu_item(ui, tl!("Clear Overrides"), sel.is_some() && has_text, false)

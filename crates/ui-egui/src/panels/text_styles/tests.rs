@@ -1,7 +1,7 @@
 use super::*;
 use vectorcraft_doc::{NodeId, NodeKind};
 
-use super::super::tests_appearance::{click, frame_events, text_rect};
+use super::super::tests_appearance::{click, frame_events, frame_raw, text_rect};
 
 #[test]
 fn panels_draw_and_apply_headless() {
@@ -238,6 +238,114 @@ fn click_style_ui(ctx: &egui::Context, app: &mut VectorcraftApp, id: NodeId, ran
     assert!(dispatched, "pointer click did not dispatch {label}; do not interpret this as parameter rejection");
     assert_eq!(app.run_count, commands.wrapping_add(1), "exactly one real panel command");
     assert_eq!(text_editing(app), expected, "Type selection after {label}");
+}
+
+/// Click `label` where `draw` paints it (a style row of the panel, or a panel menu item with
+/// its three-space prefix). → how many commands the click ran.
+fn click_label(ctx: &egui::Context, app: &mut VectorcraftApp, label: &str, mut draw: impl FnMut(&mut VectorcraftApp, &mut egui::Ui)) -> u64 {
+    frame_events(ctx, app, vec![], &mut draw);
+    let texts = frame_events(ctx, app, vec![], &mut draw);
+    let pos = text_rect(&texts, label).center();
+    let before = app.run_count;
+    click(ctx, app, pos, &mut draw);
+    app.run_count.wrapping_sub(before)
+}
+
+/// The panel menu's Duplicate highlights the copy and its Delete clears the highlight, as the
+/// panel's New and Delete buttons do; after a menu delete, Duplicate runs nothing.
+#[test]
+fn panel_menu_duplicate_and_delete_update_the_highlighted_style() {
+    for kind in [Kind::Char, Kind::Para] {
+        let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
+        app.run("file.new", json!({"width": 100, "height": 100})).unwrap();
+        app.run(&format!("{}.new", kind.prefix()), json!({"name": "Body"})).unwrap();
+        let ctx = egui::Context::default();
+        crate::theme::install_fonts(&ctx);
+        let what = kind.what();
+        let has = |app: &mut VectorcraftApp, name: &str| styles(app, kind).iter().any(|s| s.0 == name);
+        let highlighted = |ctx: &egui::Context| pstate::<Option<String>>(ctx, kind.key());
+        click_label(&ctx, &mut app, "Body", |app, ui| show(app, ui, kind));
+        assert_eq!(highlighted(&ctx).as_deref(), Some("Body"), "{what}: clicking the row highlights it");
+
+        let duplicate = format!("   Duplicate {what} Style");
+        assert_eq!(click_label(&ctx, &mut app, &duplicate, |app, ui| menu(app, ui, kind)), 1, "{what}: Duplicate runs");
+        assert!(has(&mut app, "Body copy"), "{what}: the copy exists");
+        assert_eq!(highlighted(&ctx).as_deref(), Some("Body copy"), "{what}: the menu's Duplicate highlights the copy");
+
+        let delete = format!("   Delete {what} Style");
+        assert_eq!(click_label(&ctx, &mut app, &delete, |app, ui| menu(app, ui, kind)), 1, "{what}: Delete runs");
+        assert!(!has(&mut app, "Body copy"), "{what}: the copy is deleted");
+        assert_eq!(highlighted(&ctx), None, "{what}: the menu's Delete clears the highlight");
+        assert_eq!(click_label(&ctx, &mut app, &duplicate, |app, ui| menu(app, ui, kind)), 0, "{what}: Duplicate is disabled after the delete");
+        assert!(has(&mut app, "Body"), "{what}: the original stays");
+    }
+}
+
+/// In a panel scrolled to the top of a long list, the menu's Duplicate scrolls the copy's row into
+/// view, and so does the New button's `highlight_made` for the new style.
+#[test]
+fn a_style_made_from_the_panel_is_scrolled_into_view() {
+    for kind in [Kind::Char, Kind::Para] {
+        let what = kind.what();
+        for from_menu in [true, false] {
+            let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
+            app.run("file.new", json!({"width": 100, "height": 100})).unwrap();
+            app.run(&format!("{}.new", kind.prefix()), json!({"name": "Body"})).unwrap();
+            for i in 1..=12 {
+                app.run(&format!("{}.new", kind.prefix()), json!({"name": format!("Item {i:02}")})).unwrap();
+            }
+            let ctx = egui::Context::default();
+            crate::theme::install_fonts(&ctx);
+            let panel = |app: &mut VectorcraftApp, ui: &mut egui::Ui| {
+                egui::ScrollArea::vertical().id_salt("styles").max_height(80.0).show(ui, |ui| show(app, ui, kind));
+            };
+            let before = frame_events(&ctx, &mut app, vec![], panel);
+            let body = text_rect(&before, "Body");
+            let made = if from_menu {
+                set_pstate(&ctx, kind.key(), Some("Body".to_string()));
+                let duplicate = format!("   Duplicate {what} Style");
+                assert_eq!(click_label(&ctx, &mut app, &duplicate, |app, ui| menu(app, ui, kind)), 1, "{what}: Duplicate runs");
+                "Body copy".to_string()
+            } else {
+                // The New button's path: the style it made, highlighted with `highlight_made`.
+                let name = app.run(&format!("{}.new", kind.prefix()), json!({})).unwrap()["name"].as_str().unwrap_or_default().to_string();
+                highlight_made(&ctx, kind, Some(name.clone()));
+                name
+            };
+            assert_eq!(pstate::<Option<String>>(&ctx, kind.key()).as_deref(), Some(made.as_str()), "{what}: the new style is highlighted");
+            let mut after = vec![];
+            for _ in 0..3 {
+                let time = ctx.input(|i| i.time) + 1.0;
+                after = frame_raw(&ctx, &mut app, egui::RawInput { time: Some(time), ..Default::default() }, panel);
+            }
+            let row = text_rect(&after, &made);
+            let top = body.top() - 30.0;
+            assert!(row.top() >= top && row.bottom() <= top + 80.0 + 30.0, "{what}, menu {from_menu}: {made} at {row:?}, panel from {top}");
+        }
+    }
+}
+
+/// A highlighted style renamed in Style Options (`<kind>.rename`) or deleted by a command is no
+/// longer highlighted once the panel draws, so the panel menu's Duplicate runs nothing.
+#[test]
+fn a_highlighted_style_that_is_no_longer_listed_is_not_highlighted() {
+    for kind in [Kind::Char, Kind::Para] {
+        for (change, p) in [("rename", json!({"name": "Body", "to": "Heading"})), ("delete", json!({"name": "Body"}))] {
+            let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), Default::default());
+            app.run("file.new", json!({"width": 100, "height": 100})).unwrap();
+            app.run(&format!("{}.new", kind.prefix()), json!({"name": "Body"})).unwrap();
+            let ctx = egui::Context::default();
+            crate::theme::install_fonts(&ctx);
+            let what = kind.what();
+            click_label(&ctx, &mut app, "Body", |app, ui| show(app, ui, kind));
+            assert_eq!(pstate::<Option<String>>(&ctx, kind.key()).as_deref(), Some("Body"), "{what}: clicking the row highlights it");
+            app.run(&format!("{}.{change}", kind.prefix()), p).unwrap();
+            frame_events(&ctx, &mut app, vec![], |app, ui| show(app, ui, kind));
+            assert_eq!(pstate::<Option<String>>(&ctx, kind.key()), None, "{what}, {change}: the old name is not highlighted");
+            let duplicate = format!("   Duplicate {what} Style");
+            assert_eq!(click_label(&ctx, &mut app, &duplicate, |app, ui| menu(app, ui, kind)), 0, "{what}, {change}: Duplicate is disabled");
+        }
+    }
 }
 
 fn text_runs(app: &VectorcraftApp, id: NodeId) -> Vec<(String, f64, Option<String>)> {
