@@ -3898,6 +3898,39 @@ fn a_stream_past_the_cap_is_named() {
     });
 }
 
+// Pages that share one `Contents` array, the array an object of its own: its stream is named as
+// a page's content, and a refused stream elsewhere is still found past the pages (#4612 review).
+#[test]
+fn pages_sharing_a_contents_array_name_its_stream() {
+    let image = "/Type /XObject /Subtype /Image /Width 10 /Height 10 /ColorSpace /DeviceRGB /BitsPerComponent 8";
+    let plain = |content: &str| format!("<< /Length {} >>\nstream\n{content}\nendstream", content.len() + 1).into_bytes();
+    let spaces = spaces_past_the_cap();
+    // 1 catalog, 2 pages, 3 the shared array, 4 its stream, 5 to 7 the pages, 8 an image they draw.
+    let pdf = |content: Vec<u8>, image: Vec<u8>| {
+        let page = b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Contents 3 0 R /Resources << /XObject << /Im 8 0 R >> >> >>";
+        let head = [
+            b"<< /Type /Catalog /Pages 2 0 R >>".to_vec(),
+            b"<< /Type /Pages /Kids [5 0 R 6 0 R 7 0 R] /Count 3 >>".to_vec(),
+            b"[4 0 R]".to_vec(),
+            content,
+        ];
+        pdf_of(&head.into_iter().chain([page.to_vec(), page.to_vec(), page.to_vec(), image]).collect::<Vec<_>>())
+    };
+    let files = [
+        (pdf(packed_as_is("", &spaces), packed(image, "\0\0\0")), "a page's content in it (object 4) would decode to more than 256 MB"),
+        (
+            pdf(plain("q 10 0 0 10 0 0 cm /Im Do Q"), packed_as_is(image, &spaces)),
+            "an image of 10 × 10 px in it (object 8) would decode to more than 256 MB",
+        ),
+    ];
+    on_a_small_stack(move || {
+        for (bytes, why) in &files {
+            let e = vectorcraft_engine::cmd::fileio::load("shared.pdf", bytes).err().map(|e| e.to_string());
+            assert!(e.as_deref().is_some_and(|e| e.contains(why)), "{why}: {e:?}");
+        }
+    });
+}
+
 #[test]
 fn pdf_art_that_draws_itself() {
     let own = "<< /XObject << /F 5 0 R >> /Pattern << /P 5 0 R >> /Font << /F1 5 0 R >> /ExtGState << /G << /SMask << /S /Alpha /G 5 0 R >> >> >> >>";
