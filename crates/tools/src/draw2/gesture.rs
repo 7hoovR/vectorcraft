@@ -9,8 +9,8 @@
 //! key toggles to Smooth Tool off) draws a straight line at any angle. The Pencil's new path starts and ends on
 //! Smart Guides ([`DrawSnap`]: an anchor, a path, in line with the art), hovering too; the points
 //! between follow the hand. The Paintbrush records the pen pressure of each point (a stroke a pen
-//! pressed less than fully on sends `[x, y, pressure]` points) for pressure-sensitive brushes. The
-//! other tools collect the drag polyline (shown as an overlay) and run
+//! pressed less than fully on sends `[x, y, pressure]` points) for pressure-sensitive brushes, and
+//! so does the Blob Brush while its Size varies with Pressure. The other tools collect the drag polyline (shown as an overlay) and run
 //! one command on release. With Shift held, the Blob Brush's points stay on the horizontal or
 //! vertical line through the press point. Alt held at the press, or before the Blob Brush's drag
 //! has moved, switches the Blob Brush to the Smooth tool: the drag smooths the selected paths.
@@ -38,7 +38,8 @@ pub struct GestureTool {
     previewed: usize,
     id: &'static str,
     points: Vec<Point>,
-    /// The pen pressure of each of `points` (the Paintbrush only).
+    /// The pen pressure of each of `points` (the Paintbrush, and the Blob Brush with
+    /// `size_pressure`).
     pressures: Vec<f32>,
     active: bool,
     began: bool,
@@ -57,6 +58,12 @@ pub struct GestureTool {
     pub fidelity: f64,
     /// Brush / eraser diameter in points (the Eraser's across its tip's long axis).
     pub size: f64,
+    /// Blob Brush Tool Options' Size set to Pressure (else Fixed): the brush is `size` −
+    /// `size_variation` wide at the lightest pen pressure and `size` + `size_variation` at the
+    /// heaviest.
+    pub size_pressure: bool,
+    /// Blob Brush Tool Options' Size Variation, in points.
+    pub size_variation: f64,
     /// The angle of the Eraser tip's long axis, in degrees counter-clockwise from horizontal.
     pub angle: f64,
     /// The Eraser tip's short axis in percent of its long one (100: round).
@@ -137,6 +144,8 @@ impl GestureTool {
             redraw: None,
             fidelity,
             size: 10.0,
+            size_pressure: false,
+            size_variation: 0.0,
             angle: 0.0,
             roundness: 100.0,
             fill: false,
@@ -175,7 +184,7 @@ impl GestureTool {
     /// Add a stroke sample.
     fn push(&mut self, p: Point, pressure: f32) {
         self.points.push(p);
-        if self.id == "paintbrush" {
+        if self.id == "paintbrush" || (self.id == "blobBrush" && self.size_pressure) {
             self.pressures.push(pressure);
         }
     }
@@ -234,6 +243,13 @@ impl GestureTool {
         self.pressures.clear();
         self.previewed = 0;
         self.shift_line = None;
+    }
+
+    /// The pen pressure of each point of a Blob Brush stroke whose Size varies with Pressure, when
+    /// a pen pressed less than fully anywhere along it (a stroke without pressure keeps its Size).
+    fn blob_pressures(&self) -> Option<&[f32]> {
+        let pressed = self.pressures.len() == self.points.len() && self.pressures.iter().any(|p| *p < 1.0);
+        (self.id == "blobBrush" && self.size_pressure && !self.smoothing && pressed).then_some(self.pressures.as_slice())
     }
 
     /// The stroke's points, each `[x, y, pressure]` when a pen pressed less than fully anywhere
@@ -374,8 +390,10 @@ impl GestureTool {
             "blobBrush" => vec![Action::Exec(
                 "path.blob".into(),
                 json!({
-                    "points": points_json(pts),
+                    "points": self.stroke_json(),
                     "size": self.size,
+                    "sizeMode": if self.size_pressure { "pressure" } else { "fixed" },
+                    "sizeVariation": self.size_variation,
                     "fidelity": self.fidelity,
                     "keepSelected": self.keep_selected,
                     "mergeOnlySelection": self.merge_only_selection
@@ -622,7 +640,16 @@ impl Tool for GestureTool {
             o.push(Overlay::Path { path: area.to_bezpath(), color, width: 1.0, dashed: false });
             return o;
         }
-        o.push(Overlay::Path { path: polyline(&self.points), color, width, dashed: self.id == "knife" });
+        // With Size set to Pressure, each step of the drag shows as wide as the pen pressed there.
+        if let Some(pressures) = self.blob_pressures() {
+            for (seg, p) in self.points.windows(2).zip(pressures.windows(2)) {
+                let pressure = f64::from(p[0] + p[1]) / 2.0;
+                let width = super::blob_pressure_size(self.size, self.size_variation, pressure) * cx.zoom;
+                o.push(Overlay::Path { path: polyline(seg), color, width: width as f32, dashed: false });
+            }
+        } else {
+            o.push(Overlay::Path { path: polyline(&self.points), color, width, dashed: self.id == "knife" });
+        }
         if cx.measurement_labels && self.id == "blobBrush" && !self.smoothing {
             let last = self.points[self.points.len() - 1];
             let length = self.points.windows(2).map(|w| w[0].distance(w[1])).sum();
@@ -691,7 +718,14 @@ impl Tool for GestureTool {
             }
             "smooth" => json!({"fidelity": self.fidelity}),
             "blobBrush" => {
-                json!({"fidelity": self.fidelity, "size": self.size, "keepSelected": self.keep_selected, "mergeOnlySelection": self.merge_only_selection})
+                json!({
+                    "fidelity": self.fidelity,
+                    "size": self.size,
+                    "sizeMode": if self.size_pressure { "pressure" } else { "fixed" },
+                    "sizeVariation": self.size_variation,
+                    "keepSelected": self.keep_selected,
+                    "mergeOnlySelection": self.merge_only_selection
+                })
             }
             "eraser" => json!({"size": self.size, "angle": self.angle, "roundness": self.roundness}),
             _ => Value::Null,
@@ -701,6 +735,12 @@ impl Tool for GestureTool {
         match key {
             "fidelity" => self.fidelity = v.as_f64().unwrap_or(self.fidelity).clamp(super::min_fidelity(self.id), 100.0),
             "size" => self.size = v.as_f64().unwrap_or(self.size).clamp(0.1, 1000.0),
+            "sizeMode" if self.id == "blobBrush" => match v.as_str() {
+                Some("pressure") => self.size_pressure = true,
+                Some("fixed") => self.size_pressure = false,
+                _ => {}
+            },
+            "sizeVariation" if self.id == "blobBrush" => self.size_variation = v.as_f64().unwrap_or(self.size_variation).clamp(0.0, 1000.0),
             "angle" => self.angle = v.as_f64().unwrap_or(self.angle).clamp(-180.0, 180.0),
             "roundness" => self.roundness = v.as_f64().unwrap_or(self.roundness).clamp(1.0, 100.0),
             "fill" => self.fill = v.as_bool().unwrap_or(self.fill),

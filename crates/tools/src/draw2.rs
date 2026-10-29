@@ -38,6 +38,16 @@ pub fn min_fidelity(id: &str) -> f64 {
     if id == "smooth" { SMOOTH_MIN_FIDELITY } else { MIN_FIDELITY }
 }
 
+/// The Blob Brush's width at pen `pressure` (0..1) with Size set to Pressure: `size` −
+/// `variation` at the lightest pressure to `size` + `variation` at the heaviest, at least
+/// [`MIN_BLOB_SIZE`].
+pub fn blob_pressure_size(size: f64, variation: f64, pressure: f64) -> f64 {
+    (size + variation * (2.0 * pressure.clamp(0.0, 1.0) - 1.0)).max(MIN_BLOB_SIZE)
+}
+
+/// The narrowest a Blob Brush stroke gets, in points (its Size field's minimum).
+pub const MIN_BLOB_SIZE: f64 = 0.1;
+
 /// Create a drawing tool by id (None = not one of ours).
 pub fn create(id: &str) -> Option<Box<dyn Tool>> {
     Some(match id {
