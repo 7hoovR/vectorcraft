@@ -358,10 +358,8 @@ fn canvas_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
         // showed through them: #4518), unless a drag that began on the canvas goes on there.
         let moved = Xf::new(rect, app.view().unwrap_or(&View::default()));
         let dragging = ui.data(|d| d.get_temp::<Drag>(drag_id()).is_some());
-        app.hover_doc = ui
-            .input(|i| i.pointer.hover_pos())
-            .filter(|p| rect.contains(*p) && (dragging || drag::on_canvas(ui, resp, *p)))
-            .map(|p| moved.to_doc(p));
+        app.hover_doc =
+            ui.input(|i| i.pointer.hover_pos()).filter(|p| rect.contains(*p) && (dragging || drag::on_canvas(ui, resp, *p))).map(|p| moved.to_doc(p));
     }
 }
 
