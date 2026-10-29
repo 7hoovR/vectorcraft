@@ -1372,8 +1372,8 @@ is one of them, and `edit.undo` selects them again with the key object.
 `object.hide.unselected` (Object › Hide › Unselected Artwork, Cmd+Alt+Shift+3) hides, in one undo step, every
 object that `select.all` takes and that is neither selected nor holds a selected object, and returns `{count}`. In a
 group that holds a selected object it hides the group's other members one by one; a clip group, a compound path or
-another object that holds a selected object stays as it is with its members. While Lock Guides is on it leaves the
-guide paths as they are. The selection stays as it is, and `object.showAll` shows the objects again. With nothing to
+another object that holds a selected object stays as it is with its members. The objects of a selected layer count as
+selected. While Lock Guides is on, the guide paths count as selected and stay as they are. The selection stays as it is, and `object.showAll` shows the objects again. With nothing to
 hide it records no undo step. In isolation mode the menu item is disabled, and the command returns the error "exit
 isolation mode first" and changes nothing.
 
