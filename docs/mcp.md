@@ -3270,6 +3270,11 @@ each range, and a size of 0 or less is read as 1 pt.
 The desktop app's `file.newDialog` (Cmd/Ctrl+N) opens the New Document dialog on the first Recent entry, or on the
 Print category's Letter while Recent is empty. `file.newWithoutDialog` (Cmd/Ctrl+Alt+N) runs `file.new` with those
 settings and the next untitled name, without opening the dialog, and returns what `file.new` returns.
+`window.nextDocument` (Cmd/Ctrl+F6) and `window.previousDocument` (Cmd/Ctrl+Shift+F6) make the next and the previous
+open document in tab order the current one, as a click on its tab does, and return `{index}`. After the last document
+comes the first, and before the first document comes the last. From the Home screen they go to the first and the last
+document. With no document open they fail with "no document open". `document.activate {index}` makes a given document
+the current one.
 
 ```json
 {"name":"run_command","arguments":{"command":"file.new","params":{"preset":"A4","orientation":"landscape","artboards":4,"artboardLayout":{"columns":2},"bleed":9}}}

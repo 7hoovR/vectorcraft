@@ -616,6 +616,8 @@ font-technology	Variable	バリアブル
 	Saved View 25	保存した表示 25
 	Window	ウィンドウ
 	New Window	新規ウィンドウ
+	Next Document	次のドキュメント
+	Previous Document	前のドキュメント
 	Cascade	重ねて表示
 	Tile	並べて表示
 	Float in Window	ウィンドウを分離
