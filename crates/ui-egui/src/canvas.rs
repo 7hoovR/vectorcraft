@@ -370,9 +370,12 @@ fn canvas_cursor(app: &mut VectorcraftApp, ui: &Ui, view_info: vectorcraft_engin
     let space = ui.input(|i| i.key_down(egui::Key::Space));
     let drag = ui.data(|d| d.get_temp::<Drag>(drag_id()));
     let panning = matches!(drag, Some(Drag::Pan { .. }));
-    let zooming = if space { m.command } else { app.session.tool_id() == "zoom" };
+    // A zoom drag keeps its cursor when Space is pressed (with or without Shift) or Cmd is let go.
+    let zoom_drag = matches!(drag, Some(Drag::ZoomBox { .. } | Drag::ZoomScrub { .. }));
+    let zooming = zoom_drag || if space { m.command } else { app.session.tool_id() == "zoom" };
     // A rotating drag keeps its cursor when Shift is let go.
-    let rotating = matches!(drag, Some(Drag::RotateView { .. })) || if space { m.shift && !m.command } else { app.session.tool_id() == "rotateView" };
+    let rotating = matches!(drag, Some(Drag::RotateView { .. }))
+        || (!zoom_drag && if space { m.shift && !m.command } else { app.session.tool_id() == "rotateView" });
     // The hand and the magnifier are drawn like the tool cursors below: Windows has no
     // system cursor for them (winit shows the four-headed move cursor for Grab).
     let view_cursor = if panning {
