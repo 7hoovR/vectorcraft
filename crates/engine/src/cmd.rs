@@ -378,6 +378,15 @@ pub(crate) fn check_switches(p: &Value, keys: &[&str], cmd: &str) -> Result<()> 
 pub(crate) fn str_param<'a>(p: &'a Value, key: &str) -> Option<&'a str> {
     p.get(key).and_then(Value::as_str)
 }
+/// The string `p` gives for `key`, or `None` when `p` leaves it out or gives null. Any other
+/// value, such as `5`, is an error: "`{key}` must be a string".
+pub(crate) fn text_param<'a>(p: &'a Value, key: &str, cmd: &str) -> Result<Option<&'a str>> {
+    match p.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::String(v)) => Ok(Some(v)),
+        Some(_) => Err(bad(cmd, format!("`{key}` must be a string"))),
+    }
+}
 pub(crate) fn id_param(p: &Value, key: &str) -> Option<NodeId> {
     p.get(key).and_then(Value::as_u64).map(NodeId)
 }

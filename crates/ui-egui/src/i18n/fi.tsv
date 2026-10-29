@@ -4158,8 +4158,10 @@ imageTrace	Outline	Ääriviiva
 @msg	`freeform.points` must be an array	`freeform.points` on oltava taulukko
 @msg	`freeform.lines` must be an array	`freeform.lines` on oltava taulukko
 @msg	`gradient` must be an object	`gradient` on oltava objekti
+@msg	`groupColors` must be an array	`groupColors` on oltava taulukko
 @msg	`library` is a library id or name (see {list})	`library` on kirjaston tunnus tai nimi (ks. {list})
 @msg	`mode` applies to freeform gradients	`mode` koskee vapaamuotoisia liukuvärejä
+@msg	`preserve` must be an object	`preserve` on oltava objekti
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize` on oltava 1, 3 tai 5
 @msg	`stops` must be an array	`stops` on oltava taulukko
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg` on oltava SVG-asetusten objekti (ks. document.formats)

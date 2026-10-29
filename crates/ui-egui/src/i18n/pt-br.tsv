@@ -3521,8 +3521,10 @@ axis	Both	Ambos
 @msg	`freeform.points` must be an array	`freeform.points` deve ser uma matriz
 @msg	`freeform.lines` must be an array	`freeform.lines` deve ser uma matriz
 @msg	`gradient` must be an object	`gradient` deve ser um objeto
+@msg	`groupColors` must be an array	`groupColors` deve ser uma matriz
 @msg	`library` is a library id or name (see {list})	`library` é o id ou o nome de uma biblioteca (veja {list})
 @msg	`mode` applies to freeform gradients	`mode` se aplica a gradientes de forma livre
+@msg	`preserve` must be an object	`preserve` deve ser um objeto
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize` deve ser 1, 3 ou 5
 @msg	`stops` must be an array	`stops` deve ser uma matriz
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg` deve ser um objeto com opções de SVG (veja document.formats)

@@ -3933,8 +3933,10 @@ axis	Both	Les deux
 @msg	`freeform.points` must be an array	`freeform.points` doit être un tableau
 @msg	`freeform.lines` must be an array	`freeform.lines` doit être un tableau
 @msg	`gradient` must be an object	`gradient` doit être un objet
+@msg	`groupColors` must be an array	`groupColors` doit être un tableau
 @msg	`library` is a library id or name (see {list})	`library` est l’identifiant ou le nom d’une bibliothèque (voir {list})
 @msg	`mode` applies to freeform gradients	`mode` s’applique aux dégradés de forme libre
+@msg	`preserve` must be an object	`preserve` doit être un objet
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize` doit valoir 1, 3 ou 5
 @msg	`stops` must be an array	`stops` doit être un tableau
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg` doit être un objet d’options SVG (voir document.formats)

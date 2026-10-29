@@ -4085,7 +4085,9 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	unknown freeform mode `{m}` (points, lines)	`{m}` は不明なフリーフォームのモードです (points、lines)
 @msg	`aspect` must be a number (%)	`aspect` には数値 (%) を指定してください
 @msg	`gradient` must be an object	`gradient` にはオブジェクトを指定してください
+@msg	`groupColors` must be an array	`groupColors` には配列を指定してください
 @msg	`mode` applies to freeform gradients	`mode` はフリーフォームグラデーションにのみ適用されます
+@msg	`preserve` must be an object	`preserve` にはオブジェクトを指定してください
 @msg	`stops` must be an array	`stops` には配列を指定してください
 @msg	`{k}` must be [x, y]	`{k}` は [x, y] の形式で指定してください
 @msg	a gradient needs at least two stops	グラデーションには 2 つ以上の分岐点が必要です
