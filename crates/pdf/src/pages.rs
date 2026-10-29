@@ -193,9 +193,10 @@ fn stream_kind(pdf: &Pdf, id: ObjectIdentifier, dict: &Dict<'_>) -> String {
     }
     let is = |m: Option<MaybeRef<Object<'_>>>| matches!(m, Some(MaybeRef::Ref(r)) if ObjectIdentifier::from(r) == id);
     let pages = pdf.pages();
-    let content = pages.iter().any(|page| match page.raw().get_raw::<Object<'_>>(b"Contents") {
-        Some(MaybeRef::NotRef(Object::Array(a))) => items(&a).any(|m| is(Some(m))),
-        other => is(other),
+    // `Contents` is a stream or an array of them, the array in the page or an object of its own.
+    let content = pages.iter().any(|page| match page.raw().get::<Array<'_>>(b"Contents") {
+        Some(a) => items(&a).any(|m| is(Some(m))),
+        None => is(page.raw().get_raw::<Object<'_>>(b"Contents")),
     });
     if content {
         return "a page's content in it".to_string();

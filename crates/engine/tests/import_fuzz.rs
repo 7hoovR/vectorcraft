@@ -3850,8 +3850,8 @@ fn pdf_a_huge_form_drawn_over_and_over_is_refused_in_bounded_time() {
 #[test]
 fn a_stream_past_the_cap_is_named() {
     let image = "/Type /XObject /Subtype /Image /Width 10 /Height 10 /ColorSpace /DeviceRGB /BitsPerComponent 8";
-    let page = |entries: &str| {
-        format!("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Contents 4 0 R /Resources << /XObject << /Im 5 0 R >> >> {entries} >>")
+    let page = |contents: &str, entries: &str| {
+        format!("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Contents {contents} /Resources << /XObject << /Im 5 0 R >> >> {entries} >>")
             .into_bytes()
     };
     let plain = |content: &str| format!("<< /Length {} >>\nstream\n{content}\nendstream", content.len() + 1).into_bytes();
@@ -3864,17 +3864,27 @@ fn a_stream_past_the_cap_is_named() {
     let files = [
         (
             "an image",
-            pdf(page(""), vec![plain("q 10 0 0 10 0 0 cm /Im Do Q"), packed_as_is(image, &spaces)]),
+            pdf(page("4 0 R", ""), vec![plain("q 10 0 0 10 0 0 cm /Im Do Q"), packed_as_is(image, &spaces)]),
             "an image of 10 × 10 px in it (object 5) would decode to more than 256 MB",
         ),
         (
             "a page's content",
-            pdf(page(""), vec![packed_as_is("", &spaces), packed(image, "\0\0\0")]),
+            pdf(page("4 0 R", ""), vec![packed_as_is("", &spaces), packed(image, "\0\0\0")]),
+            "a page's content in it (object 4) would decode to more than 256 MB",
+        ),
+        (
+            "a page's content in an array",
+            pdf(page("[4 0 R]", ""), vec![packed_as_is("", &spaces), packed(image, "\0\0\0")]),
+            "a page's content in it (object 4) would decode to more than 256 MB",
+        ),
+        (
+            "a page's content in an array of its own",
+            pdf(page("6 0 R", ""), vec![packed_as_is("", &spaces), packed(image, "\0\0\0"), b"[4 0 R]".to_vec()]),
             "a page's content in it (object 4) would decode to more than 256 MB",
         ),
         (
             "the editing data",
-            pdf(page(editing), vec![plain("0 0 5 5 re f"), packed(image, "\0\0\0"), packed_as_is("", &spaces)]),
+            pdf(page("4 0 R", editing), vec![plain("0 0 5 5 re f"), packed(image, "\0\0\0"), packed_as_is("", &spaces)]),
             "its editing data (object 6) would decode to more than 256 MB",
         ),
     ];
