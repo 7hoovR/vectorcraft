@@ -3846,6 +3846,7 @@ theme	Appearance	Erscheinungsbild
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` muss zwischen {min} und {max} liegen (erhalten: {x})
 @msg	`{key}` must be one of {_1}	`{key}` muss einer der folgenden Werte sein: {_1}
 @msg	`{key}` must be true or false	`{key}` muss true oder false sein
+@msg	`top` and `below` can't both be true	`top` und `below` können nicht beide true sein
 @msg	`select` must be true or false	`select` muss true oder false sein
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` und `maxAnchors` müssen ganze Zahlen sein
 @msg	`{key}` must be a number not below 0	`{key}` muss eine Zahl nicht kleiner als 0 sein

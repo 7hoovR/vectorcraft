@@ -3922,6 +3922,7 @@ axis	Both	Ambos
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` debe estar entre {min} y {max} (se recibió {x})
 @msg	`{key}` must be one of {_1}	`{key}` debe ser uno de estos: {_1}
 @msg	`{key}` must be true or false	`{key}` debe ser true o false
+@msg	`top` and `below` can't both be true	`top` y `below` no pueden ser true a la vez
 @msg	`select` must be true or false	`select` debe ser true o false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` y `maxAnchors` deben ser números enteros
 @msg	`{key}` must be a number not below 0	`{key}` debe ser un número no inferior a 0

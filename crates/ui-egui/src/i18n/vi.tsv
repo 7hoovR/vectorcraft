@@ -4102,6 +4102,7 @@ theme	Appearance	Giao diện
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` phải nằm trong khoảng {min} đến {max} (nhận được {x})
 @msg	`{key}` must be one of {_1}	`{key}` phải là một trong {_1}
 @msg	`{key}` must be true or false	`{key}` phải là true hoặc false
+@msg	`top` and `below` can't both be true	`top` và `below` không thể cùng là true
 @msg	`select` must be true or false	`select` phải là true hoặc false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` và `maxAnchors` phải là số nguyên
 @msg	`{key}` must be a number not below 0	`{key}` phải là một số không nhỏ hơn 0

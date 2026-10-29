@@ -403,6 +403,58 @@ fn new_layers_go_above_the_current_one_at_its_level() {
     assert_eq!(unique.len(), names.len(), "{names:?}");
 }
 
+/// `below` puts a new layer directly below the current layer, at its level, and `bottom` puts a
+/// new sublayer under the parent's contents, each in one undo step.
+#[test]
+fn new_layers_go_below_the_current_one_and_sublayers_under_the_contents() {
+    let mut s = session();
+    let (layer, sub, a, g, _, c) = tree(&mut s);
+    run(&mut s, "layer.setCurrent", json!({"id": sub.0}));
+    let before = undos(&s);
+    let n = id(&run(&mut s, "layer.new", json!({"below": true})));
+    assert_eq!(children(&s, layer), vec![c, n, sub], "a sublayer directly below the current sublayer");
+    assert_eq!(undos(&s), before + 1);
+    assert_eq!(s.doc().unwrap().highlighted_rows(), vec![n]);
+    assert_eq!(s.doc().unwrap().current_layer(), Some(n));
+    run(&mut s, "edit.undo", json!({}));
+    assert_eq!(children(&s, layer), vec![c, sub]);
+    // At the top level: below the current layer, above the layers under it.
+    let top = id(&run(&mut s, "layer.new", json!({"top": true, "name": "Top"})));
+    let middle = id(&run(&mut s, "layer.new", json!({"below": true, "name": "Middle", "locked": true})));
+    let order = s.doc().unwrap().doc.layers.iter().map(|l| l.id).collect::<Vec<_>>();
+    assert_eq!(order, vec![layer, middle, top]);
+    assert!(node(&s, middle).locked, "options as without `below`");
+    run(&mut s, "layer.setCurrent", json!({"id": layer.0}));
+    let bottom = id(&run(&mut s, "layer.new", json!({"below": true})));
+    assert_eq!(s.doc().unwrap().doc.layers[0].id, bottom, "below the bottom layer");
+    // Sublayers: on top of the parent's contents, or under them with `bottom`.
+    let before = undos(&s);
+    let under = id(&run(&mut s, "layer.newSublayer", json!({"parent": sub.0, "bottom": true})));
+    assert_eq!(children(&s, sub), vec![under, a, g]);
+    assert_eq!(undos(&s), before + 1);
+    assert_eq!(s.doc().unwrap().highlighted_rows(), vec![under]);
+    let over = id(&run(&mut s, "layer.newSublayer", json!({"parent": sub.0, "bottom": false})));
+    assert_eq!(children(&s, sub), vec![under, a, g, over]);
+    // Bad values change nothing.
+    let count = s.doc().unwrap().doc.node_count();
+    for (cmd, p) in [
+        ("layer.new", json!({"below": true, "top": true})),
+        ("layer.new", json!({"below": "yes"})),
+        ("layer.newSublayer", json!({"parent": sub.0, "bottom": 1})),
+    ] {
+        assert!(s.execute(cmd, &p).is_err(), "{cmd} {p}");
+    }
+    assert_eq!(s.doc().unwrap().doc.node_count(), count);
+    // In a clipping layer the clipping path stays at the bottom.
+    let mut s = session();
+    let layer = s.doc().unwrap().doc.layers[0].id;
+    let (back, front) = (rect(&mut s, 0.0), rect(&mut s, 100.0));
+    run(&mut s, "layer.clippingMask.toggle", json!({"id": layer.0}));
+    assert_eq!(children(&s, layer), vec![front, back], "the top object clips");
+    let under = id(&run(&mut s, "layer.newSublayer", json!({"parent": layer.0, "bottom": true})));
+    assert_eq!(children(&s, layer), vec![front, under, back]);
+}
+
 #[test]
 fn rows_move_above_below_and_into_layers_and_groups() {
     let mut s = session();

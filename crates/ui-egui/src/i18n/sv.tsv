@@ -3842,6 +3842,7 @@ axis	Both	Båda
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` måste vara mellan {min} och {max} (fick {x})
 @msg	`{key}` must be one of {_1}	`{key}` måste vara något av {_1}
 @msg	`{key}` must be true or false	`{key}` måste vara true eller false
+@msg	`top` and `below` can't both be true	`top` och `below` kan inte båda vara true
 @msg	`select` must be true or false	`select` måste vara true eller false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` och `maxAnchors` måste vara heltal
 @msg	`{key}` must be a number not below 0	`{key}` måste vara ett tal som inte är under 0

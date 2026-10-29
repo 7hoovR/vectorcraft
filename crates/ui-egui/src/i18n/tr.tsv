@@ -3725,6 +3725,7 @@ axis	Both	Her İkisi
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}`, {min} ile {max} arasında olmalıdır ({x}'yi aldı)
 @msg	`{key}` must be one of {_1}	`{key}`, {_1}'den biri olmalıdır
 @msg	`{key}` must be true or false	"{key}" doğru veya yanlış olmalıdır
+@msg	`top` and `below` can't both be true	`top` ve `below` aynı anda true olamaz
 @msg	`select` must be true or false	`select` true veya false olmalıdır
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` ve `maxAnchors` tam sayı olmalıdır
 @msg	`{key}` must be a number not below 0	`{key}` 0'dan küçük olmayan bir sayı olmalıdır

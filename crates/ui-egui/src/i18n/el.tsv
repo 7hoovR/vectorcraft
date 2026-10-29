@@ -2172,6 +2172,7 @@ axis	Both	Και τα δύο
 @msg	`{key}` must be between {min} and {max} (got {x})	Το `{key}` πρέπει να είναι μεταξύ {min} και {max} (δόθηκε {x})
 @msg	`{key}` must be one of {_1}	Το `{key}` πρέπει να είναι ένα από τα {_1}
 @msg	`{key}` must be true or false	Το `{key}` πρέπει να είναι true ή false
+@msg	`top` and `below` can't both be true	Τα `top` και `below` δεν μπορούν να είναι και τα δύο true
 @msg	`select` must be true or false	Το `select` πρέπει να είναι true ή false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	Τα `minAnchors` και `maxAnchors` πρέπει να είναι ακέραιοι αριθμοί
 @msg	`{key}` must be a number not below 0	Το `{key}` πρέπει να είναι αριθμός όχι μικρότερος από 0

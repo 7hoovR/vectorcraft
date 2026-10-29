@@ -2133,10 +2133,12 @@ and `layerRows`, the rows highlighted in the panel.
   inside it); a row never goes into itself or a row inside it, and a locked layer or group takes nothing. Dragging the
   selected-art square is `layer.move` with the selected objects. `node.move {id, parent?, index}` is the low-level
   form with the same nesting rules; unlike `layer.move`, it also moves a row into a locked layer or group.
-- **Buttons**: `layer.new {name?, top?, …options}` (above the current layer at its level; `top` with Ctrl/Cmd),
-  `layer.newSublayer {parent?, name?, …options}` (on top of the parent's contents), `layer.delete {ids?}` (rows with
-  what they hold; the last layer stays), `layer.locate {id?}` (highlights the selected object's row; the panel opens
-  the rows around it) and `layer.clippingMask.toggle`.
+- **Buttons**: `layer.new {name?, top?, below?, …options}` (above the current layer at its level; `top` with
+  Ctrl/Cmd; `below`, directly below the current layer at its level, with Ctrl/Cmd+Alt),
+  `layer.newSublayer {parent?, bottom?, name?, …options}` (on top of the parent's contents; `bottom`, under them but
+  above a clipping layer's clipping path, with Ctrl/Cmd+Alt), `layer.delete {ids?}` (rows with what they hold; the
+  last layer stays), `layer.locate {id?}` (highlights the selected object's row; the panel opens the rows around it)
+  and `layer.clippingMask.toggle`.
 - **Panel menu**: `layer.duplicate {ids?}`, `layer.merge {ids?}` (into the layer highlighted last, keeping the
   stacking order), `layer.flatten {id?}` (every other visible layer's art into one layer; hidden layers are deleted,
   templates stay), `layer.collectInNew {ids?}`, `layer.releaseToLayers {id?, build?}` and

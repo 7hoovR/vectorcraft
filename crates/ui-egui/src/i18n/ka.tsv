@@ -3714,6 +3714,7 @@ font-technology	Variable	ცვლადი
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` უნდა იყოს {min}-სა და {max}-ს შორის (მიღებულია {x})
 @msg	`{key}` must be one of {_1}	`{key}` უნდა იყოს ერთ-ერთი: {_1}
 @msg	`{key}` must be true or false	`{key}` უნდა იყოს true ან false
+@msg	`top` and `below` can't both be true	`top` და `below` ერთდროულად ვერ იქნება true
 @msg	`select` must be true or false	`select` უნდა იყოს true ან false
 @msg	`minAnchors` and `maxAnchors` must be whole numbers	`minAnchors` და `maxAnchors` უნდა იყოს მთელი რიცხვები
 @msg	`{key}` must be a number not below 0	`{key}` უნდა იყოს რიცხვი, არანაკლებ 0
