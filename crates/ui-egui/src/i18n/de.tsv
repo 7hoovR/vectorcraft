@@ -5276,3 +5276,8 @@ axis	Y Axis	Y-Achse
 	Glyph Bounds	Glyphenbegrenzung
 	Proximity Guides	Näherungshilfslinien
 	Angular Guides	Winkelhilfslinien
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Durchschnitt berechnen und zusammenfügen…
+	Average & Join	Durchschnitt berechnen und zusammenfügen
+anchor	Points:	Punkte:
+@msg	select two open path ends, or two open paths, to average and join	wählen Sie zwei Enden offener Pfade oder zwei offene Pfade aus, um sie zu mitteln und zusammenzufügen

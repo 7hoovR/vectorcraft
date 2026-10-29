@@ -5693,3 +5693,8 @@ axis	Y Axis	Axe Y
 	Glyph Bounds	Limites du glyphe
 	Proximity Guides	Repères de proximité
 	Angular Guides	Repères angulaires
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Alignement et jonction…
+	Average & Join	Alignement et jonction
+anchor	Points:	Points :
+@msg	select two open path ends, or two open paths, to average and join	sélectionnez deux extrémités de tracés ouverts, ou deux tracés ouverts, à aligner et joindre

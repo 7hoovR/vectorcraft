@@ -2582,7 +2582,10 @@ or pulls handles out in line with the neighbouring anchors (a smooth anchor keep
 on top of each other, and an open path becomes one path per piece. Each cut leaves one of its two anchors selected,
 so `path.moveAnchors {dx, dy}` (or a Direct Selection drag) pulls the path apart there; `path.join {}` (Connect
 Selected End Points) joins the ends again; `path.join {ids: [a, b], ends: ["last", "first"]}` joins the ends asked for
-(the Pen's join, #776: drawing on from one open path, a click on another's end makes them one path). `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
+(the Pen's join, #776: drawing on from one open path, a click on another's end makes them one path). `path.averageJoin {to: "corner"|"smooth", ids?}`
+(Average & Join, Cmd+Alt+Shift+J) moves two ends to their midpoint and joins them there, the joined anchor a corner or a smooth point, in one
+undo step: the two direct-selected anchors when they are open path ends, else the nearest ends of the two open paths in `ids` or the
+selection (both ends of one, closing it); anything else is refused. `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
 `path.split {id, subpath?, anchor}` do the same to one anchor (the Anchor Point and Scissors tools); the Pen with Alt
 held over a selected path's handle, anchor or segment works as the Anchor Point tool. `press_key` Escape between two
 `pointer_gesture` calls of an Anchor Point drag cancels it: the path goes back and no undo step is added. `path.reshapeSegment {id,

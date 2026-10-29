@@ -5725,3 +5725,8 @@ axis	Y Axis	Y-akseli
 	Glyph Bounds	Merkin rajat
 	Proximity Guides	Läheisyysapuviivat
 	Angular Guides	Kulma-apuviivat
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Keskiarvota ja liitä…
+	Average & Join	Keskiarvota ja liitä
+anchor	Points:	Pisteet:
+@msg	select two open path ends, or two open paths, to average and join	valitse kaksi avoimen polun päätä tai kaksi avointa polkua keskiarvotettaviksi ja liitettäviksi

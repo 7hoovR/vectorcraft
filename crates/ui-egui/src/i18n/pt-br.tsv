@@ -5611,3 +5611,8 @@ axis	Y Axis	Eixo Y
 	Glyph Bounds	Limites do Glifo
 	Proximity Guides	Guias de Proximidade
 	Angular Guides	Guias Angulares
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Média e união…
+	Average & Join	Média e união
+anchor	Points:	Pontos:
+@msg	select two open path ends, or two open paths, to average and join	selecione duas extremidades de traçados abertos, ou dois traçados abertos, para calcular a média e unir

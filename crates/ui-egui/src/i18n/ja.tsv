@@ -5372,3 +5372,8 @@ axis	Y Axis	Y 軸
 	Glyph Bounds	字形の境界
 	Proximity Guides	近接ガイド
 	Angular Guides	角度ガイド
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	平均と連結…
+	Average & Join	平均と連結
+anchor	Points:	ポイント:
+@msg	select two open path ends, or two open paths, to average and join	平均と連結には、オープンパスの端点を 2 つ、またはオープンパスを 2 つ選択してください

@@ -5718,3 +5718,8 @@ axis	Y Axis	Y-axel
 	Glyph Bounds	Glyfgränser
 	Proximity Guides	Närhetsstödlinjer
 	Angular Guides	Vinkelstödlinjer
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Medelvärde och foga samman…
+	Average & Join	Medelvärde och foga samman
+anchor	Points:	Punkter:
+@msg	select two open path ends, or two open paths, to average and join	markera två ändar av öppna banor, eller två öppna banor, att medelvärdesberäkna och foga samman

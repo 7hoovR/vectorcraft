@@ -5643,3 +5643,8 @@ axis	Y Axis	Y-as
 	Glyph Bounds	Glyphbegrenzing
 	Proximity Guides	Nabijheidshulplijnen
 	Angular Guides	Hoekhulplijnen
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Gemiddelde en verbinden…
+	Average & Join	Gemiddelde en verbinden
+anchor	Points:	Punten:
+@msg	select two open path ends, or two open paths, to average and join	selecteer twee uiteinden van open paden, of twee open paden, om te middelen en te verbinden

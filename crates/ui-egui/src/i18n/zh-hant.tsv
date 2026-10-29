@@ -5329,3 +5329,8 @@ axis	Y Axis	Y 軸
 	Glyph Bounds	字符邊界
 	Proximity Guides	鄰近參考線
 	Angular Guides	角度參考線
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	平均並連接…
+	Average & Join	平均並連接
+anchor	Points:	點：
+@msg	select two open path ends, or two open paths, to average and join	請選取兩個開放路徑的端點或兩條開放路徑以進行平均並連接

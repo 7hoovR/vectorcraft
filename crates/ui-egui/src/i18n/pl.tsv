@@ -5548,3 +5548,8 @@ axis	Y Axis	Oś Y
 	Glyph Bounds	Granice glifów
 	Proximity Guides	Linie bliskości
 	Angular Guides	Linie kątowe
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Uśrednij i połącz…
+	Average & Join	Uśrednij i połącz
+anchor	Points:	Punkty:
+@msg	select two open path ends, or two open paths, to average and join	zaznacz dwa końce otwartych ścieżek lub dwie otwarte ścieżki do uśrednienia i połączenia

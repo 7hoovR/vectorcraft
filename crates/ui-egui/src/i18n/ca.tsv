@@ -5685,3 +5685,8 @@ theme	Appearance	Aparença
 	Glyph Bounds	Límits del glif
 	Proximity Guides	Guies de proximitat
 	Angular Guides	Guies angulars
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Mitjana i unió…
+	Average & Join	Mitjana i unió
+anchor	Points:	Punts:
+@msg	select two open path ends, or two open paths, to average and join	selecciona dos extrems de traçats oberts, o dos traçats oberts, per fer-ne la mitjana i unir-los

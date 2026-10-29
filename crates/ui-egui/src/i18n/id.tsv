@@ -5599,3 +5599,8 @@ axis	Y Axis	Sumbu Y
 	Glyph Bounds	Batas glif
 	Proximity Guides	Panduan kedekatan
 	Angular Guides	Panduan sudut
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Rata-rata dan sambungkan…
+	Average & Join	Rata-rata dan sambungkan
+anchor	Points:	Titik:
+@msg	select two open path ends, or two open paths, to average and join	pilih dua ujung jalur terbuka, atau dua jalur terbuka, untuk dirata-ratakan dan disambungkan

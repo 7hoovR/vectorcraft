@@ -5273,3 +5273,8 @@ axis	Y Axis	Y축
 	Glyph Bounds	글리프 경계
 	Proximity Guides	근접 안내선
 	Angular Guides	각도 안내선
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	평균 및 결합…
+	Average & Join	평균 및 결합
+anchor	Points:	포인트:
+@msg	select two open path ends, or two open paths, to average and join	평균 및 결합할 열린 패스의 끝점 두 개 또는 열린 패스 두 개를 선택하세요

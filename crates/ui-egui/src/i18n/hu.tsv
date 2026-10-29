@@ -5680,3 +5680,8 @@ axis	Y Axis	Y tengely
 	Glyph Bounds	Glifahatárok
 	Proximity Guides	Közelségi segédvonalak
 	Angular Guides	Szög-segédvonalak
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Átlagolás és összekapcsolás…
+	Average & Join	Átlagolás és összekapcsolás
+anchor	Points:	Pontok:
+@msg	select two open path ends, or two open paths, to average and join	jelölj ki két nyitott útvonalvéget vagy két nyitott útvonalat az átlagoláshoz és összekapcsoláshoz
