@@ -3791,6 +3791,10 @@ theme	Appearance	外観
 	Shaper	Shaper
 	Expand Shaper Group	Shaper グループを拡張
 	Release Shaper Group	Shaper グループを解除
+	Remove from Shaper Group	Shaper グループから削除
+@msg	source must be the id of a Shaper Group's original shape	source には Shaper グループの元のシェイプの ID を指定してください
+@msg	group must be the id of a Shaper Group	group には Shaper グループの ID を指定してください
+@msg	the shape is not an editable original shape of that Shaper Group	そのシェイプはその Shaper グループの編集可能な元のシェイプではありません
 	Select Shaper Face	Shaper の面を選択
 	Constrain	制限
 	Free Transform	自由変形

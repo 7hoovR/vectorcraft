@@ -4426,6 +4426,10 @@ axis	Both	Båda
 	Shaper	Formning
 	Expand Shaper Group	Expandera Shaper-grupp
 	Release Shaper Group	Släpp formgivargrupp
+	Remove from Shaper Group	Ta bort från formgivargrupp
+@msg	source must be the id of a Shaper Group's original shape	source måste vara id för en originalform i en formgivargrupp
+@msg	group must be the id of a Shaper Group	group måste vara id för en formgivargrupp
+@msg	the shape is not an editable original shape of that Shaper Group	formen är inte en redigerbar originalform i den formgivargruppen
 	Select Shaper Face	Markera Shaper-yta
 	Drag art, colors and text styles here to reuse them across documents. Libraries are stored on this machine — no account required.	Dra hit grafik, färger och textstilar för att återanvända dem i andra dokument. Biblioteken lagras på den här datorn – inget konto krävs.
 	1 Color Job	1-färgsjobb

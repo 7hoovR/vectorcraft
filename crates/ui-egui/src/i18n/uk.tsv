@@ -4542,6 +4542,10 @@ axis	Both	Обидві
 	Shaper	Формоутворення
 	Expand Shaper Group	Розібрати групу формоутворення
 	Release Shaper Group	Звільнити групу формоутворення
+	Remove from Shaper Group	Вилучити з групи формоутворення
+@msg	source must be the id of a Shaper Group's original shape	source має бути ідентифікатором вихідної фігури групи формоутворення
+@msg	group must be the id of a Shaper Group	group має бути ідентифікатором групи формоутворення
+@msg	the shape is not an editable original shape of that Shaper Group	фігура не є редагованою вихідною фігурою цієї групи формоутворення
 	Select Shaper Face	Виділити область формоутворення
 	Constrain	Обмежити
 	Free Transform	Вільне трансформування

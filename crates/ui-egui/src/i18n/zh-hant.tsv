@@ -4641,6 +4641,10 @@ axis	Both	兩者
 	Shaper	Shaper
 	Expand Shaper Group	展開 Shaper 群組
 	Release Shaper Group	釋放 Shaper 群組
+	Remove from Shaper Group	從 Shaper 群組中移除
+@msg	source must be the id of a Shaper Group's original shape	source 必須是 Shaper 群組中原始形狀的 ID
+@msg	group must be the id of a Shaper Group	group 必須是 Shaper 群組的 ID
+@msg	the shape is not an editable original shape of that Shaper Group	該形狀不是該 Shaper 群組中可編輯的原始形狀
 	Select Shaper Face	選取 Shaper 區域
 	Constrain	強制
 	Free Transform	任意變形

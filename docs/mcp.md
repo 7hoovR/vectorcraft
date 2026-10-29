@@ -1104,7 +1104,7 @@ The transform, Align, Object Properties and Live Shape Properties commands refus
 that is not true or false with `` `strokes` must be true or false ``, naming the key, and leave the document and its
 undo history as they were: the options `copy`, `strokes`, `corners`, `patterns`, `objects` and `typeAreas` in
 `object.transform`, `object.move`, `object.nudge`, `object.rotate`, `object.scale`, `object.reflect`, `object.shear`,
-`object.transformAgain` and `object.setBounds`; `anchors` in `object.transform`; `big` in `object.nudge`;
+`object.transformAgain` and `object.setBounds`; `anchors` and `releaseOutside` in `object.transform`; `big` in `object.nudge`;
 `absolute` in `object.rotate`; `proportional` in `object.setBounds`; `patterns` in `object.align`, `object.distribute`
 and `object.distributeSpacing`; `visible`, `locked`, `isolate` and `knockoutShape` in `object.setProps`; and
 `invertPie`, `makeSidesEqual` and `relativeRadii` in `object.setLiveShape`. A null is read as a key left out.
@@ -1388,6 +1388,19 @@ everything in it, and `select.all`, `select.allOnArtboard` and `select.inverse` 
 `select.nextAbove` and `select.nextBelow` select the nearest such object above or below the first selected object
 among the objects beside it in its group or layer, passing over hidden and locked objects and sublayers. When there
 is no such object, the selection stays as it is.
+
+## Shaper Groups
+
+`shaper.releaseSource {source, group?}` takes the original shape `source` out of its Shaper Group: the shape becomes a
+path just above the group with its own fill and stroke, and is selected. The group's result is computed again from the
+original shapes left, and a group left with none is removed. When `group` is given, it must be the Shaper Group that
+holds `source`. A source that is not an original shape of an editable Shaper Group is an error, and the document and its
+undo history stay as they were. The command returns `{id}`, the shape's id, and records one undo step, Remove from Shaper
+Group. Construction mode ends when the group was in it.
+
+`object.transform` with `releaseOutside: true` does the same for each moved original shape whose bounds end wholly
+outside the bounds the group's original shapes had before the move, in the move's undo step. A shape whose bounds still
+overlap them only moves. The Selection tool sends it at the end of a move in Construction mode.
 
 ## Global Edit
 
