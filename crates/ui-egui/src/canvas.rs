@@ -19,6 +19,7 @@ mod artboards;
 mod context;
 mod cursor;
 mod drag;
+mod fill;
 mod grid;
 mod home;
 mod input;
@@ -40,6 +41,10 @@ pub use drag::{apply_requests, dispatch, mods};
 pub(crate) use drag::{end_document_drag, release_art_in_window, release_over_panel};
 #[cfg(test)]
 use drag::{frame_moves, tool_drag_doc_id, tool_drag_moved, tool_frame_moves, tool_press_doc_id};
+pub use fill::Fill;
+use fill::fill_uncovered;
+#[cfg(test)]
+use fill::{fill_view, polygon_area};
 #[cfg(test)]
 use grid::ruler_rects;
 use grid::{LineLook, PIXEL_GRID, PIXEL_GRID_ZOOM, checker, clip_segment, grid, ruler_input, rulers, textured_quad, view_bounds};
@@ -281,6 +286,7 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     if undecoded > 0 {
         app.status(format!("{undecoded} image(s) couldn't be decoded and show as crossed boxes"));
     }
+    fill_uncovered(app, ui.ctx(), &painter, &key, &doc, rect, &xf);
     reproject_frame(app, &painter, &xf, rect, (key.doc, v.rotation));
     if let Some(look) = grid_look.filter(|_| !grids_in_back) {
         grid(&painter, &xf, doc.grid.spacing, doc.grid.subdivisions, look);
@@ -489,6 +495,7 @@ fn poll_worker(app: &mut VectorcraftApp, ui: &Ui, key_doc: usize) {
         app.canvas.worker_started = true;
         if std::env::var_os("VECTORCRAFT_SYNC_RENDER").is_none() {
             app.canvas.worker = crate::render_worker::Worker::spawn(ui.ctx().clone());
+            app.canvas.fill_worker = crate::render_worker::Worker::spawn(ui.ctx().clone());
         }
     }
     // Upload finished background renders.
