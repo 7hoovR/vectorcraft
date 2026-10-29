@@ -4528,6 +4528,10 @@ theme	Appearance	Erscheinungsbild
 	Side Tile	Seitenkachel
 	Outer Corner Tile	Äußere Eckkachel
 	Inner Corner Tile	Innere Eckkachel
+	Auto-Centered	Auto-zentriert
+	Auto-Between	Auto-dazwischen
+	Auto-Sliced	Auto-geschnitten
+	Auto-Overlap	Auto-überlappend
 	Start Tile	Anfangskachel
 	End Tile	Endkachel
 	Fit	Einpassen

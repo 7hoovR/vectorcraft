@@ -1502,7 +1502,11 @@ already walks Image Trace. Short agent entry points:
   `brush.new` refuses a longer one, counting the number it adds to a taken name, and `brush.options` refuses a
   longer `newName`. `brush.duplicate` does not check the length. A bristle brush that already has a longer name
   keeps it, and `brush.options` without a new name, or with a `newName` that only trims the white space around the
-  name, does not refuse. Other brush types take a name of any length.
+  name, does not refuse. Other brush types take a name of any length. A pattern brush's `outer_source` and `inner_source` set
+  what that kind of corner draws when the brush has no `outer_corner` or `inner_corner` art for it: `none` draws no
+  corner tile, and `autoCentered`, `autoBetween`, `autoSliced` and `autoOverlap` make one from the side tile. Without
+  a source, the corner draws the other kind of corner's art. `brush.options {params: {outer_corner: null}}` removes
+  the art.
 - Variables: `variable.list`, `variable.define {name, kind: text|visibility|image|graph}`, `variable.bind {variable, ids?}`,
   `variable.makeTextDynamic`, `variable.makeVisibilityDynamic`, `variable.makeImageDynamic`, `variable.makeGraphDynamic`,
   `variable.unbind`, `variable.rename`, `variable.delete`, `variable.highlight` (image values are file paths, graph

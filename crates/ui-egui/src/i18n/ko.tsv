@@ -2102,6 +2102,10 @@ font-technology	Variable	가변
 	Outer Corner Tile	바깥쪽 모서리 타일
 	Side Tile	측면 타일
 	Inner Corner Tile	안쪽 모서리 타일
+	Auto-Centered	자동(가운데)
+	Auto-Between	자동(사이)
+	Auto-Sliced	자동(자르기)
+	Auto-Overlap	자동(겹치기)
 	Start Tile	시작 타일
 	End Tile	끝 타일
 	Fit	맞춤

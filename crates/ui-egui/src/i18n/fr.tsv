@@ -1952,6 +1952,10 @@ font-technology	Variable	Variables
 	Outer Corner Tile	Carreau d'angle extérieur
 	Side Tile	Carreau latéral
 	Inner Corner Tile	Carreau d'angle intérieur
+	Auto-Centered	Auto-centré
+	Auto-Between	Auto-entre
+	Auto-Sliced	Auto-biseauté
+	Auto-Overlap	Auto-chevauchement
 	Start Tile	Carreau de début
 	End Tile	Carreau de fin
 	Fit	Ajustement

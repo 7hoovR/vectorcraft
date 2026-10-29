@@ -1785,6 +1785,10 @@ lighting	Light	სინათლე
 	Outer Corner Tile	გარე კუთხე
 	Side Tile	გვერდითი
 	Inner Corner Tile	შიდა კუთხე
+	Auto-Centered	ავტო-ცენტრირებული
+	Auto-Between	ავტო-შორის
+	Auto-Sliced	ავტო-დაჭრილი
+	Auto-Overlap	ავტო-გადაფარვა
 	Start Tile	საწყისი
 	End Tile	ბოლო ფილა
 	Fit	მორგება

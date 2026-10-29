@@ -3240,6 +3240,10 @@ font-technology	Variable	Variáveis
 	Outer Corner Tile	Ladrilho de canto externo
 	Side Tile	Ladrilho lateral
 	Inner Corner Tile	Ladrilho de canto interno
+	Auto-Centered	Auto-centralizado
+	Auto-Between	Auto-entre
+	Auto-Sliced	Auto-fatiado
+	Auto-Overlap	Auto-sobreposto
 	Start Tile	Ladrilho inicial
 	End Tile	Ladrilho final
 	Fit	Ajustar

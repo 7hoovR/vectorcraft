@@ -1990,6 +1990,10 @@ lighting	Light	Światło
 	Outer Corner Tile	Kafelek narożnika zewnętrznego
 	Side Tile	Kafelek boczny
 	Inner Corner Tile	Kafelek narożnika wewnętrznego
+	Auto-Centered	Auto-wyśrodkowany
+	Auto-Between	Auto-pomiędzy
+	Auto-Sliced	Auto-cięty
+	Auto-Overlap	Auto-nakładanie
 	Start Tile	Kafelek początkowy
 	End Tile	Kafelek końcowy
 	Fit	Dopasowanie

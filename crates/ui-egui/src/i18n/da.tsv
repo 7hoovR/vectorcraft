@@ -1887,6 +1887,10 @@ lighting	Light	Lys
 	Outer Corner Tile	Ydre hjørneflise
 	Side Tile	Sideflise
 	Inner Corner Tile	Indre hjørneflise
+	Auto-Centered	Auto-centreret
+	Auto-Between	Auto-mellem
+	Auto-Sliced	Auto-skåret
+	Auto-Overlap	Auto-overlap
 	Start Tile	Startflise
 	End Tile	Slutflise
 	Fit	Tilpas

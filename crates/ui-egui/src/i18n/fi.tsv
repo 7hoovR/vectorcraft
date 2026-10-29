@@ -2033,6 +2033,10 @@ lighting	Light	Valo
 	Outer Corner Tile	Ulkokulman ruutu
 	Side Tile	Sivuruutu
 	Inner Corner Tile	Sisäkulman ruutu
+	Auto-Centered	Autom. keskitetty
+	Auto-Between	Autom. välissä
+	Auto-Sliced	Autom. viistetty
+	Auto-Overlap	Autom. limittäin
 	Start Tile	Alkuruutu
 	End Tile	Loppuruutu
 	Fit	Sovita
