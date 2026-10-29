@@ -373,7 +373,18 @@ pub(super) fn blob(s: &mut Session, p: &Value) -> Result<Value> {
     if !(size.is_finite() && size > 0.0) {
         return Err(bad(C, "size must be positive"));
     }
-    let region = brush_region(&pts, size);
+    // With `fidelity` (pt), the brush follows the stroke fitted by [`fit_freehand`], as a Pencil
+    // stroke is fitted. Without it, or when the fitted stroke has no length (a short stroke back to
+    // its start), the brush follows every point.
+    let fidelity = match p.get("fidelity") {
+        None | Some(Value::Null) => None,
+        Some(_) => Some(number_or(p, "fidelity", 0.0, C)?.clamp(vectorcraft_tools::draw2::MIN_FIDELITY, 100.0)),
+    };
+    let fitted = fidelity
+        .filter(|_| pts.len() > 1)
+        .map(|tol| po::outline_stroke(&PathData::single(fit_freehand(&pts, tol, false)), size, Cap::Round, Join::Round, 4.0))
+        .filter(|r| !r.is_empty());
+    let region = fitted.unwrap_or_else(|| brush_region(&pts, size));
     if region.is_empty() {
         return Err(EngineError::Other("empty brush stroke".into()));
     }
@@ -392,7 +403,9 @@ pub(super) fn blob(s: &mut Session, p: &Value) -> Result<Value> {
     if merge && !(only_selection && st.selection.is_empty()) {
         let all = Selection::default();
         let from = if only_selection { &st.selection } else { &all };
-        for id in target_paths(&st.doc, from, poly_bounds(&pts, size)) {
+        // A fitted stroke can curve outside the points' bounds, so the area also takes in the shape.
+        let area = region.control_bounds().map_or_else(|| poly_bounds(&pts, size), |b| b.union(poly_bounds(&pts, size)));
+        for id in target_paths(&st.doc, from, area) {
             let Some(n) = st.doc.node(id) else { continue };
             if !blob_match(n, &paint) {
                 continue;
