@@ -3365,8 +3365,8 @@ font-technology	Variable	Variáveis
 	New Name	Novo nome
 	no variable to rename	nenhuma variável para renomear
 	no data set to rename	nenhum conjunto de dados para renomear
-	Top-to-Top Leading	Entrelinha de topo a topo
-	Bottom-to-Bottom Leading	Entrelinha de base a base
+	Top-to-Top Leading	Entrelinhamento de topo a topo
+	Bottom-to-Bottom Leading	Entrelinhamento de base a base
 	Burasagari	Burasagari
 	Force	Forçar
 	Miter	Ponta
@@ -5355,7 +5355,7 @@ mark-style	Japanese	Japonesas
 	Word Spacing:	Espaçamento entre Palavras:
 	Letter Spacing:	Espaçamento entre Letras:
 	Glyph Scaling:	Dimensionamento de Glifos:
-	Auto Leading:	Entrelinha Automática:
+	Auto Leading:	Entrelinhamento Automático:
 	Single Word Justification:	Justificação de Palavra Única:
 	Full Justify	Justificação Completa
 	Minimum must not exceed Desired, nor Desired Maximum.	O mínimo não pode passar do desejado, nem o desejado do máximo.

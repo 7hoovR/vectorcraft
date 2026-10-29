@@ -460,6 +460,31 @@ fn zh_hans_is_simplified_and_mainland() {
     assert!(bad.is_empty(), "in zh-hans.tsv:\n{}", bad.join("\n"));
 }
 
+/// Each catalog names leading with one term: every word of the Character panel's Leading field
+/// (the text before " (", ignoring case) appears in the Auto Leading, Size/Leading, Top-to-Top
+/// Leading and Bottom-to-Bottom Leading rows outside their placeholders.
+/// A catalog without the Leading row, or without one of the others, is skipped for that check.
+#[test]
+fn leading_term_agrees_within_each_catalog() {
+    let mut bad = Vec::new();
+    for l in LANGUAGES.iter().filter(|l| !l.source.is_empty()) {
+        let (entries, _) = parse_entries(l.source);
+        let row = |src: &str| entries.iter().find(|(ctx, s, _)| ctx.is_empty() && s == src).map(|(_, _, tr)| tr.to_lowercase());
+        let Some(leading) = row("Leading").map(|tr| tr.split(" (").next().unwrap_or_default().trim().to_string()) else {
+            continue;
+        };
+        for src in ["Auto Leading:", "Size/Leading", "Top-to-Top Leading", "Bottom-to-Bottom Leading"] {
+            if let Some(text) = row(src) {
+                let bare = placeholders(&text).iter().fold(text.clone(), |t, p| t.replace(&format!("{{{p}}}"), " "));
+                for word in leading.split_whitespace().filter(|w| !bare.contains(*w)) {
+                    bad.push(format!("{}: {src:?} → {text:?} lacks {word:?} from the Leading field {leading:?}", l.code));
+                }
+            }
+        }
+    }
+    assert!(bad.is_empty(), "rows that name leading differently from the Leading field:\n{}", bad.join("\n"));
+}
+
 /// No translated word mixes Latin, Cyrillic and Greek letters, such as a Latin "A" typed in place
 /// of a Cyrillic "А". A word written in one script, such as "PDF" or "X" in a Russian row, is
 /// allowed.
