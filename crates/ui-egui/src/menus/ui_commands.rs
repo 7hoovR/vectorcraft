@@ -518,6 +518,18 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
     ("window.workspace.rename", "Rename Workspace", "", "{name, to}"),
     ("window.workspace.list", "List Workspaces", "", "{}"),
     ("window.newWindow", "New Window", "", "{}"),
+    (
+        "window.nextDocument",
+        "Next Document",
+        "Cmd+F6",
+        "{} make the open document after the current one in tab order the current one, as a click on its tab does (after the last document it goes to the first, and from the Home screen to the first); returns {index}",
+    ),
+    (
+        "window.previousDocument",
+        "Previous Document",
+        "Cmd+Shift+F6",
+        "{} make the open document before the current one in tab order the current one, as a click on its tab does (before the first document it goes to the last, and from the Home screen to the last); returns {index}",
+    ),
     ("tool.select", "Select Tool", "", "{tool: id} (see tools)"),
     (
         "tool.setOption",

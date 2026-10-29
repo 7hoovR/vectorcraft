@@ -263,6 +263,7 @@ pub fn enabled(app: &VectorcraftApp, id: &str) -> bool {
         "ui.perspectivePlane" => app.session.active().is_some(),
         // Only one window per document so far: greyed out, as Window › Arrange's items are (#3724).
         "window.newWindow" => false,
+        "window.nextDocument" | "window.previousDocument" => !app.session.documents().is_empty(),
         _ => true,
     }
 }
