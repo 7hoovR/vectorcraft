@@ -3,8 +3,9 @@ use super::common::{
     within_input_bound,
 };
 use super::{
-    Anchor, Appearance, BTreeSet, BoolOp, Color, EngineError, FillRule, NewArt, NodeId, NodeKind, Paint, PathData, Point, PressureProfile, Result,
-    Selection, Session, SimplifyOptions, SubPath, Value, bad, id_param, insert_look, json, number_or, po, remove_each, str_param, switch_or,
+    Anchor, Appearance, BTreeSet, BoolOp, Color, Document, EngineError, FillRule, NewArt, Node, NodeId, NodeKind, Paint, PathData, Point,
+    PressureProfile, Result, Selection, Session, SimplifyOptions, SubPath, Value, bad, id_param, insert_look, json, number_or, po, remove_each,
+    str_param, switch_or,
 };
 
 // ---------- Pencil / Paintbrush ----------
