@@ -4002,7 +4002,9 @@ mark-style	Japanese	Kiểu Nhật
 	X11 (XWayland) When a Pen Is Attached	X11 (XWayland) khi có bút được kết nối
 	If a drawing tablet's pen doesn't draw, choose an X11 (XWayland) option.	Nếu bút của bảng vẽ không vẽ được, hãy chọn một tùy chọn X11 (XWayland).
 	X11 (XWayland)	X11 (XWayland)
+	X:	X:
 	XML ID	XML ID
+	Y:	Y:
 	Yards	Yard
 	Yellow	Vàng
 	Your browser downloads the files (several as one .zip).	Trình duyệt của bạn tải xuống các tệp (một số tệp gộp thành một .zip).
