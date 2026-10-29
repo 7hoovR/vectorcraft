@@ -3970,6 +3970,7 @@ font-technology	Variable	ცვლადი
 @msg	not an EMF or WMF file	ეს არ არის EMF ან WMF ფაილი
 @msg	not found	ვერ მოიძებნა
 @msg	not in pattern editing mode	პატერნის რედაქტირების რეჟიმი არ არის ჩართული
+@msg	finish editing the pattern first	ჯერ დაასრულეთ პატერნის რედაქტირება
 @msg	nothing encoded	არაფერია კოდირებული
 @msg	nothing selected	არაფერია მონიშნული
 @msg	nothing selected is in a group	მონიშნულთაგან არაფერია ჯგუფში

@@ -4212,6 +4212,7 @@ imageTrace	Outline	Contour
 @msg	not an EMF or WMF file	geen EMF- of WMF-bestand
 @msg	not found	niet gevonden
 @msg	not in pattern editing mode	niet in patroonbewerkingsmodus
+@msg	finish editing the pattern first	rond eerst het bewerken van het patroon af
 @msg	nothing encoded	niets gecodeerd
 @msg	nothing selected	niets geselecteerd
 @msg	nothing selected is in a group	niets van de selectie zit in een groep

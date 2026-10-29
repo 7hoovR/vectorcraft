@@ -3770,6 +3770,7 @@ axis	Both	Ambos
 @msg	not an EMF or WMF file	não é um arquivo EMF ou WMF
 @msg	not found	não encontrado
 @msg	not in pattern editing mode	não está no modo de edição de padrão
+@msg	finish editing the pattern first	termine de editar o padrão primeiro
 @msg	nothing encoded	nada codificado
 @msg	nothing selected	nada selecionado
 @msg	nothing selected is in a group	nada do que está selecionado está em um grupo

@@ -4115,6 +4115,7 @@ theme	Appearance	Erscheinungsbild
 @msg	not an EMF or WMF file	keine EMF- oder WMF-Datei
 @msg	not found	nicht gefunden
 @msg	not in pattern editing mode	nicht im Musterbearbeitungsmodus
+@msg	finish editing the pattern first	beenden Sie zuerst die Bearbeitung des Musters
 @msg	nothing encoded	nichts kodiert
 @msg	nothing selected	nichts ausgewählt
 @msg	nothing selected is in a group	nichts Ausgewähltes befindet sich in einer Gruppe
