@@ -133,6 +133,47 @@ fn delete_and_backspace_remove_the_selected_pin_then_clear() {
     }
 }
 
+#[test]
+fn escape_cancels_a_puppet_warp_perspective_or_liquify_drag() {
+    let grid = |app: &VectorcraftApp| vectorcraft_tools::distort::perspective::PerspectiveGrid::current(&app.session.doc().unwrap().doc);
+    for tool in ["puppetWarp", "perspectiveGrid", "perspectiveSelection", "warp"] {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.run("file.new", json!({"width": 400, "height": 400})).unwrap();
+        let id = app.run("shape.rectangle", json!({"x": 100, "y": 100, "width": 200, "height": 100})).unwrap()["id"].as_u64().unwrap();
+        app.run("select.set", json!({"ids": [id]})).unwrap();
+        app.select_tool(tool);
+        // Where the drag starts: a new pin, a vanishing point, a plane widget, the art's right edge.
+        let from = match tool {
+            "puppetWarp" => {
+                click(&mut app, 112.0, 188.0);
+                (112.0, 188.0)
+            }
+            "perspectiveGrid" => (grid(&app).vp_left, grid(&app).horizon),
+            "perspectiveSelection" => {
+                let q = grid(&app).plane_widgets()[0].1;
+                (q.x, q.y)
+            }
+            _ => (290.0, 150.0),
+        };
+        let st = app.session.doc().unwrap();
+        let (before, undo) = (st.doc.clone(), st.history.undo.len());
+        let view = app.view_info();
+        for (kind, x, y) in [(PointerKind::Down, from.0, from.1), (PointerKind::Drag, from.0 + 30.0, from.1 - 20.0)] {
+            app.session.pointer(&PointerEvent::new(kind, x, y), view).unwrap();
+        }
+        assert!(app.session.tool_busy(), "{tool}");
+        assert_ne!(*app.session.doc().unwrap().doc, *before, "{tool}: the drag changes the preview");
+        press(&mut app, Key::Escape);
+        assert_eq!(*app.session.doc().unwrap().doc, *before, "{tool}: Escape cancels the drag");
+        assert_eq!(app.session.doc().unwrap().history.undo.len(), undo, "{tool}: and adds no undo step");
+        assert!(!app.session.tool_busy(), "{tool}");
+        assert_eq!(app.session.tool_id(), tool, "{tool}: Escape keeps the tool");
+        app.session.pointer(&PointerEvent::new(PointerKind::Up, from.0 + 30.0, from.1 - 20.0), view).unwrap();
+        assert_eq!(*app.session.doc().unwrap().doc, *before, "{tool}: the release changes nothing");
+        assert_eq!(app.session.doc().unwrap().history.undo.len(), undo, "{tool}");
+    }
+}
+
 fn artboard_keys_app(boards: usize) -> (VectorcraftApp, u64) {
     let mut app = VectorcraftApp::new(Session::new(), Default::default());
     app.run("file.new", json!({"width": 400, "height": 400, "artboards": boards})).unwrap();

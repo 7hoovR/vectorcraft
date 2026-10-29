@@ -3018,7 +3018,9 @@ profile, which runs along every subpath (the Width tool shows each subpath's poi
 `object.puppetWarp {ids?, pins, moved, angles?, expand?}` warps art as rigidly as possible so that each pin (a point
 on the art) lands on its `moved` point. `angles` (degrees, or null for a free pin; as long as `pins`) holds the turn
 the art takes around a pin, as Alt-dragging near a selected pin with the Puppet Warp tool does: one pin with
-`angles: [90]` turns the art a quarter turn around it.
+`angles: [90]` turns the art a quarter turn around it. `press_key` Escape between two `pointer_gesture` calls of a
+pin drag or a turn cancels it: the art, its pins and the selected pins go back to how the press found them, and no
+undo step is added.
 
 The Puppet Warp tool's pins live in the document while the same art stays selected (never saved; Undo and Redo take
 them back with the art). `object.puppetWarp.pins {ids?}` reads them: `pins` (where each sits on the shape the pins
@@ -5097,7 +5099,8 @@ horizon; with Lock Station Point the other one swings), the horizon, the third v
 and right ground-level points (24 px from the origin along each wall's ground line: they move the whole grid; Shift
 keeps one axis), the left and right extents (separate: `extent` and `extentRight`; Alt drags both, Shift goes by
 whole cells), the vertical extent and the cell size widget (on the line where the planes meet, a cell up, or more
-cells while they're small) reshape the grid; Lock Grid stops them. The Plane Switching Widget stays put in a corner
+cells while they're small) reshape the grid; Lock Grid stops them. `press_key` Escape during a drag of one of them,
+or of a plane widget, cancels it and puts the grid back. The Plane Switching Widget stays put in a corner
 of the document window (headless: the first artboard's top-left corner); a press on it picks the plane with any tool
 while the grid shows (choosing a perspective tool shows it, and `perspective.grid.show` hides it again with the tool
 still chosen), and the keys 1–4 (`key` with `"1"`…`"4"`) pick the left, horizontal, right and no plane.
@@ -5150,7 +5153,8 @@ Brush Dimensions shared by the seven tools (`width`, `height` in pt, `angle`, `i
 `showBrush`) and the tool's own: `detail` (1..10); `simplify` (0..100) with `simplifyOn` (Warp, Twirl, Pucker,
 Bloat); `rate` (Twirl, -180..180°); `complexity` (0..15) and `affectAnchors`, `affectIn`, `affectOut` (Scallop,
 Crystallize, Wrinkle: what the brush moves); `horizontal`, `vertical` (Wrinkle, 0..1). Alt-drag sizes the brush from
-its current size (with Shift too it keeps its proportions). With Use Pressure Pen on, each `pointer_gesture` event's
+its current size (with Shift too it keeps its proportions). `press_key` Escape during a stroke cancels it and adds no
+undo step; during an Alt-drag it puts the brush size back. With Use Pressure Pen on, each `pointer_gesture` event's
 `pressure` (0..1) is the intensity there, and `object.liquify` takes points as `[x, y, pressure]`.
 
 ```json
@@ -5190,7 +5194,8 @@ distance along the plane's normal), so copies, duplicates and pastes stay attach
 `perspectiveSelection` tool, a drag moves the selection within its plane (`perspective.move`; Alt copies), the
 bounding-box handles scale it in plane space (`perspective.transform`; Shift keeps proportions, Alt scales about the
 centre), and `press_key` `5` during a drag switches the move to perpendicular to the plane (press again to switch
-back). The arrow keys nudge a selection in perspective by the keyboard increment (`perspective.nudge`; Shift ×10, Alt
+back). `press_key` Escape during a move, a resize or a plane widget drag cancels it and puts the objects and the
+grid back. The arrow keys nudge a selection in perspective by the keyboard increment (`perspective.nudge`; Shift ×10, Alt
 copies). Object › Transform › Transform Again repeats the last perspective move or scale in plane space.
 
 ```json
