@@ -4195,6 +4195,7 @@ imageTrace	Outline	Ääriviiva
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` on prosessiväri: sävytteet koskevat globaaleja värejä ja spottivärejä
 @msg	`{name}` is no recovery entry name	`{name}` ei ole palautusmerkinnän nimi
 @msg	`{name}` isn't a colour swatch	`{name}` ei ole värimalli
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	prosessiväri ei voi värittää läpinäkyvyyttä sisältävää harmaasävykuvaa: käytä spottiväriä, mustaa tai valkoista
 @msg	`{path}` must be a bool or an object of bools	`{path}` on oltava totuusarvo tai totuusarvojen objekti
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` ei ole väri (#rrggbb tai esiasetuksen nimi)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` ei ole Nesteytä-työkalu

@@ -3890,6 +3890,7 @@ axis	Both	Båda
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` är en processfärg: nyanser gäller för globala färger och dekorfärger
 @msg	`{name}` is no recovery entry name	`{name}` är inget namn på en återställningspost
 @msg	`{name}` isn't a colour swatch	`{name}` är inte en färgruta
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	en processfärg kan inte färglägga en gråskalebild med genomskinlighet: använd en dekorfärg, svart eller vitt
 @msg	`{path}` must be a bool or an object of bools	`{path}` måste vara ett booleskt värde eller ett objekt med booleska värden
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` är inte en färg (#rrggbb eller namnet på en förinställning)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` är inte ett verktyg för Gör flytande

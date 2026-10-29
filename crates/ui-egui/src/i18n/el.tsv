@@ -2211,6 +2211,7 @@ axis	Both	Και τα δύο
 @msg	`{name}` is a process colour: tints apply to global and spot colours	Το `{name}` είναι χρώμα τετραχρωμίας: οι αποχρώσεις εφαρμόζονται σε καθολικά και πλακάτα χρώματα
 @msg	`{name}` is no recovery entry name	Το `{name}` δεν είναι όνομα καταχώρισης ανάκτησης
 @msg	`{name}` isn't a colour swatch	Το `{name}` δεν είναι δείγμα χρώματος
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	ένα χρώμα τετραχρωμίας δεν μπορεί να χρωματίσει εικόνα κλίμακας του γκρι με διαφάνεια: χρησιμοποιήστε πλακάτο χρώμα, μαύρο ή λευκό
 @msg	`{path}` must be a bool or an object of bools	Το `{path}` πρέπει να είναι λογική τιμή ή αντικείμενο λογικών τιμών
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	Το `{s}` δεν είναι χρώμα (#rrggbb ή όνομα προεπιλογής)
 @msg	`{tool}` isn't a Liquify tool	Το `{tool}` δεν είναι εργαλείο ρευστοποίησης

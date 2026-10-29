@@ -4081,6 +4081,7 @@ theme	Appearance	외관
 @msg	the object already has an opacity mask	개체에 이미 불투명 마스크가 있습니다
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}`은(는) 프로세스 색상입니다. 색조는 글로벌 색상과 별색에만 적용됩니다
 @msg	`{name}` isn't a colour swatch	`{name}`은(는) 색상 견본이 아닙니다
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	프로세스 색상으로는 투명도가 있는 그레이스케일 이미지를 색칠할 수 없습니다. 별색, 검정 또는 흰색을 사용하십시오
 @msg	a document needs at least one artboard	문서에는 아트보드가 하나 이상 있어야 합니다
 @msg	empty path	빈 패스입니다
 @msg	join needs open paths	연결하려면 열린 패스가 필요합니다

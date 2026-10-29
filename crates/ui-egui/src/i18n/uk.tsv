@@ -3998,6 +3998,7 @@ axis	Both	Обидві
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` — складовий колір: відтінки застосовуються до глобальних та плашкових кольорів.
 @msg	`{name}` is no recovery entry name	`{name}` не є ім’ям запису відновлення
 @msg	`{name}` isn't a colour swatch	`{name}` не є колірним зразком
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	складовий колір не може розфарбувати зображення у відтінках сірого з прозорістю: використайте плашковий колір, чорний або білий
 @msg	`{path}` must be a bool or an object of bools	`{path}` має бути логічним значенням чи об’єктом логічних значень
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` не є кольором (#rrggbb або ім’ям набору)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` не є інструментом пластики

@@ -3882,6 +3882,7 @@ imageTrace	Outline	轮廓
 @msg	the object already has an opacity mask	该对象已有不透明度蒙版
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` 是印刷色：色调仅适用于全局色和专色
 @msg	`{name}` isn't a colour swatch	`{name}` 不是颜色色板
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	印刷色无法为带透明度的灰度图像上色：请使用专色、黑色或白色
 @msg	a document needs at least one artboard	文档至少需要一个画板
 @msg	empty path	路径为空
 @msg	join needs open paths	连接需要开放路径

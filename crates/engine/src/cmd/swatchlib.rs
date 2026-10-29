@@ -657,6 +657,7 @@ fn reset_defaults(s: &mut Session, p: &Value) -> Result<Value> {
     // With replace, links to swatches that are no longer global ones are dropped (the art keeps
     // its colour); filled in by the edit.
     let mut live: Vec<String> = vec![];
+    let colorized_ok = super::paint::check_colorized(&s.doc()?.doc).is_ok();
     let added = s.edit("Default Swatches", |d, _| {
         let mut added = vec![];
         if replace {
@@ -665,6 +666,7 @@ fn reset_defaults(s: &mut Session, p: &Value) -> Result<Value> {
             added.extend(d.swatches_iter().filter(|w| !before.contains(&w.name)).map(|w| w.name.clone()));
             live.extend(d.swatches_iter().filter(|w| w.global).map(|w| w.name.clone()));
             map_swatch_links(d, &mut |_, l, _| unlink_dead(&live, l));
+            super::paint::check_colorized_kept(colorized_ok, d).map_err(|e| bad("swatch.resetDefaults", e))?;
             return Ok(added);
         }
         for (i, w) in defaults.into_iter().enumerate() {

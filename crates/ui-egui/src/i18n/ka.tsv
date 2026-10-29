@@ -3765,6 +3765,7 @@ font-technology	Variable	ცვლადი
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` პროცესული ფერია: ტონირება გამოიყენება გლობალურ და სპოტ-ფერებზე
 @msg	`{name}` is no recovery entry name	`{name}` აღდგენის ჩანაწერის სახელი არ არის
 @msg	`{name}` isn't a colour swatch	`{name}` ფერის ნიმუში არ არის
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	პროცესული ფერი ვერ გააფერადებს გამჭვირვალობის მქონე ნაცრისფერ გამოსახულებას: გამოიყენეთ სპოტ-ფერი, შავი ან თეთრი
 @msg	`{path}` must be a bool or an object of bools	`{path}` უნდა იყოს bool ან bool-ების ობიექტი
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` ფერი არ არის (#rrggbb ან პრესეტის სახელი)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` გათხევადების ხელსაწყო არ არის

@@ -4010,6 +4010,7 @@ axis	Both	Оба
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` — составной цвет: оттенки применяются к глобальным и плашечным цветам
 @msg	`{name}` is no recovery entry name	`{name}` не является именем записи восстановления
 @msg	`{name}` isn't a colour swatch	`{name}` не является цветовым образцом
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	составной цвет не может раскрасить изображение в оттенках серого с прозрачностью: используйте плашечный цвет, чёрный или белый
 @msg	`{path}` must be a bool or an object of bools	`{path}` должно быть логическим значением или объектом логических значений
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` не является цветом (#rrggbb или именем набора)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` не является инструментом пластики

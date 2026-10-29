@@ -3974,6 +3974,7 @@ axis	Both	Ambos
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` es un color de cuatricromía: los matices se aplican a colores globales y planos
 @msg	`{name}` is no recovery entry name	`{name}` no es el nombre de una entrada de recuperación
 @msg	`{name}` isn't a colour swatch	`{name}` no es una muestra de color
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	un color de cuatricromía no puede colorear una imagen en escala de grises con transparencia: use un color plano, negro o blanco
 @msg	`{path}` must be a bool or an object of bools	`{path}` debe ser un booleano o un objeto de booleanos
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` no es un color (#rrggbb o el nombre de un preajuste)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` no es una herramienta de Licuar
