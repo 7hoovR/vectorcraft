@@ -47,7 +47,7 @@ pub struct GestureTool {
     /// Pencil/Paintbrush starting on a selected path away from its ends: (path, Edit Selected
     /// Paths' distance in points); the stroke redraws the section it ends on (#2850).
     redraw: Option<(NodeId, f64)>,
-    /// Fit tolerance in points (Pencil/Paintbrush/Smooth "Fidelity").
+    /// Fit tolerance in points (Pencil/Paintbrush/Smooth/Blob Brush "Fidelity").
     pub fidelity: f64,
     /// Brush / eraser diameter in points (the Eraser's across its tip's long axis).
     pub size: f64,
@@ -388,6 +388,7 @@ impl GestureTool {
                 json!({
                     "points": points_json(pts),
                     "size": self.size,
+                    "fidelity": self.fidelity,
                     "keepSelected": self.keep_selected,
                     "mergeOnlySelection": self.merge_only_selection
                 }),
@@ -698,7 +699,9 @@ impl Tool for GestureTool {
                 })
             }
             "smooth" => json!({"fidelity": self.fidelity}),
-            "blobBrush" => json!({"size": self.size, "keepSelected": self.keep_selected, "mergeOnlySelection": self.merge_only_selection}),
+            "blobBrush" => {
+                json!({"fidelity": self.fidelity, "size": self.size, "keepSelected": self.keep_selected, "mergeOnlySelection": self.merge_only_selection})
+            }
             "eraser" => json!({"size": self.size, "angle": self.angle, "roundness": self.roundness}),
             _ => Value::Null,
         }

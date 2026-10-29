@@ -532,6 +532,65 @@ fn blob_brush_merges_with_the_topmost_match_and_its_neighbors() {
     assert_eq!(area(&path(&s, outside)), area_outside, "the path outside the group is left as it was");
 }
 
+/// Blob Brush Fidelity: the brush of `path.blob` follows the stroke fitted at `fidelity` points, as
+/// `path.freehand` fits a Pencil stroke; without `fidelity` it follows every point. On a jittery
+/// stroke, 0.01 pt keeps the jitter and 1.5 pt and 10 pt smooth it away, with fewer anchors and a
+/// shape of about the same area. The tool's Fidelity is 1.5 pt by default.
+#[test]
+fn blob_brush_fidelity_fits_the_stroke_the_brush_follows() {
+    let mut s = session();
+    // A wave drawn with a hand's jitter: every other point 1 pt off.
+    let wave: Vec<[f64; 2]> =
+        (0..=80).map(|i| [20.0 + f64::from(i) * 4.0, 200.0 + 30.0 * (f64::from(i) * 0.125).sin() + if i % 2 == 0 { 1.0 } else { -1.0 }]).collect();
+    // The anchors and area of the blob the wave paints at height `dy` with `fidelity` (None: left out).
+    let mut blob = |dy: f64, fidelity: Option<f64>| {
+        let pts: Vec<[f64; 2]> = wave.iter().map(|q| [q[0], q[1] + dy]).collect();
+        let mut p = json!({"points": pts, "size": 20, "merge": false});
+        if let Some(f) = fidelity {
+            p["fidelity"] = json!(f);
+        }
+        let id = NodeId(s.execute("path.blob", &p).unwrap()["id"].as_u64().unwrap());
+        let pd = path(&s, id);
+        (pd.subpaths.iter().map(|sp| sp.anchors.len()).sum::<usize>(), area(&pd))
+    };
+    let (unfitted, unfitted_area) = blob(0.0, None);
+    let (default, default_area) = blob(100.0, Some(1.5));
+    let (smooth, smooth_area) = blob(200.0, Some(10.0));
+    let (accurate, _) = blob(300.0, Some(0.01));
+    assert!(default < unfitted, "{default} anchors at 1.5 pt, {unfitted} unfitted");
+    assert!(smooth < default, "{smooth} anchors at 10 pt, {default} at 1.5 pt, {unfitted} unfitted");
+    assert!(default < accurate, "{default} anchors at 1.5 pt, {accurate} at 0.01 pt");
+    for (a, f) in [(default_area, 1.5), (smooth_area, 10.0)] {
+        assert!((a - unfitted_area).abs() < unfitted_area * 0.05, "{a} pt² at {f} pt, {unfitted_area} pt² unfitted");
+    }
+    // A short stroke back to its start that the fit leaves with no length still paints.
+    let back = json!({"points": [[100, 600], [110, 600], [100, 600]], "size": 10, "fidelity": 100, "merge": false});
+    let dab = NodeId(s.execute("path.blob", &back).unwrap()["id"].as_u64().unwrap());
+    assert!(area(&path(&s, dab)) > 70.0, "{}", area(&path(&s, dab)));
+    s.select_tool("blobBrush", view()).unwrap();
+    assert_eq!(s.tool_options()["fidelity"], json!(1.5));
+}
+
+/// A stroke fitted at its Fidelity can curve outside its points, and it still merges with a blob
+/// of its color that the curve covers there.
+#[test]
+fn blob_brush_merges_with_a_blob_its_fitted_stroke_curves_over() {
+    let stroke = json!({"points": [[100, 100], [600, 100], [600, 600]], "size": 10, "fidelity": 1.5});
+    // Where the fitted shape reaches farthest outside the points' bounds padded by the size.
+    let mut first = session();
+    let id = NodeId(first.execute("path.blob", &with(&stroke, json!({"merge": false}))).unwrap()["id"].as_u64().unwrap());
+    let outside = |p: Point| (90.0 - p.x).max(p.x - 610.0).max(90.0 - p.y).max(p.y - 610.0);
+    let far =
+        path(&first, id).subpaths.iter().flat_map(|sp| sp.anchors.iter().map(|a| a.p)).max_by(|a, b| outside(*a).total_cmp(&outside(*b))).unwrap();
+    assert!(outside(far) > 5.0, "the fitted stroke curves {} pt past the padded bounds", outside(far));
+    // A small blob there merges with the stroke.
+    let mut s = session();
+    let small = NodeId(s.execute("path.blob", &json!({"points": [[far.x, far.y]], "size": 6, "merge": false})).unwrap()["id"].as_u64().unwrap());
+    let merged = NodeId(s.execute("path.blob", &stroke).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(merged, small);
+    assert_eq!(paths(&s).len(), 1);
+}
+
 /// Three points already curve in the saved path: both ends carry a handle into the curve.
 #[test]
 fn path_curvature_with_three_points_saves_end_handles() {
@@ -1373,6 +1432,7 @@ fn drawing_commands_refuse_a_size_given_as_text() {
         ("path.smoothRegion", "fidelity"),
         ("path.joinScrub", "tolerance"),
         ("path.blob", "size"),
+        ("path.blob", "fidelity"),
     ] {
         refuses_a_number_given_as_text(&mut s, cmd, &stroke, key);
     }

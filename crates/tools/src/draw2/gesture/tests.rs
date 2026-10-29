@@ -283,6 +283,23 @@ fn blob_brush_sends_keep_selected_and_merge_only_with_selection() {
     assert_eq!(GestureTool::new("eraser").options(), json!({"size": 10.0, "angle": 0.0, "roundness": 100.0}));
 }
 
+/// The Blob Brush has a Fidelity, 1.5 pt by default and 0.01 to 100 pt, and its stroke sends it.
+#[test]
+fn blob_brush_sends_its_fidelity() {
+    let (d, _) = doc_with_rect();
+    let s = Selection::default();
+    let p = paint();
+    let cx = cx(&d, &s, &p);
+    let mut t = GestureTool::new("blobBrush");
+    assert_eq!(t.options()["fidelity"], json!(1.5));
+    for (set, sent) in [(1.5, 1.5), (6.0, 6.0), (0.001, 0.01), (500.0, 100.0)] {
+        t.set_option("fidelity", &json!(set));
+        assert_eq!(t.options()["fidelity"], json!(sent));
+        let acts = drag(&mut t, &cx, &[(50.0, 150.0), (250.0, 150.0)], Mods::default());
+        assert!(matches!(&acts[2][0], Action::Exec(c, v) if c == "path.blob" && v["fidelity"] == json!(sent)), "{set}: {acts:?}");
+    }
+}
+
 /// Shift keeps a Blob Brush stroke on the horizontal or vertical line through the press point,
 /// whichever is nearer to the pointer, at 90° steps from the Constrain Angle; the points
 /// dragged with Shift held move to the other line together, and each point follows the Shift
