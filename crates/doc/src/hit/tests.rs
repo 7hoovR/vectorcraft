@@ -155,6 +155,25 @@ fn a_selected_groups_hidden_art_counts_only_where_a_click_would_hit_it() {
     assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), None, "its own mask");
 }
 
+/// A selected guide path where a mask hides it counts only while guides can be clicked: not
+/// while they are locked or hidden (`skip_guides`), as a click on it then hits nothing.
+#[test]
+fn a_selected_guide_hidden_by_a_mask_counts_only_while_guides_can_be_clicked() {
+    let mut d = Document::new(300.0, 200.0);
+    let l = d.layers[0].id;
+    let (mask, mut art) = half_clipped(&mut d);
+    if let NodeKind::Path { guide, .. } = &mut art.kind {
+        *guide = true;
+    }
+    let (g, guide_id) = (d.alloc_id(), art.id);
+    let mut clip = Node::group(g, vec![Arc::new(mask), Arc::new(art)]);
+    clip.set_clips(true);
+    d.insert(Some(l), 0, clip).unwrap();
+    let (hidden, opt) = (Point::new(150.0, 50.0), HitOptions::default());
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[guide_id]), Some(guide_id));
+    assert_eq!(selected_hidden_at(&d, hidden, HitOptions { skip_guides: true, ..opt }, &[guide_id]), None);
+}
+
 /// #2345: a marquee touches a clip group only where its art shows. Over the clipped-away
 /// half alone it selects nothing, and around a rectangle drawn beside the group's mask it
 /// takes that rectangle alone; reaching into the mask takes the group. The same holds for

@@ -115,8 +115,8 @@ pub fn hit_test_visible(doc: &Document, p: Point, opt: HitOptions) -> Option<Hit
 /// click there hits nothing ([`hit_test`]), so the selection tools grab the selection by that
 /// art instead of starting a marquee: an image in a mask, picked in the Layers panel, can be
 /// dragged by its hidden part, whose frame shows while it is selected. An object that a click
-/// can't hit anyway doesn't count: hidden, locked, a template, outside the isolated container
-/// (`opt.scope`) or on a locked artboard.
+/// can't hit anyway doesn't count: hidden, locked, a template, a guide while guides are locked
+/// or hidden, outside the isolated container (`opt.scope`) or on a locked artboard.
 pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &[NodeId]) -> Option<NodeId> {
     let symbols = doc.symbol_boxes();
     let locks = doc.locked_artboards();
@@ -136,9 +136,13 @@ pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &
             .rev()
             .skip(1)
             .any(|n| n.clips() && n.children().and_then(|c| c.first()).is_some_and(|clip| clip.id != id && !clip_contains(clip, p)));
-        // Its own art is what a click would hit in it: a group's hidden, locked or masked
-        // contents don't count.
-        masked && nodes.last().is_some_and(|n| object_hit(n, p, opt, &symbols, true))
+        // A click may reach it there ([`may_hit`]: not a guide while guides are locked or
+        // hidden, nor a Shaper group's hidden part), and its own art is what a click would hit
+        // in it: a group's hidden, locked or masked contents don't count.
+        let [.., parent, n] = nodes.as_slice() else { return false };
+        let reachable =
+            parent.children().and_then(|c| c.iter().position(|c| c.id == id)).is_some_and(|i| may_hit(parent, i, n, p, opt, &symbols, true));
+        masked && reachable && object_hit(n, p, opt, &symbols, true)
     })
 }
 
