@@ -151,6 +151,23 @@ fn mask_options_already_set_record_no_undo_step() {
     assert!(s.execute("transparency.setOpacityMask", &json!({"id": a.0})).is_err(), "no flag given");
 }
 
+/// #4538: while a mask is edited the Layers panel lists only the mask, so New Layer and New
+/// Sublayer are refused instead of adding layers no row shows; they work again afterwards.
+#[test]
+fn new_layers_are_refused_while_a_mask_is_edited() {
+    let mut s = session();
+    editing_mask(&mut s);
+    let layers = doc(&s).layers.len();
+    for cmd in ["layer.new", "layer.newSublayer"] {
+        assert!(s.execute(cmd, &json!({})).is_err(), "{cmd} while the mask is edited");
+    }
+    assert_eq!(doc(&s).layers.len(), layers);
+    s.execute("transparency.stopEditingOpacityMask", &json!({})).unwrap();
+    let layers = doc(&s).layers.len();
+    s.execute("layer.new", &json!({})).unwrap();
+    assert_eq!(doc(&s).layers.len(), layers + 1);
+}
+
 #[test]
 fn release_while_editing_leaves_editing_first() {
     let mut s = session();
