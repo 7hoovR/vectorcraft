@@ -2341,6 +2341,21 @@ fn a_turned_view_draws_the_last_frame_turned_until_its_own_arrives() {
 /// fill is dropped.
 #[test]
 fn a_pan_fills_the_area_the_last_frame_leaves_until_the_worker_frame_arrives() {
+    // The canvas key holds the global placed-document bitmap clock, which tests on other threads
+    // move: a frame whose key changed by more than the view drops the fill. An attempt that fails
+    // while the clock moved runs again; one that fails while it stood still is a real failure.
+    for _ in 0..20 {
+        let clock = vectorcraft_render::placed_document::generation();
+        match std::panic::catch_unwind(pan_fills_the_area_the_last_frame_leaves) {
+            Ok(()) => return,
+            Err(_) if vectorcraft_render::placed_document::generation() != clock => {}
+            Err(e) => std::panic::resume_unwind(e),
+        }
+    }
+    pan_fills_the_area_the_last_frame_leaves();
+}
+
+fn pan_fills_the_area_the_last_frame_leaves() {
     let ctx = egui::Context::default();
     let mut app = VectorcraftApp::new(Session::new(), Default::default());
     app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
