@@ -1134,6 +1134,18 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "{} close the progress window of the heavy filters running in the background; they go on, shown in the status bar → {hidden: n}",
     ),
     (
+        "imageTrace.cancelRuns",
+        "Cancel Image Trace",
+        "",
+        "{} stop every Image Trace running in the background (its progress window's Cancel): it stops at its next colour and changes nothing → {cancelled: n}",
+    ),
+    (
+        "imageTrace.hideRuns",
+        "Continue in Background",
+        "",
+        "{} close the progress window of the Image Traces running in the background; they go on, shown in the status bar → {hidden: n}",
+    ),
+    (
         "ui.checkScript",
         "Check Script…",
         "",
