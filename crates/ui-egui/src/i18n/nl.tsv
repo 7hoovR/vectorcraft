@@ -5631,3 +5631,6 @@ axis	Y Axis	Y-as
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Breid eerst het uiterlijk uit (Object › Uiterlijk uitbreiden)
 	Live preview	Live voorbeeld
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punttekst
+	Area Text	Vlaktekst

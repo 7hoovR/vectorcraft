@@ -5640,3 +5640,6 @@ axis	Y Axis	Y ekseni
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Önce görünümü genişletin (Nesne › Görünümü Genişlet)
 	Live preview	Canlı önizleme
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Nokta Metni
+	Area Text	Alan Metni

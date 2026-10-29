@@ -2938,6 +2938,22 @@ that index, the step gets that document's last artboard. An action recorded in t
 {"name":"run_command","arguments":{"command":"select.allOnArtboard","params":{"artboard":1}}}
 ```
 
+## Align to Glyph Bounds
+
+Align and Distribute normally measure type by its em box (point type) or its frame (area type). With the preference
+`alignGlyphBoundsPoint` on (`prefs.set {key: "alignGlyphBoundsPoint", value: true}`; also the Align panel flyout's
+Align to Glyph Bounds › Point Text), `object.align`, `object.distribute` and `object.distributeSpacing` measure point
+type by the ink of its glyphs instead: lowercase "ace" aligned to the top of a rectangle lines up the tops of its
+letters, not the space above them that the em box keeps for capitals and ascenders. `alignGlyphBoundsArea` (Area Text)
+does the same for area type. The two are independent and off by default; type on a path, type that draws nothing and
+type inside a selected group are measured as before. With Use Preview Bounds on, the glyphs' ink takes in the
+characters' strokes. [Align text](https://helpx.adobe.com/illustrator/desktop/design-with-text/edit-format-text/align-text.html).
+
+```json
+{"name":"run_command","arguments":{"command":"prefs.set","params":{"values":{"alignGlyphBoundsPoint":true,"alignGlyphBoundsArea":true}}}}
+{"name":"run_command","arguments":{"command":"object.align","params":{"vertical":"top"}}}
+```
+
 ## Use Preview Bounds
 
 With the preference `usePreviewBounds` on (`prefs.set {key: "usePreviewBounds", value: true}`; also the Align panel

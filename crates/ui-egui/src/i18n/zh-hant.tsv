@@ -5317,3 +5317,6 @@ axis	Y Axis	Y 軸
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	請先展開外觀（物件 › 展開外觀）
 	Live preview	即時預覽
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	點狀文字
+	Area Text	區域文字

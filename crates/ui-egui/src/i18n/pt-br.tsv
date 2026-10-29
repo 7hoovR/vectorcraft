@@ -5599,3 +5599,6 @@ axis	Y Axis	Eixo Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Expanda a aparência primeiro (Objeto › Expandir Aparência)
 	Live preview	Visualização ao vivo
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Texto de Ponto
+	Area Text	Texto de Área

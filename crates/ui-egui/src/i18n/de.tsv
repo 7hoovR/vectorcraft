@@ -5264,3 +5264,6 @@ axis	Y Axis	Y-Achse
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Wandeln Sie zuerst das Aussehen um (Objekt › Aussehen umwandeln)
 	Live preview	Live-Vorschau
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttext
+	Area Text	Flächentext

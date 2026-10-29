@@ -5360,3 +5360,6 @@ axis	Y Axis	Y 軸
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	先にアピアランスを分割してください（オブジェクト › アピアランスを分割）
 	Live preview	ライブプレビュー
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	ポイント文字
+	Area Text	エリア内文字

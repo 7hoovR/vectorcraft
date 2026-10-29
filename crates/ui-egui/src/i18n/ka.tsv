@@ -5671,3 +5671,6 @@ swatch	Bright Violet	კაშკაშა იისფერი
 	Line Weight:	ხაზის სისქე:
 	Position:	პოზიცია:
 	Font Size:	შრიფტის ზომა:
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	წერტილოვანი ტექსტი
+	Area Text	არის ტექსტი

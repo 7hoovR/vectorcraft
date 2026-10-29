@@ -5681,3 +5681,6 @@ axis	Y Axis	Axe Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Décomposez d’abord l’aspect (Objet › Décomposer l’aspect)
 	Live preview	Aperçu en direct
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Texte de point
+	Area Text	Texte captif

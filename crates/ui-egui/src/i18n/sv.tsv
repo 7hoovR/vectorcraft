@@ -5706,3 +5706,6 @@ axis	Y Axis	Y-axel
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Expandera utseendet först (Objekt › Expandera utseende)
 	Live preview	Direkt förhandsgranskning
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttext
+	Area Text	Områdestext

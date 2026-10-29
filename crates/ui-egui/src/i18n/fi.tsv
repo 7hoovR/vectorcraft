@@ -5713,3 +5713,6 @@ axis	Y Axis	Y-akseli
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Laajenna ensin ulkoasu (Objekti › Laajenna ulkoasu)
 	Live preview	Reaaliaikainen esikatselu
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Pisteteksti
+	Area Text	Alueteksti

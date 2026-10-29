@@ -5668,3 +5668,6 @@ axis	Y Axis	Y tengely
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Előbb bontsd ki a megjelenést (Objektum › Megjelenés kibontása)
 	Live preview	Élő előnézet
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Pontszöveg
+	Area Text	Területszöveg

@@ -5572,3 +5572,6 @@ axis	Y Axis	Y ос
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Първо разширете външния вид (Обект › Разширяване на външния вид)
 	Live preview	Преглед на живо
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Точков текст
+	Area Text	Текст в зона

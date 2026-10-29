@@ -27,6 +27,12 @@ pub struct Prefs {
     pub select_same_tint_percent: bool,
     pub show_home_screen: bool,
     pub use_preview_bounds: bool,
+    /// Align panel menu › Align to Glyph Bounds › Point Text: Align and Distribute measure point
+    /// type by the ink of its glyphs instead of its em box.
+    pub align_glyph_bounds_point: bool,
+    /// Align panel menu › Align to Glyph Bounds › Area Text: the same for area type, instead of
+    /// its frame.
+    pub align_glyph_bounds_area: bool,
     pub display_print_size: bool,
     pub double_click_to_isolate: bool,
     pub transform_pattern_tiles: bool,
@@ -317,6 +323,8 @@ impl Default for Prefs {
             select_same_tint_percent: false,
             show_home_screen: true,
             use_preview_bounds: false,
+            align_glyph_bounds_point: false,
+            align_glyph_bounds_area: false,
             display_print_size: false,
             double_click_to_isolate: true,
             transform_pattern_tiles: false,

@@ -5280,3 +5280,6 @@ axis	Y Axis	Trục Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Hãy mở rộng diện mạo trước (Đối tượng › Mở rộng diện mạo)
 	Live preview	Xem trước trực tiếp
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Chữ điểm
+	Area Text	Chữ vùng
