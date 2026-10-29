@@ -1963,6 +1963,7 @@ font-technology	Variable	Променливи
 	Brush Art	Графика на четка
 	New Calligraphic Brush	Нова калиграфска четка
 	New Character Style	Нов стил на знак
+	New Character Style…	Нов стил на знак…
 	New Color Group	Нова цветова група
 	New Color Group…	Нова цветова група…
 	New Document Presets	Предварителни настройки за нов документ
@@ -1978,6 +1979,7 @@ font-technology	Variable	Променливи
 	New Opacity Masks Are Clipping	Новите маски за непрозрачност са изрязващи
 	New Opacity Masks Are Inverted	Новите маски за непрозрачност са инвертирани
 	New Paragraph Style	Нов стил на абзац
+	New Paragraph Style…	Нов стил на абзац…
 	New Pattern Brush from Selection	Нова щампова четка от селекцията
 	New PDF Preset	Нова предварителна настройка за PDF
 	New Print Preset	Нова предварителна настройка за печат

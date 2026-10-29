@@ -2841,6 +2841,7 @@ file-filter	Templates	範本
 	Brush Art	筆刷圖稿
 	New Calligraphic Brush	新增書法筆刷
 	New Character Style	新增字元樣式
+	New Character Style…	新增字元樣式…
 	New Color Group	新增顏色群組
 	New Color Group…	新增顏色群組…
 	New Document Presets	新增文件預設集
@@ -2856,6 +2857,7 @@ file-filter	Templates	範本
 	New Opacity Masks Are Clipping	新的不透明度遮色片為剪裁
 	New Opacity Masks Are Inverted	新的不透明度遮色片為反轉
 	New Paragraph Style	新增段落樣式
+	New Paragraph Style…	新增段落樣式…
 	New Pattern Brush from Selection	從選取範圍新增圖樣筆刷
 	New PDF Preset	新增 PDF 預設集
 	New Print Preset	新增列印預設集

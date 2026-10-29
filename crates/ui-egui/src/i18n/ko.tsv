@@ -2174,6 +2174,7 @@ font-technology	Variable	가변
 	Brush Art	브러시 아트
 	New Calligraphic Brush	새 캘리그래피 브러시
 	New Character Style	새 문자 스타일
+	New Character Style…	새 문자 스타일…
 	New Color Group	새 색상 그룹
 	New Color Group…	새 색상 그룹…
 	New Document Presets	새 문서 사전 설정
@@ -2187,6 +2188,7 @@ font-technology	Variable	가변
 	New Opacity Masks Are Inverted	새 불투명 마스크를 반전으로 설정
 	New PDF Preset	새 PDF 사전 설정
 	New Paragraph Style	새 단락 스타일
+	New Paragraph Style…	새 단락 스타일…
 	New Pattern Brush from Selection	선택 항목으로 새 패턴 브러시 만들기
 	New Print Preset	새 인쇄 사전 설정
 	New Scatter Brush from Selection	선택 항목으로 새 흩뿌리기 브러시 만들기

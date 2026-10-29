@@ -634,6 +634,18 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "{name?} open Graphic Style Options (dialog `graphicStyleOptions`, field `name`): for style `name` OK renames it (graphicStyle.rename); without, OK makes a new style of that name from the selection (graphicStyle.new)",
     ),
     (
+        "ui.newCharStyle",
+        "New Character Style…",
+        "",
+        "{} open New Character Style (dialog `newTextStyle`, field `name`, filled in with the name charStyle.new {} would give the style), what Alt-clicking the Character Styles panel's New button opens; OK runs charStyle.new with the name and the Type tool's selected characters (else the selected type) as they were when the dialog opened; Cancel adds no style",
+    ),
+    (
+        "ui.newParaStyle",
+        "New Paragraph Style…",
+        "",
+        "{} open New Paragraph Style (dialog `newTextStyle`, field `name`, filled in with the name paraStyle.new {} would give the style), what Alt-clicking the Paragraph Styles panel's New button opens; OK runs paraStyle.new with the name and the paragraph of the Type tool's selection (else the selected type) as it was when the dialog opened; Cancel adds no style",
+    ),
+    (
         "ui.symbolOptions",
         "Symbol Options…",
         "F8",

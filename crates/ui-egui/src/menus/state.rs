@@ -221,7 +221,7 @@ pub fn enabled(app: &VectorcraftApp, id: &str) -> bool {
         "ui.missingFontsDialog" => !cfg!(target_arch = "wasm32") && app.session.active().is_some(),
         "ui.findFontsInFolder" => crate::picks::can(app, &crate::picks::PickRequest::Folder) && app.session.active().is_some(),
         "ui.swatchOptions" | "ui.newSwatch" | "ui.newColorGroup" => app.session.active().is_some(),
-        "ui.graphicStyleOptions" => app.session.active().is_some(),
+        "ui.graphicStyleOptions" | "ui.newCharStyle" | "ui.newParaStyle" => app.session.active().is_some(),
         "ui.newArtboard" => app.session.active().is_some(),
         "ui.sampleScreenColor" => crate::screen_color::available(app),
         "ui.newBrush" => app.session.active().is_some(),

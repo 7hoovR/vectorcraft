@@ -4955,6 +4955,13 @@ inserting `\n`) continues the style of the paragraph it splits; deleting a break
 `text.setText` gives every paragraph the first one's attributes. Threaded text keeps each paragraph's attributes as
 the story re-flows (a paragraph split between frames has them in both).
 
+`ui.newCharStyle` and `ui.newParaStyle` (Alt-click on New in the Character Styles or Paragraph Styles panel) open
+New Character Style or New Paragraph Style (dialog `newTextStyle`, field `name`) with the name `charStyle.new {}` or
+`paraStyle.new {}` would give the style, and add no style yet. OK runs `charStyle.new` or `paraStyle.new` with the
+name and the Type tool's selection as it was when the dialog opened (else the selected type); a name another style
+has, or an empty one, keeps the dialog open, and Cancel adds no style. A plain click on New still makes the style at
+once.
+
 In the native file a text object's `para` holds the first paragraph's attributes and `paras` (left out when every
 paragraph is alike) one entry per paragraph, so older readers keep the first paragraph's. SVG export anchors each
 centred or right-aligned line on its own (`<tspan text-anchor>`), and SVG import gives each line's paragraph its
