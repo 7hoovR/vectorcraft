@@ -239,6 +239,9 @@ fn run_ui_part3(app: &mut VectorcraftApp, id: &str, p: &Value) -> Option<Result<
         "type.highlightFontName" => crate::panels::character::highlight(app, crate::panels::character::Field::FontName),
         "type.highlightKerning" => crate::panels::character::highlight(app, crate::panels::character::Field::Kerning),
         "type.highlightTracking" => crate::panels::character::highlight(app, crate::panels::character::Field::Tracking),
+        "type.underline" => crate::panels::character::toggle_underline(app),
+        "type.lineComposer" => crate::panels::paragraph::toggle_composer(app),
+        "type.hyphenate" => crate::panels::paragraph::toggle_hyphenate(app),
         id if let Some((_, justify)) = crate::panels::paragraph::ALIGN_COMMANDS.iter().find(|c| c.0 == id) => {
             crate::panels::paragraph::align(app, justify)
         }
