@@ -19,7 +19,8 @@ use vectorcraft_doc::{Document, ImageBlob, Node, NodeId, NodeKind};
 
 use super::edit::selected_roots;
 use super::{
-    CommandSpec, EngineError, Result, Session, always, bad, bool_or, cmd, color_value, f64_or, has_selection, ids_param, str_param, unique_name,
+    CommandSpec, EngineError, Result, Session, always, bad, bool_or, check_numbers, cmd, color_value, f64_or, f64_req, has_selection, ids_param,
+    str_param, unique_name,
 };
 
 pub fn specs() -> Vec<CommandSpec> {
