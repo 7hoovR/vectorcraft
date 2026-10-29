@@ -1918,6 +1918,7 @@ file-filter	Templates	模板
 	Brush Art	画笔图稿
 	New Calligraphic Brush	新建书法画笔
 	New Character Style	新建字符样式
+	New Character Style…	新建字符样式…
 	New Color Group	新建颜色组
 	New Color Group…	新建颜色组…
 	New Document Presets	新建文档预设
@@ -1931,6 +1932,7 @@ file-filter	Templates	模板
 	New Opacity Masks Are Clipping	新建不透明度蒙版为剪切
 	New Opacity Masks Are Inverted	新建不透明度蒙版为反相
 	New Paragraph Style	新建段落样式
+	New Paragraph Style…	新建段落样式…
 	New Pattern Brush from Selection	从选区新建图案画笔
 	New PDF Preset	新建 PDF 预设
 	New Print Preset	新建打印预设

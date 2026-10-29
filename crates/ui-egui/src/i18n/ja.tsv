@@ -2179,6 +2179,7 @@ font-technology	Variable	バリアブル
 	Brush Art	ブラシのアート
 	New Calligraphic Brush	新規絵筆ブラシ
 	New Character Style	新規文字スタイル
+	New Character Style…	新規文字スタイル…
 	New Color Group	新規カラーグループ
 	New Color Group…	新規カラーグループ…
 	New Document Presets	新規ドキュメントプリセット
@@ -2192,6 +2193,7 @@ font-technology	Variable	バリアブル
 	New Opacity Masks Are Inverted	新規不透明マスクを反転に設定
 	New PDF Preset	新規 PDF プリセット
 	New Paragraph Style	新規段落スタイル
+	New Paragraph Style…	新規段落スタイル…
 	New Pattern Brush from Selection	選択範囲から新規パターンブラシ
 	New Print Preset	新規プリントプリセット
 	New Scatter Brush from Selection	選択範囲から新規散布ブラシ
