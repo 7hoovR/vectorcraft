@@ -106,7 +106,15 @@ impl Session {
         {
             crate::cmd::distortcmds::silent(self, |g| g.visible = true)?;
         }
-        self.switch_tool(id, view)
+        // When the tool already active, or the tool lent a selection tool for a drag, is chosen again,
+        // `select_tool` calls its [`Tool::chosen_again`] (the Blend tool finishes its blend).
+        let again = self.lender.as_ref().unwrap_or(&self.tool).id() == id;
+        self.switch_tool(id, view)?;
+        if again {
+            let acts = self.with_tool_cx(view, |t, cx| t.chosen_again(cx));
+            self.apply_actions(acts)?;
+        }
+        Ok(())
     }
 
     /// Switch to tool `id` without choosing it afresh (back from a temporary tool: a hidden

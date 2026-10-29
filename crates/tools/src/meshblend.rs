@@ -148,6 +148,12 @@ impl Tool for BlendTool {
         (self.first, self.chained) = (None, false);
         vec![]
     }
+    /// Choosing the Blend tool again finishes the blend: it drops the object picked first and
+    /// stops adding to the blend just made, so the next click picks a new first object. The
+    /// document and the selection stay as they are.
+    fn chosen_again(&mut self, cx: &ToolContext) -> Vec<Action> {
+        self.deactivate(cx)
+    }
 }
 
 #[derive(Default)]
@@ -294,6 +300,45 @@ mod tests {
         t.pointer(&c, &PointerEvent::new(PointerKind::Down, 150.0, 150.0));
         let acts = t.pointer(&c, &PointerEvent::new(PointerKind::Down, 320.0, 120.0));
         assert_eq!(acts, vec![Action::Exec("object.blend.make".into(), json!({"ids": [a.0, b.0]}))]);
+    }
+
+    /// Choosing the Blend tool again drops the object picked first and stops adding to the blend
+    /// just made: the next click is a new first pick. The Mesh tool keeps its state.
+    #[test]
+    fn choosing_the_blend_tool_again_finishes_the_blend() {
+        let (mut d, a) = doc_with_rect();
+        let l = d.layers[0].id;
+        let (b, g) = (d.alloc_id(), d.alloc_id());
+        let r = vectorcraft_geom::shapes::rectangle(vectorcraft_geom::Rect::new(300.0, 100.0, 350.0, 150.0));
+        d.insert(Some(l), 1, vectorcraft_doc::Node::path(b, r, vectorcraft_doc::Appearance::default_art())).unwrap();
+        let (k1, k2) = (d.alloc_id(), d.alloc_id());
+        let key = |id: NodeId, x: f64| {
+            let r = vectorcraft_geom::shapes::rectangle(vectorcraft_geom::Rect::new(x, 300.0, x + 20.0, 320.0));
+            std::sync::Arc::new(vectorcraft_doc::Node::path(id, r, vectorcraft_doc::Appearance::default_art()))
+        };
+        let blend = vectorcraft_doc::Node::new(g, NodeKind::Blend { children: vec![key(k1, 0.0), key(k2, 100.0)], spec: Default::default() });
+        d.insert(Some(l), 2, blend).unwrap();
+        let (s, p) = (Selection::default(), paint());
+        let c = cx(&d, &s, &p);
+        let picks = |id: NodeId| vec![Action::Exec("select.set".into(), json!({"ids": [id.0]}))];
+        let down = |x: f64, y: f64| PointerEvent::new(PointerKind::Down, x, y);
+        let mut t = BlendTool::default();
+        assert_eq!(t.pointer(&c, &down(150.0, 150.0)), picks(a));
+        assert!(t.busy());
+        assert!(t.chosen_again(&c).is_empty(), "choosing the tool again changes nothing in the document");
+        assert!(!t.busy() && t.first(&c).is_none() && t.overlays(&c).is_empty(), "and drops the pick");
+        assert_eq!(t.pointer(&c, &down(320.0, 120.0)), picks(b), "b is picked first");
+        // After a blend is made, the next click no longer adds to it.
+        let mut s = Selection::default();
+        s.set([g]);
+        let c = cx(&d, &s, &p);
+        let mut t = BlendTool { first: None, chained: true };
+        assert!(t.first(&c).is_some());
+        assert!(t.chosen_again(&c).is_empty());
+        assert!(t.first(&c).is_none(), "choosing the tool again ends adding to the blend just made");
+        assert_eq!(t.pointer(&c, &down(150.0, 150.0)), picks(a));
+        // Other tools keep their state: the default does nothing.
+        assert!(create("mesh").unwrap().chosen_again(&c).is_empty());
     }
 
     #[test]
