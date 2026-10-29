@@ -472,6 +472,60 @@ fn moves_are_validated() {
     assert_eq!(parent(&s, sub), None);
 }
 
+/// The Layers panel's commands refuse a switch given as text or as another value that is not true
+/// or false, and leave the document, the selection, the highlighted rows and the undo history as
+/// they were; true, false and null still work.
+#[test]
+fn layer_commands_refuse_a_switch_given_as_text() {
+    let fixture = || {
+        let mut s = session();
+        let (layer, sub, a, g, _, c) = tree(&mut s);
+        run(&mut s, "layer.setCurrent", json!({"id": sub.0}));
+        (s, layer, sub, a, g, c)
+    };
+    let (_, layer, sub, a, g, _) = fixture();
+    let mut unexpected = vec![];
+    for (cmd, p, key) in [
+        ("layer.new", json!({"top": "true"}), "top"),
+        ("layer.new", json!({"top": 1, "name": "Top"}), "top"),
+        ("layer.newSublayer", json!({"top": "false"}), "top"),
+        ("layer.selectAll", json!({"id": layer.0, "add": "true"}), "add"),
+        ("layer.target", json!({"id": layer.0, "add": 1}), "add"),
+        ("layer.move", json!({"ids": [a.0], "target": layer.0, "copy": "true"}), "copy"),
+        ("layer.move", json!({"ids": [a.0], "target": g.0, "copy": {}}), "copy"),
+        ("layer.template", json!({"ids": [layer.0], "on": "false"}), "on"),
+        ("layer.pasteRemembersLayers", json!({"on": "false"}), "on"),
+        ("layer.pasteRemembersLayers", json!({"on": 0}), "on"),
+        ("layer.releaseToLayers", json!({"id": sub.0, "build": [true]}), "build"),
+    ] {
+        // Each call on a fresh copy of the same tree, so one that goes through does not change the next.
+        let (mut s, l, sl, o, gr, _) = fixture();
+        assert_eq!((l, sl, o, gr), (layer, sub, a, g), "the same ids");
+        let before = layer_target_snapshot(&s);
+        let r = s.execute(cmd, &p);
+        let want = format!("`{key}` must be true or false");
+        if !matches!(&r, Err(EngineError::BadParams { cmd: got, msg }) if got == cmd && *msg == want) {
+            unexpected.push(format!("{cmd} {p}: {r:?}"));
+        } else if layer_target_snapshot(&s) != before {
+            unexpected.push(format!("{cmd} {p}: refused, but the document, selection, rows or history changed"));
+        }
+    }
+    assert!(unexpected.is_empty(), "not refused: {}", unexpected.join("; "));
+    let (mut s, layer, sub, a, g, c) = fixture();
+    // A null reads as the key left out.
+    let n = id(&run(&mut s, "layer.new", json!({"top": null})));
+    assert_eq!(parent(&s, n), Some(layer), "beside the current sublayer");
+    run(&mut s, "layer.selectAll", json!({"id": sub.0, "add": null}));
+    run(&mut s, "layer.selectAll", json!({"id": c.0, "add": true}));
+    assert_eq!(s.doc().unwrap().selection.objects, vec![a, g, c]);
+    run(&mut s, "layer.move", json!({"ids": [a.0], "target": g.0, "copy": false}));
+    assert_eq!(parent(&s, a), Some(g));
+    assert_eq!(run(&mut s, "layer.template", json!({"ids": [layer.0], "on": null}))["on"], true);
+    assert_eq!(run(&mut s, "layer.template", json!({"ids": [layer.0], "on": false}))["on"], false);
+    assert_eq!(run(&mut s, "layer.pasteRemembersLayers", json!({"on": null}))["on"], true, "null toggles");
+    assert_eq!(ids(&run(&mut s, "layer.releaseToLayers", json!({"id": g.0, "build": null}))).len(), 2);
+}
+
 /// `node.move` into a hidden or locked layer deselects the object it moves, here the key object.
 /// Undo puts the object back and selects it again as the key object.
 #[test]

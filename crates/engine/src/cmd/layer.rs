@@ -15,7 +15,7 @@ use vectorcraft_geom::{Affine, Rect};
 
 use super::{
     CommandSpec, Result, Session, bad, bool_or, check_numbers, check_switches, checked_id, checked_ids_param, cmd, color_value, f64_or, has_doc,
-    has_selection, id_param, ids_param, index, ok, str_param,
+    has_selection, id_param, ids_param, index, ok, str_param, switch_or,
 };
 use crate::EngineError;
 
@@ -405,7 +405,7 @@ fn check_options(cmd: &str, p: &Value, xml_id: bool) -> Result<()> {
 /// Layers panel → Paste Remembers Layers.
 fn paste_remembers_layers(s: &mut Session, p: &Value) -> Result<Value> {
     let cur = s.doc()?.doc.paste_remembers_layers;
-    let on = bool_or(p, "on", !cur);
+    let on = switch_or(p, "on", !cur, "layer.pasteRemembersLayers")?;
     if on != cur {
         s.edit("Paste Remembers Layers", |d, _| {
             d.paste_remembers_layers = on;
@@ -429,7 +429,7 @@ fn target(s: &mut Session, p: &Value) -> Result<Value> {
     }
     let layer = n.is_layer();
     let rows = st.layer_rows.clone();
-    if p.get("add").and_then(Value::as_bool).unwrap_or(false) {
+    if switch_or(p, "add", false, C)? {
         s.select(|d, sel| sel.toggle_target(d, id))?;
     } else {
         s.select(|d, sel| sel.set_target(d, id))?;
@@ -480,6 +480,7 @@ fn clip_toggle(s: &mut Session, p: &Value) -> Result<Value> {
 
 /// A new layer with the options in `p`, at `parent`/`index`; it becomes current and highlighted.
 fn add_layer(s: &mut Session, p: &Value, cmd: &str, label: &str, place: impl FnOnce(&Document) -> Result<(Option<NodeId>, usize)>) -> Result<Value> {
+    check_switches(p, &["top"], cmd)?;
     let xml_id = s.prefs.identify_objects_by == "xmlId";
     check_options(cmd, p, xml_id)?;
     let name = str_param(p, "name").filter(|n| !n.trim().is_empty()).map(str::to_string);
@@ -669,7 +670,7 @@ fn in_isolation(doc: &Document, isolation: Option<NodeId>, id: NodeId) -> bool {
 fn select_art(s: &mut Session, p: &Value) -> Result<Value> {
     const C: &str = "layer.selectAll";
     let id = id_param(p, "id").ok_or_else(|| bad(C, "missing id"))?;
-    let add = bool_or(p, "add", false);
+    let add = switch_or(p, "add", false, C)?;
     let st = s.doc()?;
     let n = st.doc.node(id).ok_or(EngineError::NoNode(id))?;
     let ids: Vec<NodeId> = if !st.doc.is_editable(id) || !in_isolation(&st.doc, st.isolation, id) {
@@ -719,7 +720,7 @@ fn move_rows(s: &mut Session, p: &Value) -> Result<Value> {
         "inside" | "into" => Place::Inside,
         other => return Err(bad(C, format!("place is above, below or inside, not `{other}`"))),
     };
-    let copy = bool_or(p, "copy", false);
+    let copy = switch_or(p, "copy", false, C)?;
     let st = s.doc()?;
     let d = &st.doc;
     d.node(target).ok_or(EngineError::NoNode(target))?;
