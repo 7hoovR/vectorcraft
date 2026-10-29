@@ -24,7 +24,7 @@ use std::collections::BTreeMap;
 
 use kurbo::{BezPath, CubicBez, ParamCurve, ParamCurveArclen};
 use vectorcraft_color::{Color, Paint};
-use vectorcraft_doc::{CharStyle, Justify, Node, NodeId, NodeKind, ParaStyle, TextKind, TextObject, TextRun};
+use vectorcraft_doc::{CharStyle, Justify, Node, NodeId, NodeKind, ParaDirection, ParaStyle, TextKind, TextObject, TextRun};
 use vectorcraft_geom::{Affine, PathData, Point, Rect};
 
 /// Longest story read (bytes).
@@ -790,6 +790,9 @@ fn para_style(p: &Para, scale: f64) -> ParaStyle {
         space_before: p.space_before * scale,
         space_after: p.space_after * scale,
         hyphenate: p.hyphenate,
+        // A right-to-left paragraph lays its text out from the right whatever letters it has
+        // (" 120.5 mm " reads "mm 120.5"); without the key, from its first strong letter.
+        direction: p.rtl.then_some(ParaDirection::RightToLeft),
         ..ParaStyle::default()
     }
 }
@@ -836,6 +839,20 @@ mod tests {
         // Left to right keeps them.
         assert_eq!(justify(b"/0 0 /33 0"), Justify::Left);
         assert_eq!(justify(b"/0 1 /33 0"), Justify::Right);
+    }
+
+    /// A right-to-left paragraph is laid out right to left even when it has no right-to-left
+    /// letters (a dimension's label " 120.5 mm " reads "mm 120.5"); a left-to-right one, or one
+    /// that doesn't say, goes by its letters.
+    #[test]
+    fn right_to_left_paragraphs_set_their_direction() {
+        let texts =
+            Texts { stories: vec![], fonts: vec![], defaults: Val::Dict(BTreeMap::new()), para_defaults: read(b"/33 1").unwrap(), frames: vec![] };
+        let direction = |own: &[u8]| para_style(&texts.para(Some(&read(own).unwrap())), 1.0).direction;
+        assert_eq!(direction(b"/0 2"), Some(ParaDirection::RightToLeft), "from the document's defaults");
+        assert_eq!(direction(b"/0 2 /33 0"), None, "the paragraph's own");
+        let plain = Texts { para_defaults: Val::Dict(BTreeMap::new()), ..texts };
+        assert_eq!(para_style(&plain.para(None), 1.0).direction, None);
     }
 
     #[test]
