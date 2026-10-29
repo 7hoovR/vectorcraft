@@ -5674,3 +5674,11 @@ swatch	Bright Violet	კაშკაშა იისფერი
 # Align panel menu › Align to Glyph Bounds (#4231).
 	Point Text	წერტილოვანი ტექსტი
 	Area Text	არის ტექსტი
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	გლიფზე მიბმის პარამეტრების ჩვენება
+	Hide Snap to Glyph Options	გლიფზე მიბმის პარამეტრების დამალვა
+	Snap to Glyph Options	გლიფზე მიბმის პარამეტრები
+	x-height	x სიმაღლე
+	Glyph Bounds	გლიფის საზღვრები
+	Proximity Guides	სიახლოვის დამხმარე ხაზები
+	Angular Guides	კუთხური დამხმარე ხაზები

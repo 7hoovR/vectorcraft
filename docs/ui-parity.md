@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Align panel menu › Align to Glyph Bounds › Point Text and Area Text align and distribute type by the ink of its glyphs (#4231); scores and estimates unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Character panel menu › Show Snap to Glyph Options shows the Snap to Glyph section (Baseline, x-height, Glyph Bounds, Proximity Guides, Angular Guides, Anchor Point; `view.snapToGlyph.options`) (#4232); scores and estimates unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -150,7 +150,7 @@ tools, never checked side by side) isn't captured row by row.
 | Distance Guides: Alt/Option over another object, or an empty part of an artboard, shows the selection's distances to it (Smart Guides › Invoke Distance Guides) | done | Selection tool hover with Smart Guides on: the gap between facing edges, else the offsets of matching edges, to another object; the left, right, top and bottom distances to the artboard; labelled in the General unit. The selection is measured as a whole. Nothing while moving or nudging, which the public pages don't describe. [Use Distance Guides](https://helpx.adobe.com/illustrator/desktop/measure-and-align/grids-and-guides/use-distance-guides-for-accurate-placement.html), [Smart Guides options](https://helpx.adobe.com/illustrator/desktop/measure-and-align/grids-and-guides/smart-guides-options.html) |
 | Snapping tolerance preference | done | |
 | Snap to Point, Snap to Grid, Snap to Pixel; Pixel Preview | done | #1840: with Snap to Grid on, anchors and objects snap to the grid even when Snap to Pixel is also ticked (#1816 waits for the reporter) |
-| Snap to Glyph | done | View › Snap to Glyph (`view.snapToGlyph`); new type and drawing snap to live-text baselines and glyph bounds when Smart Guides are on (#3124) |
+| Snap to Glyph | done | View › Snap to Glyph (`view.snapToGlyph`); new type and drawing snap to live-text baselines and glyph bounds when Smart Guides are on (#3124). Character panel menu › Show Snap to Glyph Options: a checkbox for each guide (Baseline, x-height, Glyph Bounds, Proximity Guides, Angular Guides, Anchor Point), dimmed while Snap to Glyph is off (#4232) |
 | Tangent and perpendicular snapping for line endpoints (new in 30.0) | partial | #2530: tangent snapping to curves and perpendicular snapping to straight segments for drawn lines; saved Preferences › Smart Guides › Geometric Guides controls, on by default. Other tool/drag cases remain. [Public source](https://helpx.adobe.com/illustrator/desktop/measure-and-align/plot-and-measure/snap-to-perpendicular.html) |
 | Snapping panel/popover consolidating the snap options (30.0) | partial | Control bar › Snapping provides quick access through existing view commands and prefs.set; no View › Snapping submenu. Floating-panel parity remains unverified. |
 | Customisable rotation snap angle (#973) | missing | Illustrator: Constrain Angle and construction angles only |
@@ -361,6 +361,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | Character panel menu › Show Snap to Glyph Options shows the Snap to Glyph section (Baseline, x-height, Glyph Bounds, Proximity Guides, Angular Guides, Anchor Point; `view.snapToGlyph.options`) (#4232); scores and estimates unchanged |
 | 2026-10-30 | minor | Align panel menu › Align to Glyph Bounds › Point Text and Area Text align and distribute type by the ink of its glyphs (#4231); the Character and Properties panels' controls for it are not done; scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush and Eraser Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590, #3961); scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590); scores and estimates unchanged |

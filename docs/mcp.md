@@ -3101,6 +3101,18 @@ Guides change where a snapped point lands:
   of their two edges on it) or, over no object, to the left, right, top and bottom edges of the artboard under the
   pointer: measured lines labelled in the General unit. Off, Alt-hovering shows none.
 
+The Snap to Glyph options (the desktop app's Character panel menu › Show Snap to Glyph Options; View › Snap to Glyph
+is the desktop app's): `view.snapToGlyph.options {baseline?, xHeight?, bounds?, proximity?, angular?, anchors?}` (or
+`prefs.get`/`prefs.set` with key `glyphSnap`, a partial object) reads and sets which guides Snap to Glyph gives, all on
+by default: the baseline and the x-height of a single line of type, the glyph bounds (each glyph's edges), the
+proximity guides at both edges of each character's width, the angular guides (along a glyph's slanted strokes, and
+every guide of rotated type, which runs at its angle) and the glyphs' anchor points. `{}` reads them; a key it doesn't
+know or a value that isn't a boolean is refused and changes nothing.
+
+```json
+{"name":"run_command","arguments":{"command":"view.snapToGlyph.options","params":{"angular":false,"anchors":false}}}
+```
+
 With Smart Guides on, a bounding-box handle dragged with the Selection or Free Transform tool (`mods.shift`
 proportional, `mods.alt` from the centre) lands on another object's anchor or centre (labelled "anchor" or
 "center"), else its corners and side line up with the edges and centres of the other objects and the artboards (a

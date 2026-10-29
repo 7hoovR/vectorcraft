@@ -5684,3 +5684,11 @@ axis	Y Axis	Axe Y
 # Align panel menu › Align to Glyph Bounds (#4231).
 	Point Text	Texte de point
 	Area Text	Texte captif
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Afficher les options de magnétisme du glyphe
+	Hide Snap to Glyph Options	Masquer les options de magnétisme du glyphe
+	Snap to Glyph Options	Options de magnétisme du glyphe
+	x-height	Hauteur d’x
+	Glyph Bounds	Limites du glyphe
+	Proximity Guides	Repères de proximité
+	Angular Guides	Repères angulaires
