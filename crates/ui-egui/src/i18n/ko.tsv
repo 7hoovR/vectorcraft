@@ -224,6 +224,7 @@ font-technology	Variable	가변
 	Offset Path…	패스 오프셋…
 	Reverse Path Direction	패스 방향 반전
 	Simplify…	단순화…
+	Smooth…	매끄럽게…
 	Add Anchor Points	앵커 포인트 추가
 	Remove Anchor Points	앵커 포인트 제거
 	Divide Objects Below	아래 개체 나누기
@@ -2844,6 +2845,7 @@ mark-style	Japanese	일본식
 	Show Original Path	원래 패스 표시
 	Open this dialog with these settings next time	다음에 이 설정으로 이 대화상자 열기
 	Auto-Simplify	자동 단순화
+	Auto-Smooth	자동 매끄럽게
 	Color Panel Options	색상 패널 옵션
 	Show Package	패키지 표시
 	Show Panel	패널 표시
@@ -4299,6 +4301,7 @@ theme	Appearance	외관
 @msg	videoRulerPixelAspectRatio must be a number from 0.1 to 10	videoRulerPixelAspectRatio은(는) 0.1에서 10 사이의 숫자여야 합니다
 @msg	the Color Picker is not open	색상 피커가 열려 있지 않습니다
 @msg	the Simplify slider is not open	단순화 슬라이더가 열려 있지 않습니다
+@msg	the Smooth slider is not open	매끄럽게 슬라이더가 열려 있지 않습니다
 @msg	the screen color sampler is already open	화면 색상 추출기가 이미 열려 있습니다
 @msg	this system has no screen color sampler	이 시스템에는 화면 색상 추출기가 없습니다
 @msg	Corners edits the corners of a path	모퉁이는 패스의 모퉁이를 편집합니다

@@ -2055,6 +2055,7 @@ file-filter	Templates	範本
 @msg	videoRulerPixelAspectRatio must be a number from 0.1 to 10	videoRulerPixelAspectRatio 必須是 0.1 到 10 之間的數字
 @msg	the Color Picker is not open	「顏色選擇器」未開啟
 @msg	the Simplify slider is not open	「簡化」滑桿未開啟
+@msg	the Smooth slider is not open	「平滑」滑桿未開啟
 @msg	the screen color sampler is already open	螢幕取色器已開啟
 @msg	this system has no screen color sampler	此系統沒有螢幕取色器
 @msg	Corners edits the corners of a path	「轉角」用於編輯路徑的轉角
@@ -3831,6 +3832,7 @@ font-script	Japanese	漢字
 	Show Original Path	顯示原始路徑
 	Open this dialog with these settings next time	下次以這些設定開啟此對話方塊
 	Auto-Simplify	自動簡化
+	Auto-Smooth	自動平滑
 	Color Panel Options	顏色面板選項
 	Show Package	顯示封裝
 	Show Panel	顯示面板
@@ -3867,6 +3869,7 @@ font-script	Japanese	漢字
 	Simplify	簡化
 	Simplify:	簡化：
 	Simplify…	簡化…
+	Smooth…	平滑…
 	Simulate Colored Paper	模擬有色紙張
 	Simulate Paper	模擬紙張
 	Double Column	雙欄

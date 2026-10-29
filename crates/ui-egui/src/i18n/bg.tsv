@@ -2950,6 +2950,7 @@ font-technology	Variable	Променливи
 	Show Original Path	Показване на оригиналния път
 	Open this dialog with these settings next time	Отваряне на този прозорец с тези настройки следващия път
 	Auto-Simplify	Автоматично опростяване
+	Auto-Smooth	Автоматично изглаждане
 	Show Package	Показване на пакет
 	Show Panel	Показване на панел
 	Show Pattern Swatches	Показване на образци за мостра
@@ -2984,6 +2985,7 @@ font-technology	Variable	Променливи
 	Simplify	Опростяване
 	Simplify:	Опростяване:
 	Simplify…	Опростяване…
+	Smooth…	Изглаждане…
 	Simulate Colored Paper	Симулиране на цветна хартия
 	Simulate Paper	Симулиране на хартия
 	Double Column	Две колони
