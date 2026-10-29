@@ -297,6 +297,85 @@ fn shape_builder_fill_option_and_untouched_shapes_kept() {
     assert_eq!(outline(&node(&s, sq)).0.anchor_count(), 4);
 }
 
+fn parent(s: &Session, id: NodeId) -> Option<NodeId> {
+    s.doc().unwrap().doc.parent_of(id)
+}
+
+/// The merge replaces only the shapes it uses: a selected type object stays as it was.
+#[test]
+fn shape_builder_merge_keeps_a_selected_type_object() {
+    let mut s = session();
+    let (a, b) = two(&mut s);
+    let t = NodeId(s.execute("text.create", &json!({"x": 300, "y": 300, "text": "Label"})).unwrap()["id"].as_u64().unwrap());
+    s.execute("select.set", &json!({"ids": [a.0, b.0, t.0]})).unwrap();
+    let before = node(&s, t);
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [125, 50]]})).unwrap();
+    assert_eq!(s.doc().unwrap().doc.node(t), Some(&before));
+    assert_eq!(layer_children(&s), 2, "the merged shape and the type");
+    assert!(ids(&r).contains(&t), "{r}");
+}
+
+/// A hidden member of a selected group stays hidden in its group, with the merged shape.
+#[test]
+fn shape_builder_merge_keeps_a_hidden_group_member() {
+    let mut s = session();
+    let (a, b) = two(&mut s);
+    let c = rect(&mut s, 300.0, 300.0, 50.0, 50.0);
+    s.execute("select.set", &json!({"ids": [a.0, b.0, c.0]})).unwrap();
+    let g = NodeId(s.execute("object.group", &json!({})).unwrap()["id"].as_u64().unwrap());
+    s.execute("object.hide", &json!({"ids": [c.0]})).unwrap();
+    s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [125, 50]]})).unwrap();
+    let merged = NodeId(r["merged"].as_u64().unwrap());
+    assert_eq!((parent(&s, c), node(&s, c).visible, parent(&s, merged)), (Some(g), false, Some(g)));
+    assert_eq!(node(&s, g).children().unwrap().len(), 2);
+}
+
+/// A locked member of a selected group is neither cut nor moved, and does not cut the others.
+#[test]
+fn shape_builder_merge_leaves_a_locked_group_member() {
+    let mut s = session();
+    let (_, b) = two(&mut s);
+    let g = NodeId(s.execute("object.group", &json!({})).unwrap()["id"].as_u64().unwrap());
+    s.execute("object.lock", &json!({"ids": [b.0]})).unwrap();
+    s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
+    let before = node(&s, b);
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [75, 50]]})).unwrap();
+    assert_eq!(s.doc().unwrap().doc.node(b), Some(&before));
+    assert_eq!(parent(&s, b), Some(g));
+    let merged = NodeId(r["merged"].as_u64().unwrap());
+    assert!((area(&s, merged) - 10000.0).abs() < 1.0, "A whole: {}", area(&s, merged));
+}
+
+/// In a clip group, the clipping path stays and the merged shape stays inside the group.
+#[test]
+fn shape_builder_merge_keeps_a_clip_groups_clipping_path() {
+    let mut s = session();
+    let (a, b) = two(&mut s);
+    let m = rect(&mut s, 0.0, 0.0, 120.0, 100.0);
+    s.execute("select.set", &json!({"ids": [a.0, b.0, m.0]})).unwrap();
+    let g = NodeId(s.execute("object.clippingMask.make", &json!({})).unwrap()["id"].as_u64().unwrap());
+    let r = s.execute("shapeBuilder.merge", &json!({"ids": [g.0], "points": [[25, 50], [125, 50]]})).unwrap();
+    let merged = NodeId(r["merged"].as_u64().unwrap());
+    let gn = node(&s, g);
+    let NodeKind::Group { children, clip: true } = &gn.kind else { panic!("a clip group: {:?}", gn.kind) };
+    assert_eq!(children.first().map(|c| c.id), Some(m), "the clipping path");
+    assert_eq!(parent(&s, merged), Some(g));
+}
+
+/// A group goes when deleting regions leaves it empty, and stays while anything is left in it.
+#[test]
+fn shape_builder_erase_removes_only_a_group_it_empties() {
+    let mut s = session();
+    two(&mut s);
+    let g = NodeId(s.execute("object.group", &json!({})).unwrap()["id"].as_u64().unwrap());
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50]], "erase": true})).unwrap();
+    assert_eq!((ids(&r), node(&s, g).children().unwrap().len()), (vec![g], 2));
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[60, 50], [140, 50]], "erase": true})).unwrap();
+    assert!(ids(&r).is_empty() && s.doc().unwrap().doc.node(g).is_none(), "{r}");
+    assert_eq!(layer_children(&s), 0);
+}
+
 #[test]
 fn shape_builder_miss_is_an_error_and_undo_restores() {
     let mut s = session();
@@ -2411,11 +2490,77 @@ fn shape_builder_keeps_the_edges_of_an_unfilled_live_paint_group() {
     let c = rect(&mut s, 160.0, 20.0, 100.0, 20.0);
     set_fill(&mut s, c, Color::rgb(0.0, 1.0, 0.0));
     s.execute("select.set", &json!({"ids": [g.0, c.0]})).unwrap();
+    let before = node(&s, g);
     let r = s.execute("shapeBuilder.merge", &json!({"points": [[200, 30]]})).unwrap();
-    let out = ids(&r);
+    // The merge does not use the group, so it stays as it was, with every edge: the outline of
+    // 0..150 × 0..100 and the edges at x = 50 and 100.
+    assert_eq!(s.doc().unwrap().doc.node(g), Some(&before));
+    assert!(ids(&r).contains(&g), "{r}");
+    let edges: Vec<NodeId> = vectorcraft_tools::builder::edges(&before).iter().map(|e| e.id).collect();
+    assert!((stroked_length(&s, &edges) - 700.0).abs() < 1.0, "{}", stroked_length(&s, &edges));
+}
+
+/// A locked face of a Live Paint group the merge replaces is not a region, and a copy of it stays,
+/// still locked.
+#[test]
+fn shape_builder_merge_keeps_a_locked_live_paint_face() {
+    let mut s = session();
+    let g = live(&mut s);
+    let locked = vectorcraft_tools::builder::face_at(&node(&s, g), vectorcraft_geom::Point::new(125.0, 50.0)).unwrap().id;
+    s.execute("object.lock", &json!({"ids": [locked.0]})).unwrap();
+    s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
+    let map = s.execute("shapeBuilder.regions", &json!({})).unwrap();
+    assert!(map["regions"].as_array().unwrap().iter().all(|r| !r["sources"].as_array().unwrap().iter().any(|i| *i == locked.0)), "{map}");
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [75, 50]]})).unwrap();
+    assert_eq!(r["regions"], 2, "{r}");
     assert!(s.doc().unwrap().doc.node(g).is_none());
-    // Every edge of the group: the outline of 0..150 × 0..100 and the edges at x = 50 and 100.
-    assert!((stroked_length(&s, &out) - 700.0).abs() < 1.0, "{}", stroked_length(&s, &out));
+    let kept: Vec<Node> = ids(&r).into_iter().map(|i| node(&s, i)).filter(|n| n.locked).collect();
+    assert_eq!(kept.len(), 1, "{r}");
+    assert!((area(&s, kept[0].id) - 5000.0).abs() < 1.0, "{}", area(&s, kept[0].id));
+}
+
+/// A hidden face of a Live Paint group the merge replaces is not a region, and a copy of it stays,
+/// still hidden.
+#[test]
+fn shape_builder_merge_keeps_a_hidden_live_paint_face() {
+    let mut s = session();
+    let g = live(&mut s);
+    let hidden = vectorcraft_tools::builder::face_at(&node(&s, g), vectorcraft_geom::Point::new(125.0, 50.0)).unwrap().id;
+    s.execute("object.hide", &json!({"ids": [hidden.0]})).unwrap();
+    s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [75, 50]]})).unwrap();
+    assert_eq!(r["regions"], 2, "{r}");
+    assert!(s.doc().unwrap().doc.node(g).is_none());
+    let kept: Vec<Node> = ids(&r).into_iter().map(|i| node(&s, i)).filter(|n| !n.visible).collect();
+    assert_eq!(kept.len(), 1, "{r}");
+    assert!((area(&s, kept[0].id) - 5000.0).abs() < 1.0, "{}", area(&s, kept[0].id));
+}
+
+/// A locked face without a fill and a locked edge without a stroke, in a Live Paint group the
+/// merge replaces, each keep a copy, still locked.
+#[test]
+fn shape_builder_merge_keeps_unpainted_locked_live_paint_members() {
+    let mut s = session();
+    let g = live(&mut s);
+    s.execute("livePaint.fill", &json!({"group": g.0, "point": [125, 50], "none": true})).unwrap();
+    let n = node(&s, g);
+    let face = vectorcraft_tools::builder::face_at(&n, Point::new(125.0, 50.0)).unwrap().id;
+    let edge = vectorcraft_tools::builder::visible_edge_near(&n, Point::new(150.0, 50.0), 4.0).unwrap().id;
+    let names = (node(&s, face).name, node(&s, edge).name);
+    assert_ne!(names.0, names.1);
+    s.edit("t", |d, _| {
+        d.node_mut(edge).unwrap().appearance.set_stroke(Paint::None);
+        Ok(())
+    })
+    .unwrap();
+    s.execute("object.lock", &json!({"ids": [face.0, edge.0]})).unwrap();
+    s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
+    let r = s.execute("shapeBuilder.merge", &json!({"points": [[25, 50], [75, 50]]})).unwrap();
+    assert!(s.doc().unwrap().doc.node(g).is_none());
+    let kept: Vec<Node> = ids(&r).into_iter().map(|i| node(&s, i)).filter(|n| n.locked).collect();
+    let faces = kept.iter().filter(|n| n.name == names.0 && n.appearance.fill_paint().is_none() && (area(&s, n.id) - 5000.0).abs() < 1.0).count();
+    let edges = kept.iter().filter(|n| n.name == names.1 && n.appearance.stroke_paint().is_none()).count();
+    assert_eq!((kept.len(), faces, edges), (2, 1, 1), "{r}");
 }
 
 /// A plain group whose name starts with "Live Paint" is not a Live Paint group: the Shape Builder
@@ -2439,7 +2584,9 @@ fn shape_builder_takes_the_paths_of_a_plain_group_named_live_paint() {
     assert_eq!(map["regions"].as_array().unwrap().len(), 2, "{map}");
     let r = s.execute("shapeBuilder.merge", &json!({"points": [[200, 30]]})).unwrap();
     let out = ids(&r);
-    assert!(out.iter().any(|i| (area(&s, *i) - 10000.0).abs() < 1.0), "the group's rectangle is kept: {r}");
+    // The merge keeps the unused group whole, so its rectangle is inside an id of the reply.
+    let kept_area = |n: &Node| n.children().map_or_else(|| area(&s, n.id), |c| c.iter().map(|c| area(&s, c.id)).sum());
+    assert!(out.iter().any(|i| (kept_area(&node(&s, *i)) - 10000.0).abs() < 1.0), "the group's rectangle is kept: {r}");
     // A stroke of the group's rectangle splits as a plain path's does.
     s.execute("edit.undo", &json!({})).unwrap();
     s.execute("select.set", &json!({"ids": [g.0]})).unwrap();
