@@ -111,7 +111,10 @@ fn a_new_document_offers_the_native_options_used_last() {
     let o = s.execute("file.formatOptions", &json!({"format": "vectorcraft"})).unwrap();
     let value = |k: &str| o["options"][k]["value"].clone();
     assert_eq!((value("preview"), value("embedProfiles"), value("pdfCompatible")), (json!(true), json!(false), json!(true)));
-    assert_eq!((value("separateArtboards"), value("range")), (o["options"]["separateArtboards"]["default"].clone(), o["options"]["range"]["default"].clone()));
+    assert_eq!(
+        (value("separateArtboards"), value("range")),
+        (o["options"]["separateArtboards"]["default"].clone(), o["options"]["range"]["default"].clone())
+    );
     let _ = std::fs::remove_dir_all(d);
 }
 

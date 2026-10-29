@@ -938,9 +938,11 @@ fn format_options(s: &mut Session, p: &Value) -> Result<Value> {
         .filter(|f| f.write || SAVE_FORMATS.contains(&f.id) || TEMPLATE_FORMATS.contains(&f.id))
         .ok_or_else(|| bad(C, format!("`{id}` is no writable format (see document.formats)")))?;
     // A document not yet saved as a native file starts from the native options used last.
-    let saved = st.filter(|d| d.format == f.id).map(remembered_save_options).filter(|m| !m.is_empty()).or_else(|| {
-        (f.id == "vectorcraft" && !s.prefs.native_save_options.is_empty()).then(|| s.prefs.native_save_options.clone())
-    });
+    let saved = st
+        .filter(|d| d.format == f.id)
+        .map(remembered_save_options)
+        .filter(|m| !m.is_empty())
+        .or_else(|| (f.id == "vectorcraft" && !s.prefs.native_save_options.is_empty()).then(|| s.prefs.native_save_options.clone()));
     // A native save compresses as Use Compression says, unless told otherwise.
     let prefs = with_compression_pref(&s.prefs, &json!({}));
     let mut v = f.to_json();
