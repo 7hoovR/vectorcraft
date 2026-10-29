@@ -1,7 +1,7 @@
 //! Flare, Reshape, Shaper and Graph tools.
 //!
-//! Flare: drag sets the center and its size and turns the rays with the pointer (Shift keeps them in
-//! their original orientation; click without dragging opens the Flare Tool Options), then a click
+//! Flare: drag sets the center and its size and turns the rays as the pointer moves up or down
+//! (Shift holds their turn; click without dragging opens the Flare Tool Options), then a click
 //! sets the end point of the rings; Space held during either drag moves the flare. The rest comes
 //! from the tool's options (the Flare Tool Options, which last). Reshape: drag a point of a
 //! selected path; the engine's `path.reshape` adds an anchor there if needed and moves the
@@ -109,12 +109,17 @@ pub fn flare_params(o: &Value, c: Point) -> Value {
     v
 }
 
-/// The rays' turn (degrees, clockwise) for a center drag along `v`: as a polygon's first corner,
-/// the rays follow the pointer, and a drag straight up leaves them unturned. Shift keeps them in
-/// their original orientation: unturned, or turned by General › Constrain Angle `base` (degrees,
-/// counter-clockwise) as a polygon drawn with Shift is.
-fn ray_turn(v: Vec2, shift: bool, base: f64) -> f64 {
-    if shift { vectorcraft_geom::constrain_rotation(base).unwrap_or(0.0) } else { (v.atan2().to_degrees() + 90.0).rem_euclid(360.0) }
+/// How far one update of the center drag turns the rays, in radians.
+const RAY_STEP: f64 = 0.1;
+
+/// The rays' turn (degrees, as `shape.flare`'s `rotation`) after a center drag update whose
+/// pointer moved `dy` in document y from the last one: a greater y adds [`RAY_STEP`], a smaller y
+/// takes it away, and the same y leaves the turn as it is. Shift holds the turn.
+fn ray_turn(turn: f64, dy: f64, shift: bool) -> f64 {
+    if shift || dy == 0.0 {
+        return turn;
+    }
+    (turn + RAY_STEP.to_degrees().copysign(dy)).rem_euclid(360.0)
 }
 
 impl FlareTool {
@@ -157,9 +162,13 @@ impl Tool for FlareTool {
             PointerKind::Drag => {
                 if let Some((mut c, _)) = self.drag {
                     // Space held moves the center with the pointer, so the size and the turn stay.
+                    let dy = ev.pos.y - self.last.y;
+                    let moving = ev.mods.space && self.began;
                     crate::shape::space_moves(&mut c, &mut self.last, ev, self.began);
                     self.drag = Some((c, ev.pos));
-                    self.turn = ray_turn(ev.pos - c, ev.mods.shift, cx.constrain_angle);
+                    if !moving {
+                        self.turn = ray_turn(self.turn, dy, ev.mods.shift);
+                    }
                     if !self.began && ev.pos.distance(c) >= cx.tol(3.0) {
                         self.began = true;
                         return vec![
@@ -572,10 +581,11 @@ mod tests {
         }
     }
 
-    /// The center drag turns the rays with the pointer, and Shift keeps them in their original
-    /// orientation; the second drag keeps the turn the first one left.
+    /// Each update of the center drag turns the rays by 0.1 radian as the pointer's y grows or
+    /// falls, and none as it stays; Shift holds the turn, and the second drag keeps the turn the
+    /// first one left.
     #[test]
-    fn flare_drag_turns_the_rays_and_shift_keeps_them_unturned() {
+    fn flare_drag_turns_the_rays_and_shift_holds_their_turn() {
         use crate::testutil::*;
         use vectorcraft_doc::Selection;
 
@@ -584,34 +594,48 @@ mod tests {
         let p = paint();
         let cx = cx(&d, &s, &p);
         let shift = Mods { shift: true, ..Default::default() };
+        let step = 0.1_f64.to_degrees();
         let mut t = FlareTool::default();
         t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
         let turn = |t: &mut FlareTool, x: f64, y: f64, m: Mods| {
-            flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, x, y).with_mods(m)))["rotation"].as_f64()
+            flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, x, y).with_mods(m)))["rotation"].as_f64().unwrap_or(f64::NAN)
         };
-        assert_eq!(turn(&mut t, 140.0, 100.0, Mods::default()), Some(90.0));
-        assert_eq!(turn(&mut t, 100.0, 60.0, Mods::default()), Some(0.0));
-        assert_eq!(turn(&mut t, 100.0, 140.0, Mods::default()), Some(180.0));
-        assert_eq!(turn(&mut t, 60.0, 100.0, Mods::default()), Some(270.0));
-        // Shift: the rays as they are without a turn, at the size the pointer gives.
-        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 130.0, 140.0).with_mods(shift)));
-        assert_eq!((v["rotation"].as_f64(), v["diameter"].as_f64()), (Some(0.0), Some(100.0)));
+        let near = |a: f64, b: f64| {
+            let d = (a - b).rem_euclid(360.0);
+            d < 1e-9 || 360.0 - d < 1e-9
+        };
+        // Sideways: no turn, however far the pointer goes round the center.
+        assert!(near(turn(&mut t, 140.0, 100.0, Mods::default()), 0.0));
+        // Each update with a greater y adds a step, whatever the distance moved.
+        assert!(near(turn(&mut t, 140.0, 101.0, Mods::default()), step));
+        assert!(near(turn(&mut t, 140.0, 160.0, Mods::default()), 2.0 * step));
+        // A smaller y takes a step away, past zero.
+        assert!(near(turn(&mut t, 140.0, 150.0, Mods::default()), step));
+        assert!(near(turn(&mut t, 140.0, 100.0, Mods::default()), 0.0));
+        assert!(near(turn(&mut t, 140.0, 90.0, Mods::default()), 360.0 - step));
+        // Shift holds the turn while the pointer still sizes the flare; let go, turning goes on.
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 100.0, 150.0).with_mods(shift)));
+        assert!(near(v["rotation"].as_f64().unwrap_or(f64::NAN), 360.0 - step));
+        assert_eq!(v["diameter"].as_f64(), Some(100.0));
+        assert!(near(turn(&mut t, 100.0, 40.0, shift), 360.0 - step));
+        assert!(near(turn(&mut t, 140.0, 100.0, Mods::default()), 0.0));
         // ↑ adds a ray and keeps the turn.
-        assert_eq!(turn(&mut t, 140.0, 100.0, Mods::default()), Some(90.0));
-        assert_eq!(flare_preview(&t.key(&cx, ToolKey::Up, Mods::default()))["rotation"].as_f64(), Some(90.0));
-        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 140.0, 100.0));
+        assert!(near(turn(&mut t, 140.0, 110.0, Mods::default()), step));
+        assert!(near(flare_preview(&t.key(&cx, ToolKey::Up, Mods::default()))["rotation"].as_f64().unwrap_or(f64::NAN), step));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 140.0, 110.0));
         // Placing the rings' end point keeps the turn the center drag left.
         t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 300.0, 200.0));
-        let a = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 300.0, 200.0).with_mods(shift));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 300.0, 260.0));
+        let a = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 300.0, 260.0).with_mods(shift));
         assert_eq!(a.last(), Some(&Action::Commit));
-        assert_eq!(flare_preview(&a)["rotation"].as_f64(), Some(90.0));
-        // With a Constrain Angle, Shift keeps the rays turned by it, as a polygon drawn with Shift.
+        assert!(near(flare_preview(&a)["rotation"].as_f64().unwrap_or(f64::NAN), step));
+        // A nonzero Constrain Angle does not turn the rays under Shift.
         let mut cx = cx;
         cx.constrain_angle = 30.0;
         let mut t = FlareTool::default();
         t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
-        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 140.0, 100.0).with_mods(shift)));
-        assert_eq!(v["rotation"].as_f64(), Some(-30.0));
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 140.0, 120.0).with_mods(shift)));
+        assert_eq!(v["rotation"].as_f64(), Some(0.0));
     }
 
     /// Space held while dragging out a flare moves it at its current size and turn, in the center
@@ -626,21 +650,27 @@ mod tests {
         let p = paint();
         let cx = cx(&d, &s, &p);
         let space = Mods { space: true, ..Default::default() };
+        let step = 0.1_f64.to_degrees();
         let mut t = FlareTool::default();
         t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
-        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 130.0, 100.0));
-        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 180.0, 150.0).with_mods(space)));
-        let at = |v: &Value| (v["cx"].as_f64(), v["cy"].as_f64(), v["diameter"].as_f64(), v["rotation"].as_f64());
-        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(60.0), Some(90.0)));
-        // Space let go: the size follows the pointer again, from the moved center.
-        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 190.0, 150.0)));
-        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(80.0), Some(90.0)));
-        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 190.0, 150.0));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 100.0, 130.0));
+        // Space held: the pointer's y grows, but the flare moves without turning.
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 150.0, 180.0).with_mods(space)));
+        let at = |v: &Value| (v["cx"].as_f64(), v["cy"].as_f64(), v["diameter"].as_f64());
+        let turned = |v: &Value, by: f64| v["rotation"].as_f64().is_some_and(|r| (r - by).abs() < 1e-9);
+        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(60.0)));
+        assert!(turned(&v, step));
+        // Space let go: the size follows the pointer again, from the moved center, and so does the turn.
+        let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 150.0, 190.0)));
+        assert_eq!(at(&v), (Some(150.0), Some(150.0), Some(80.0)));
+        assert!(turned(&v, 2.0 * step));
+        t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 150.0, 190.0));
         // The second drag: Space held moves the flare, its rings' end point with it.
         t.pointer(&cx, &PointerEvent::new(PointerKind::Move, 300.0, 300.0));
         t.pointer(&cx, &PointerEvent::new(PointerKind::Down, 300.0, 300.0));
         let v = flare_preview(&t.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 320.0, 310.0).with_mods(space)));
-        assert_eq!((at(&v), v["x2"].as_f64(), v["y2"].as_f64()), ((Some(170.0), Some(160.0), Some(80.0), Some(90.0)), Some(320.0), Some(310.0)));
+        assert_eq!((at(&v), v["x2"].as_f64(), v["y2"].as_f64()), ((Some(170.0), Some(160.0), Some(80.0)), Some(320.0), Some(310.0)));
+        assert!(turned(&v, 2.0 * step));
         let a = t.pointer(&cx, &PointerEvent::new(PointerKind::Up, 340.0, 310.0));
         assert_eq!(a.last(), Some(&Action::Commit));
         let v = flare_preview(&a);
