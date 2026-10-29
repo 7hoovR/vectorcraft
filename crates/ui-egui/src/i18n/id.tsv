@@ -5033,7 +5033,7 @@ mark-style	Japanese	Jepang
 	This system has no screen color sampler	Sistem ini tidak memiliki pengambil warna layar
 	Color blindness – Tritanopia-type	Buta warna – tipe Tritanopia
 	Panels Except Tools and Control	Semua panel kecuali Alat dan Kontrol
-	Reset Tracking and Kerning	Atur ulang pelacakan dan kerning
+	Reset Tracking and Kerning	Atur ulang tracking dan kerning
 	Reset Horizontal Scale	Atur ulang skala horizontal
 @msg	span must be "object" or "selection", got {v}	span harus "object" atau "selection", diterima {v}
 @msg	span: "selection" places a `gradient`, not a swatch	span: "selection" menempatkan `gradient`, bukan swatch

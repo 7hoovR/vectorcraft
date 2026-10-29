@@ -2993,7 +2993,7 @@ font-technology	Variable	Променливи
 	Size/Leading	Размер/Интервал
 	Size:	Размер:
 	Ridges per segment:	Изпъкналости на сегмент:
-	Size: {size}  Tracking: {tracking}	Размер: {size}  Интервал: {tracking}
+	Size: {size}  Tracking: {tracking}	Размер: {size}  Разредка: {tracking}
 	Skew	Искавяване
 	Skin Tone Ramps	Градиенти за цвят на кожата
 	Skip Blank Artboards	Пропускане на празни работни области

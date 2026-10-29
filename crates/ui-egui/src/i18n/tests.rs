@@ -486,6 +486,49 @@ fn no_translated_word_mixes_latin_cyrillic_and_greek_letters() {
     assert!(bad.is_empty(), "words that mix scripts:\n{}", bad.join("\n"));
 }
 
+/// Each catalog gives the Character panel's Kerning, Leading and Tracking fields three different
+/// names, every word of the Tracking and Kerning names appears in the Reset Tracking and Kerning
+/// row, and every word of the Tracking name appears in the Info panel's type line outside its
+/// placeholders (ignoring case). Each word is matched once, the longer name first, so a name
+/// that contains the other name does not count for both.
+/// A catalog without one of these rows is skipped for the checks that need it.
+#[test]
+fn character_panel_terms_agree_within_each_catalog() {
+    let mut bad = Vec::new();
+    for l in LANGUAGES.iter().filter(|l| !l.source.is_empty()) {
+        let (entries, _) = parse_entries(l.source);
+        let row = |src: &str| entries.iter().find(|(ctx, s, _)| ctx.is_empty() && s == src).map(|(_, _, tr)| tr.to_lowercase());
+        let kerning = row("Kerning (0 = Auto)").map(|tr| tr.split(" (").next().unwrap_or_default().trim().to_string());
+        let leading = row("Leading");
+        let tracking = row("Tracking");
+        for (a, b) in [(&kerning, &leading), (&kerning, &tracking), (&leading, &tracking)] {
+            if let (Some(a), Some(b)) = (a, b)
+                && a == b
+            {
+                bad.push(format!("{}: two Character panel fields are both {a:?}", l.code));
+            }
+        }
+        let mut uses = |row_src: &str, terms: &[&Option<String>]| {
+            let Some(text) = row(row_src) else { return };
+            let mut bare = placeholders(&text).iter().fold(text.clone(), |t, p| t.replace(&format!("{{{p}}}"), " "));
+            let mut terms: Vec<&String> = terms.iter().filter_map(|t| t.as_ref()).collect();
+            terms.sort_by_key(|t| std::cmp::Reverse(t.chars().count()));
+            for term in terms {
+                for word in term.split_whitespace() {
+                    if bare.contains(word) {
+                        bare = bare.replacen(word, " ", 1);
+                    } else {
+                        bad.push(format!("{}: {row_src:?} → {text:?} lacks {word:?} from the field {term:?}", l.code));
+                    }
+                }
+            }
+        };
+        uses("Reset Tracking and Kerning", &[&tracking, &kerning]);
+        uses("Size: {size}  Tracking: {tracking}", &[&tracking]);
+    }
+    assert!(bad.is_empty(), "Character panel terms that disagree:\n{}", bad.join("\n"));
+}
+
 /// Every `tl!("…")` literal in this crate's sources (test modules aside).
 pub fn tl_literals() -> std::collections::BTreeSet<String> {
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src");

@@ -3458,7 +3458,7 @@ theme	Appearance	Εμφάνιση
 	Size Tile to Art	Προσαρμογή μεγέθους πλακιδίου στο σχέδιο
 	Size/Leading	Μέγεθος/διάστιχο
 	Ridges per segment:	Ράχες ανά τμήμα:
-	Size: {size}  Tracking: {tracking}	Μέγεθος: {size}  Αραίωση: {tracking}
+	Size: {size}  Tracking: {tracking}	Μέγεθος: {size}  Απόσταση χαρακτήρων: {tracking}
 	Skin Tone Ramps	Χρωματικές κλίμακες τόνων δέρματος
 	Skip Blank Artboards	Παράλειψη κενών πινάκων σχεδίασης
 	Sky Gradients	Ντεγκραντέ ουρανού
