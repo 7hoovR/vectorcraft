@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-29 · **Change:** minor (G12: Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act; no entry closed, estimate unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (G12: Preferences audit (#394): 5 options are stored but not acted on (Open Documents As Tabs, Units › East Asian Type, Hyphenation › Default Language, Scratch Disks, Legacy vector clipboard), each waiting on a subsystem; Highlight Alternate Glyphs, Real-time Drawing and the Devices options act; estimate unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -392,11 +392,17 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Done (2026-10-21, #394):** General › Constrain Angle turns the arrow keys' axes (guides stay on the page's), holds Shift drags of the Selection, Direct Selection, Free Transform, Slice Selection, Reshape and Measure tools and the Pen's handles to the turned axes, and new rectangles, rounded rectangles, ellipses, grids, point and area type, Shift-drawn polygons and stars and the shape size dialogs are drawn along it with their bounding box turned; 0° and whole turns are exactly as before, quarter turns exact (<https://helpx.adobe.com/illustrator/desktop/manage-objects/arrange-objects/rotate-objects-by-specific-angles.html>). Arcs, spirals, flares and the Pen's new paths are not turned yet. Estimate unchanged. **2026-10-24:** General › Corner Radius is the Rounded Rectangle tool's radius: the tool takes the preference when chosen and when it changes while the tool is active (or lent a selection tool for a drag), and the radius ↑/↓ set while drawing one, or a Tool Options value, becomes the preference, clamped to its 0–1296 pt range (<https://helpx.adobe.com/illustrator/using/drawing-simple-lines-shapes.html>). Estimate unchanged.
 - **Done (2026-10-17):** Background Export shows its progress in a dialog with Cancel and Continue in Background (#2564), on the shared cancel token (#2546); a cancelled export writes no file. Save As, Export for Screens and Export Selection don't show it yet. Estimate unchanged.
 - **Done:** quick Image Trace presets trace at once and leave the panel as it was; the Image Trace button (Control bar, Properties) opens the controls with Threshold and Advanced (Paths, Corners, Noise), as the public documentation describes (<https://helpx.adobe.com/illustrator/using/image-trace-results-optimization.html>). Other context-specific Properties gaps remain.
-
-- **Missing:** ~14 Preferences options stored but not acted on (#394: Open
-- **Done:** quick Image Trace presets reveal Threshold and Advanced controls (Paths, Corners, Noise); Properties can reopen them. Other context-specific Properties gaps remain.
-- **Missing:** ~15 Preferences options stored but not acted on (#394: Highlight Alternate Glyphs, Open
-  Documents As Tabs, Real-time Drawing, hyphenation language, devices…), Properties panel per
+- **Audited (2026-10-30, #394):** every Preferences dialog option but the five below is read by shipped code, by
+  its field or its key; Highlight Alternate Glyphs (the canvas's render options), Real-time Drawing and Editing
+  (tool previews wait for the commit), Show Tool Tips, Anti-aliased Artwork, Use Precise Cursors and Devices ›
+  Enable Touch Workspace and Touch Gestures included.
+- **Missing:** 5 Preferences options stored but not acted on (#394), each waiting on a subsystem of its own:
+  User Interface › Open Documents As Tabs (off would open documents in floating windows; one window per
+  document is G7), Units › East Asian Type (nothing is measured in it yet, and the Q and Ha units aren't in the
+  unit lists), Hyphenation › Default Language (hyphenation is English-only, with no per-language dictionaries),
+  Plug-ins & Scratch Disks › Primary and Secondary (documents are kept in memory; nothing pages to disk), and
+  Clipboard Handling › Legacy vector clipboard with its Preserve Paths / Preserve Appearance and Overprints choice
+  (Illustrator's own clipboard flavour, which has no public specification). Also Properties panel per
   context, context menus beyond the canvas, Layers panel row menus and Collect for Export, SVG Interactivity.
 - **Impact:** settings that silently do nothing erode trust.
 - **Estimate:** 13–20 h.
@@ -647,6 +653,7 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | G12: Preferences audit (#394): 5 options are stored but not acted on (Open Documents As Tabs, Units › East Asian Type, Hyphenation › Default Language, Scratch Disks, Legacy vector clipboard), each waiting on a subsystem; Highlight Alternate Glyphs, Real-time Drawing and the Devices options act. Estimate unchanged. |
 | 2026-10-29 | minor | G10: the Linux Flatpak on GNOME stops the clipboard retry storm (retried with a growing wait, logged once). Estimate unchanged. |
 | 2026-10-29 | minor | G12: Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act. No entry closed, estimates unchanged. |
 | 2026-10-29 | minor | G8: a blend makes at most 100,000 steps in all, the steps of blends nested in its keys and steps included; past it each pair of keys keeps the same share of its steps (#3579). No entry closed, estimates unchanged. |
