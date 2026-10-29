@@ -5578,4 +5578,6 @@ axis	Y Axis	Eje Y
 	Scale Presets	Ajustes predefinidos de escala
 @msg	a {width}×{height} screenshot's byte count overflows	el número de bytes de una captura de {width}×{height} se desborda
 @msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	el {what} de la ventana ({points} puntos × {scale} DPI) no puede dimensionar una captura
+# Object › Expand… dimmed until Expand Appearance (#3089).
+	Expand Appearance first (Object › Expand Appearance)	Primero expande la apariencia (Objeto › Expandir apariencia)
 	Live preview	Vista previa en directo

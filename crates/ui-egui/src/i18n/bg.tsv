@@ -5547,4 +5547,6 @@ axis	Y Axis	Y ос
 	Save Brush Library…	Запази библиотека с четки…
 @msg	no empty artboards to delete	няма празни работни области за изтриване
 	Scale Presets	Пресети за мащаб
+# Object › Expand… dimmed until Expand Appearance (#3089).
+	Expand Appearance first (Object › Expand Appearance)	Първо разширете външния вид (Обект › Разширяване на външния вид)
 	Live preview	Преглед на живо

@@ -5660,4 +5660,6 @@ axis	Y Axis	Y-axel
 	Scale Presets	Skalningsförval
 @msg	a {width}×{height} screenshot's byte count overflows	byteantalet för en skärmbild på {width}×{height} överstiger gränsen
 @msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	fönstrets {what} ({points} punkter × {scale} DPI) kan inte bestämma en skärmbilds storlek
+# Object › Expand… dimmed until Expand Appearance (#3089).
+	Expand Appearance first (Object › Expand Appearance)	Expandera utseendet först (Objekt › Expandera utseende)
 	Live preview	Direkt förhandsgranskning

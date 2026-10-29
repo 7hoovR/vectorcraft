@@ -5636,4 +5636,6 @@ axis	Y Axis	osa Y
 	Scale Presets	Přednastavení měřítka
 @msg	a {width}×{height} screenshot's byte count overflows	počet bajtů snímku {width}×{height} přeteče
 @msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	okno {what} ({points} bodů × {scale} DPI) nemůže určit velikost snímku
+# Object › Expand… dimmed until Expand Appearance (#3089).
+	Expand Appearance first (Object › Expand Appearance)	Nejprve rozložte vzhled (Objekt › Rozložit vzhled)
 	Live preview	Živý náhled
