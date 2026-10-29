@@ -77,6 +77,48 @@ fn half_clipped(d: &mut Document) -> (Node, Node) {
     (mask, art)
 }
 
+/// The art a mask hides counts only for a selected object: there a click hits nothing, and the
+/// selection tools grab the selection by that art. Not where the art shows (the click hits it),
+/// beyond the art, for the clip group selected as a whole, nor for art a click can't hit (locked,
+/// hidden, outside the isolated container). A layer's clipping mask hides art as a clip group's
+/// does.
+#[test]
+fn a_selected_objects_art_hidden_by_a_mask_is_found_under_the_pointer() {
+    let mut d = Document::new(300.0, 200.0);
+    let l = d.layers[0].id;
+    let (mask, art) = half_clipped(&mut d);
+    let (g, art_id) = (d.alloc_id(), art.id);
+    let mut clip = Node::group(g, vec![Arc::new(mask), Arc::new(art)]);
+    clip.set_clips(true);
+    d.insert(Some(l), 0, clip).unwrap();
+    let (hidden, shown, beyond) = (Point::new(150.0, 50.0), Point::new(50.0, 50.0), Point::new(250.0, 50.0));
+    let opt = HitOptions::default();
+    assert!(hit_test(&d, hidden, opt).is_none());
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[art_id]), Some(art_id));
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[]), None);
+    assert_eq!(selected_hidden_at(&d, shown, opt, &[art_id]), None);
+    assert_eq!(selected_hidden_at(&d, beyond, opt, &[art_id]), None);
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), None);
+    assert_eq!(selected_hidden_at(&d, hidden, HitOptions { scope: Some(g), ..opt }, &[art_id]), Some(art_id));
+    assert_eq!(selected_hidden_at(&d, hidden, HitOptions { scope: Some(art_id), ..opt }, &[art_id]), Some(art_id));
+    let other = d.add_layer(Some("Other"));
+    assert_eq!(selected_hidden_at(&d, hidden, HitOptions { scope: Some(other), ..opt }, &[art_id]), None);
+    for change in [|n: &mut Node| n.locked = true, |n: &mut Node| n.visible = false] {
+        let mut d = d.clone();
+        change(d.node_mut(art_id).unwrap());
+        assert_eq!(selected_hidden_at(&d, hidden, opt, &[art_id]), None);
+    }
+    // A layer's clipping mask.
+    let mut d = Document::new(300.0, 200.0);
+    let l = d.layers[0].id;
+    let (mask, art) = half_clipped(&mut d);
+    let art_id = art.id;
+    d.insert(Some(l), 0, mask).unwrap();
+    d.insert(Some(l), 1, art).unwrap();
+    d.node_mut(l).unwrap().set_clips(true);
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[art_id]), Some(art_id));
+}
+
 /// #2345: a marquee touches a clip group only where its art shows. Over the clipped-away
 /// half alone it selects nothing, and around a rectangle drawn beside the group's mask it
 /// takes that rectangle alone; reaching into the mask takes the group. The same holds for

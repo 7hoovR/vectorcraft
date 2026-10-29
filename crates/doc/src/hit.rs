@@ -110,6 +110,36 @@ pub fn hit_test_visible(doc: &Document, p: Point, opt: HitOptions) -> Option<Hit
     hit_test_skipping(doc, p, opt, &|_| false, false)
 }
 
+/// The object of `selected` (topmost first) whose own art lies under `p` where a clipping mask
+/// hides it: a clip group (or a layer with a clipping mask) holding it doesn't clip to `p`. A
+/// click there hits nothing ([`hit_test`]), so the selection tools grab the selection by that
+/// art instead of starting a marquee: an image in a mask, picked in the Layers panel, can be
+/// dragged by its hidden part, whose frame shows while it is selected. An object that a click
+/// can't hit anyway doesn't count: hidden, locked, a template, outside the isolated container
+/// (`opt.scope`) or on a locked artboard.
+pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &[NodeId]) -> Option<NodeId> {
+    let symbols = doc.symbol_boxes();
+    let locks = doc.locked_artboards();
+    selected.iter().rev().copied().find(|&id| {
+        let Some(chain) = doc.ancestry(id) else { return false };
+        let nodes: Vec<&Node> = chain.iter().filter_map(|a| doc.node(*a)).collect();
+        if nodes.len() != chain.len()
+            || nodes.iter().any(|n| !n.visible || n.locked || n.is_template())
+            || opt.scope.is_some_and(|s| !chain.contains(&s))
+            || locks.holds_id(id)
+        {
+            return false;
+        }
+        // Hidden by a mask: one of the containers around it clips, and not to `p`.
+        let masked = nodes
+            .iter()
+            .rev()
+            .skip(1)
+            .any(|n| n.clips() && n.children().and_then(|c| c.first()).is_some_and(|clip| clip.id != id && !clip_contains(clip, p)));
+        masked && nodes.last().is_some_and(|n| hit_any(n, p, opt, &symbols).is_some())
+    })
+}
+
 /// The objects under `p` that [`Hit::top_object`] picks in `scope` (isolation mode), topmost
 /// first: what clicks there select, one below the other (Cmd/Ctrl-click selects behind).
 pub fn objects_at(doc: &Document, p: Point, opt: HitOptions, scope: Option<NodeId>) -> Vec<NodeId> {
