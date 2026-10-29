@@ -2204,6 +2204,13 @@ file-filter	Templates	範本
 @msg	choose a folder to export to	請選擇要匯出至的資料夾
 @msg	the selection has no URL (or they differ)	選取範圍沒有 URL (或其 URL 各不相同)
 @msg	select some type first	請先選取一些文字
+@msg	the selection has no gradient fill	選取範圍沒有漸層填色
+@msg	the selection has no gradient stroke	選取範圍沒有漸層筆畫
+@msg	the selection has no pattern fill	選取範圍沒有圖樣填色
+@msg	the selection has no pattern stroke	選取範圍沒有圖樣筆畫
+@msg	no gradient swatch `{name}`	沒有漸層色票 `{name}`
+@msg	no pattern swatch `{name}`	沒有圖樣色票 `{name}`
+@msg	the library item is damaged	資料庫項目已損毀
 @msg	{_1} font families available	有 {_1} 個可用的字體家族
 @msg	{_1} has no {_2} style	{_1} 沒有 {_2} 樣式
 @msg	Copied the CSS of {rules} object(s)	已複製 {rules} 個物件的 CSS
@@ -4006,6 +4013,11 @@ font-script	Japanese	漢字
 	Stroke	筆畫
 	Stroke (X), double-click for the Color Picker	筆畫 (X)，按兩下開啟檢色器
 	Stroke Color	筆畫顏色
+	Fill Gradient	填色漸層
+	Stroke Gradient	筆畫漸層
+	Fill Pattern	填色圖樣
+	Stroke Pattern	筆畫圖樣
+	Patterns	圖樣
 	Stroke Options	筆畫選項
 	Character:	字元：
 	Character options	字元選項

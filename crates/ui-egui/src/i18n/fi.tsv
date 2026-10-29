@@ -411,6 +411,11 @@
 	Fill Color	Täyttöväri
 	Opacity	Peittävyys
 	Stroke Color	Viivan väri
+	Fill Gradient	Täytön liukuväri
+	Stroke Gradient	Viivan liukuväri
+	Fill Pattern	Täytön kuvio
+	Stroke Pattern	Viivan kuvio
+	Patterns	Kuviot
 	Stroke Weight	Viivan paksuus
 	Graphic Style	Grafiikkatyyli
 	Symbol Instance	Symbolin ilmentymä
@@ -4036,6 +4041,13 @@ imageTrace	Outline	Ääriviiva
 @plural	{n} stroke|{n} strokes	{n} viiva|{n} viivaa
 @msg	no library `{id}`	ei kirjastoa `{id}`
 @msg	select some type first	valitse ensin tekstiä
+@msg	the selection has no gradient fill	valinnalla ei ole liukuväritäyttöä
+@msg	the selection has no gradient stroke	valinnalla ei ole liukuväriviivaa
+@msg	the selection has no pattern fill	valinnalla ei ole kuviotäyttöä
+@msg	the selection has no pattern stroke	valinnalla ei ole kuvioviivaa
+@msg	no gradient swatch `{name}`	ei liukuvärimallia `{name}`
+@msg	no pattern swatch `{name}`	ei kuviomallia `{name}`
+@msg	the library item is damaged	kirjaston kohde on vioittunut
 @msg	{_1} has no {_2} style	{_1}: ei tyyliä {_2}
 @msg	a layer couldn't be read	tasoa ei voitu lukea
 @msg	it has more than one artboard	siinä on useampi kuin yksi piirtoalusta

@@ -376,6 +376,11 @@
 	Fill Color	Warna isian
 	Opacity	Opasitas
 	Stroke Color	Warna stroke
+	Fill Gradient	Gradien isian
+	Stroke Gradient	Gradien stroke
+	Fill Pattern	Pola isian
+	Stroke Pattern	Pola stroke
+	Patterns	Pola
 	Stroke Weight	Ketebalan stroke
 	Graphic Style	Gaya grafis
 	Symbol Instance	Instans simbol

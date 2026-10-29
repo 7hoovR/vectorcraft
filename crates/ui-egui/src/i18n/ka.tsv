@@ -334,6 +334,11 @@
 	Fill Color	შევსების ფერი
 	Opacity	გაუმჭვირვალობა
 	Stroke Color	კონტურის ფერი
+	Fill Gradient	შევსების გრადიენტი
+	Stroke Gradient	კონტურის გრადიენტი
+	Fill Pattern	შევსების პატერნი
+	Stroke Pattern	კონტურის პატერნი
+	Patterns	პატერნები
 	Stroke Weight	კონტურის სისქე
 	Graphic Style	გრაფიკული სტილი
 	Symbol Instance	სიმბოლოს ეგზემპლარი
@@ -3617,6 +3622,13 @@ font-technology	Variable	ცვლადი
 @plural	{n} stroke|{n} strokes	კონტური: {n}
 @msg	no library `{id}`	ბიბლიოთეკა `{id}` არ არსებობს
 @msg	select some type first	ჯერ მონიშნეთ ტექსტი
+@msg	the selection has no gradient fill	მონიშნულს შევსების გრადიენტი არ აქვს
+@msg	the selection has no gradient stroke	მონიშნულს კონტურის გრადიენტი არ აქვს
+@msg	the selection has no pattern fill	მონიშნულს შევსების პატერნი არ აქვს
+@msg	the selection has no pattern stroke	მონიშნულს კონტურის პატერნი არ აქვს
+@msg	no gradient swatch `{name}`	გრადიენტის ფერის ნიმუში `{name}` არ არის
+@msg	no pattern swatch `{name}`	პატერნის ფერის ნიმუში `{name}` არ არის
+@msg	the library item is damaged	ბიბლიოთეკის ელემენტი დაზიანებულია
 @msg	{_1} has no {_2} style	{_1}-ს არ აქვს სტილი {_2}
 @msg	a layer couldn't be read	შრის წაკითხვა ვერ მოხერხდა
 @msg	it has more than one artboard	მას ერთზე მეტი სამუშაო დაფა აქვს

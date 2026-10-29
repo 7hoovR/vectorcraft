@@ -2630,6 +2630,11 @@
 	Strikethrough	Tachado
 	Stroke	Traçado
 	Stroke Color	Cor do Traçado
+	Fill Gradient	Gradiente de Preenchimento
+	Stroke Gradient	Gradiente do Traçado
+	Fill Pattern	Padrão de Preenchimento
+	Stroke Pattern	Padrão do Traçado
+	Patterns	Padrões
 	Stroke Options	Opções de Traçado
 	Stroke Weight	Peso do Traçado
 	Character:	Caractere:
@@ -3396,6 +3401,13 @@ axis	Both	Ambos
 	Drag to the window's left edge to dock	Arraste até a borda esquerda da janela para encaixar
 @msg	no library `{id}`	nenhuma biblioteca `{id}`
 @msg	select some type first	selecione algum texto primeiro
+@msg	the selection has no gradient fill	a seleção não tem gradiente de preenchimento
+@msg	the selection has no gradient stroke	a seleção não tem gradiente de traçado
+@msg	the selection has no pattern fill	a seleção não tem padrão de preenchimento
+@msg	the selection has no pattern stroke	a seleção não tem padrão de traçado
+@msg	no gradient swatch `{name}`	nenhuma amostra de gradiente `{name}`
+@msg	no pattern swatch `{name}`	nenhuma amostra de padrão `{name}`
+@msg	the library item is damaged	o item da biblioteca está danificado
 @msg	{_1} has no {_2} style	{_1} não tem o estilo {_2}
 @msg	a layer couldn't be read	não foi possível ler uma camada
 @msg	it has more than one artboard	tem mais de uma prancheta

@@ -3112,6 +3112,11 @@ font-technology	Variable	Variabla
 	Stroke	Kontur
 	Stroke (X), double-click for the Color Picker	Kontur (X), dubbelklicka för färgväljaren
 	Stroke Color	Konturfärg
+	Fill Gradient	Fyllnadsgradient
+	Stroke Gradient	Konturgradient
+	Fill Pattern	Fyllnadsmönster
+	Stroke Pattern	Konturmönster
+	Patterns	Mönster
 	Stroke Options	Konturalternativ
 	Character:	Tecken:
 	Character options	Teckenalternativ
@@ -3730,6 +3735,13 @@ axis	Both	Båda
 	Float Tool Group	Gör verktygsgruppen flytande
 @msg	no library `{id}`	inget bibliotek `{id}`
 @msg	select some type first	markera någon text först
+@msg	the selection has no gradient fill	markeringen har ingen fyllnadsgradient
+@msg	the selection has no gradient stroke	markeringen har ingen konturgradient
+@msg	the selection has no pattern fill	markeringen har inget fyllnadsmönster
+@msg	the selection has no pattern stroke	markeringen har inget konturmönster
+@msg	no gradient swatch `{name}`	ingen gradientfärgruta `{name}`
+@msg	no pattern swatch `{name}`	ingen mönsterfärgruta `{name}`
+@msg	the library item is damaged	biblioteksobjektet är skadat
 @msg	{_1} has no {_2} style	{_1} har ingen stil {_2}
 @msg	a layer couldn't be read	ett lager kunde inte läsas
 @msg	it has more than one artboard	den har mer än en rityta

@@ -2024,7 +2024,8 @@ they answer its file's name without the extension and `count: 0`.
 
 ## Libraries
 
-The Libraries panel's libraries hold graphics, colours and character and paragraph styles that any document can use.
+The Libraries panel's libraries hold graphics, colours, gradients, patterns and character and paragraph styles that any
+document can use.
 They are kept on this machine: each is a `.vclibrary` file (JSON) named after the library (`CON-.vclibrary` for a
 library named after a Windows device such as `CON`) in the `Libraries` folder next to the preferences
 (none in the web app and headless sessions, where they last for the session). `library.list` lists them (`id`, `name`,
@@ -2034,7 +2035,7 @@ size and a PNG `thumbnail` in base64; colours with `name`, `hex` and `color`; st
 `library.setCurrent {library}` manage them; `library` is an id or a name, and without it the current library (the one
 the panel shows) is meant.
 
-`library.add {library?, kind, ids?, name?, color?}` adds from the selection: `graphic` (a copy of the objects with the
+`library.add {library?, kind, ids?, name?, color?, swatch?}` adds from the selection: `graphic` (a copy of the objects with the
 images, symbols, patterns, swatches, styles and brushes they use, as Copy takes them), `fillColor` / `strokeColor` (the
 first selected object's solid colour, else the default one, or `color`), `charStyle` / `paraStyle` (the selected
 text's attributes). An item the library already has is reported as `existing`. `library.use {library?, kind, item,
@@ -2043,6 +2044,18 @@ gives another colour merges into the document's), a colour paints the selection'
 to the document under its name without the white space around it (numbered when that name is taken by other
 attributes) and applied to the selected text, each as one undo step. `library.removeItem {library?, kind, item}` removes
 one.
+
+Gradients and patterns are kinds of their own (the panel's + button lists Fill Gradient, Stroke Gradient, Fill Pattern
+and Stroke Pattern, and a gradient or pattern swatch dragged from the Swatches panel onto the list is added).
+`library.add {kind: "fillGradient" | "strokeGradient", swatch?}` adds the first selected object's fill or stroke
+gradient (else the default one, or the gradient swatch `swatch`) without its placement or swatch links, named after its
+swatch, else `Gradient`; `library.use` paints the selection's fill or stroke with it, fitted to each object.
+`library.add {kind: "fillPattern" | "strokePattern", swatch?}` adds the first selected object's fill or stroke pattern
+(else the default one, or the pattern swatch `swatch`) with the images, symbols, patterns, swatches, styles and brushes
+its art uses, and a thumbnail of one swatch's worth of it; `library.use` adds the pattern and its swatch to the document (the
+same pattern there is reused, and a name the document gives another pattern gets a number) and paints the selection's
+fill or stroke with it, as one undo step, and returns the pattern's name in the document as `pattern`. `library.get`
+lists them as `gradients: [{name, gradient}]` and `patterns: [{name, pattern, thumbnail}]`.
 
 Items can be put in user-named groups, which the panel shows as collapsible sections after the ungrouped items (its
 search field filters every item by name; `library.get` lists them all to filter). `library.createGroup {library?,
@@ -2053,15 +2066,17 @@ deletes one, its items staying in the library ungrouped; and `library.moveItem {
 of its kind), just before or after that item in the order its kind is listed and shown in. `library.moveGroup
 {library?, group, to}` moves a group to place `to` of the list (0: first; past the end: last). Dragging items and
 group headers in the panel runs these. An item is in one group at most; `library.get` lists the groups as `groups:
-[{name, items: [{kind: "color"|"charStyle"|"paraStyle"|"graphic", item}]}]` (a graphic by its id), and each kind's
+[{name, items: [{kind: "color"|"gradient"|"pattern"|"charStyle"|"paraStyle"|"graphic", item}]}]` (a graphic by its id), and each kind's
 items in the order the panel shows them.
 
-`library.export {library?, path?}` writes a library (its colours, styles, graphics with their art and thumbnails, and
-its groups) as a `.vclibrary` file, the JSON the library folder keeps (without `path`: `{data}`, the file's text).
+`library.export {library?, path?}` writes a library (its colours, gradients, patterns, styles, graphics with their art
+and thumbnails, and its groups) as a `.vclibrary` file, the JSON the library folder keeps (without `path`: `{data}`, the file's text).
 `library.import {path? | data? | dataBase64?, name?}` adds the library of such a file as a new library and makes it
 the current one; a name another library has gets a number (`Brand (2)`). Imported files are checked: at most 10,000
-items of each kind and 1,000 groups, names clipped and made unique, thumbnails kept only when they are small PNGs, and
-groups naming items that aren't there dropped. Files written before groups load as they are.
+items of each kind and 1,000 groups, names clipped and made unique, thumbnails kept only when they are small PNGs,
+gradients with fewer than 2 or more than 1,024 stops dropped and the others' offsets, opacities and midpoints put in
+range, and groups naming items that aren't there dropped. Files written before groups load as they are. Using a
+pattern whose data is damaged fails with an error and leaves the document as it was.
 
 ```json
 {"name":"run_command","arguments":{"command":"library.add","params":{"kind":"graphic","name":"Logo"}}}

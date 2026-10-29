@@ -3181,6 +3181,11 @@ font-technology	Variable	Variables
 	Stroke	Trazo
 	Stroke (X), double-click for the Color Picker	Trazo (X), doble clic para el selector de color
 	Stroke Color	Color de trazo
+	Fill Gradient	Degradado de relleno
+	Stroke Gradient	Degradado de trazo
+	Fill Pattern	Motivo de relleno
+	Stroke Pattern	Motivo de trazo
+	Patterns	Motivos
 	Stroke Options	Opciones de trazo
 	Character:	Carácter:
 	Character options	Opciones de carácter
@@ -3809,6 +3814,13 @@ axis	Both	Ambos
 # names and values in backticks or code (`colorModel rgb`, `document.export`) stay as they are.
 @msg	no library `{id}`	no hay ninguna biblioteca `{id}`
 @msg	select some type first	selecciona primero algún texto
+@msg	the selection has no gradient fill	la selección no tiene un degradado de relleno
+@msg	the selection has no gradient stroke	la selección no tiene un degradado de trazo
+@msg	the selection has no pattern fill	la selección no tiene un motivo de relleno
+@msg	the selection has no pattern stroke	la selección no tiene un motivo de trazo
+@msg	no gradient swatch `{name}`	no existe la muestra de degradado `{name}`
+@msg	no pattern swatch `{name}`	no existe la muestra de motivo `{name}`
+@msg	the library item is damaged	el elemento de la biblioteca está dañado
 @msg	{_1} has no {_2} style	{_1} no tiene el estilo {_2}
 @msg	a layer couldn't be read	no se pudo leer una capa
 @msg	it has more than one artboard	tiene más de una mesa de trabajo
