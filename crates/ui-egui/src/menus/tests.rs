@@ -514,9 +514,9 @@ fn precise_cursors_command_is_listed_and_assignable_in_the_shortcut_editor() {
     assert_eq!(ed::default_of("view.preciseCursors"), None, "no default key");
     let mut overrides = craft_keymap::Overrides::new();
     assert_eq!(ed::effective_in(&overrides, "view.preciseCursors"), None);
-    assert_eq!(ed::assign(&mut overrides, "view.preciseCursors", Some("Cmd+Alt+Shift+U"), false), Ok(vec![]));
+    assert_eq!(ed::assign(&mut overrides, "view.preciseCursors", Some("Cmd+Alt+Shift+Q"), false), Ok(vec![]));
     let chord = ed::effective_in(&overrides, "view.preciseCursors").expect("assigned");
-    assert_eq!(ed::normalize(&chord), ed::normalize("Cmd+Alt+Shift+U"));
+    assert_eq!(ed::normalize(&chord), ed::normalize("Cmd+Alt+Shift+Q"));
     // A key another command holds is refused, so the new command can't take it over silently.
     assert!(ed::assign(&mut overrides, "view.preciseCursors", Some("Cmd+Alt+Shift+P"), false).is_err());
     assert_eq!(ed::assign(&mut overrides, "view.preciseCursors", None, false), Ok(vec![]));
