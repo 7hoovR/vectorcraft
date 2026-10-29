@@ -2227,6 +2227,7 @@ file-filter	Templates	Mẫu
 	Move Library Item to Group	Di chuyển mục thư viện vào nhóm
 	Move Locked and Hidden Artwork with Artboard	Di chuyển tác phẩm đã khóa và ẩn cùng bảng vẽ
 	Move Mesh Point	Di chuyển điểm lưới
+	Move Mesh Points	Di chuyển các điểm lưới
 	Move Panel	Di chuyển bảng
 	Move Plane	Di chuyển mặt phẳng
 	Move Plane to Match Object	Di chuyển mặt phẳng khớp với đối tượng
