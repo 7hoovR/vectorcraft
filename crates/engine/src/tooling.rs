@@ -703,6 +703,19 @@ impl Session {
         }
     }
 
+    /// End the Type tool's text editing before a command saves the art of an editing layer (pattern
+    /// editing's Done, Stop Editing Opacity Mask): point type its click placed that is still empty is
+    /// discarded first, so it is not saved into the pattern tile or the mask.
+    pub(crate) fn end_text_edit(&mut self) {
+        if self.in_tool_actions || !self.tool.wants_text() {
+            return;
+        }
+        let acts = self.with_tool_cx(self.last_view, |t, cx| t.deactivate(cx));
+        if let Err(e) = self.apply_actions(acts) {
+            log::warn!("ending the text edit: {e}");
+        }
+    }
+
     /// Tell the active tool that `edit.undo` or `edit.redo` ran, on its own or as a step of
     /// `command.batch`, so the Type tool puts the caret where the step changed the text; or that a
     /// `command.batch` began, ended or was rolled back (`batch.begin`, `batch.end`,

@@ -4191,6 +4191,7 @@ axis	Both	Les deux
 @msg	not an EMF or WMF file	ce n’est pas un fichier EMF ou WMF
 @msg	not found	introuvable
 @msg	not in pattern editing mode	pas en mode d’édition de motif
+@msg	finish editing the pattern first	terminez d’abord la modification du motif
 @msg	nothing encoded	rien n’a été encodé
 @msg	nothing selected	aucune sélection
 @msg	nothing selected is in a group	aucun élément sélectionné ne se trouve dans un groupe

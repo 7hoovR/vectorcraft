@@ -4500,6 +4500,7 @@ imageTrace	Outline	Obrys
 @msg	not an EMF or WMF file	nejde o soubor EMF ani WMF
 @msg	not found	nenalezeno
 @msg	not in pattern editing mode	není aktivní režim úprav vzorku
+@msg	finish editing the pattern first	nejprve dokončete úpravy vzorku
 @msg	nothing encoded	nic nebylo zakódováno
 @msg	nothing selected	nic není vybráno
 @msg	nothing selected is in a group	nic z výběru není ve skupině

@@ -4157,6 +4157,7 @@ theme	Appearance	Εμφάνιση
 @msg	not an EMF or WMF file	δεν είναι αρχείο EMF ή WMF
 @msg	not found	δεν βρέθηκε
 @msg	not in pattern editing mode	δεν βρίσκεστε σε λειτουργία επεξεργασίας μοτίβου
+@msg	finish editing the pattern first	ολοκληρώστε πρώτα την επεξεργασία του μοτίβου
 @msg	nothing encoded	δεν κωδικοποιήθηκε τίποτα
 @msg	nothing selected	δεν έχει επιλεγεί τίποτα
 @msg	nothing selected is in a group	τίποτα από τα επιλεγμένα δεν βρίσκεται σε ομάδα

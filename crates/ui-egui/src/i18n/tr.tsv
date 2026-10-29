@@ -3965,6 +3965,7 @@ axis	Both	Her İkisi
 @msg	not an RTF file: it doesn't start with {\\rtf	bir RTF dosyası değil: {\\rtf ile başlamıyor
 @msg	not found	bulunamadı
 @msg	not in pattern editing mode	desen düzenleme modunda değil
+@msg	finish editing the pattern first	önce deseni düzenlemeyi bitir
 @msg	nothing encoded	kodlanmış hiçbir şey yok
 @msg	nothing selected	hiçbir şey seçilmedi
 @msg	nothing selected is in a group	seçilenlerin hiçbiri bir grupta değil

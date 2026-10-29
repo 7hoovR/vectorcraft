@@ -1834,6 +1834,7 @@ file-filter	Templates	範本
 @msg	already editing a pattern	已在編輯圖樣
 @msg	no pattern `{name}`	沒有圖樣 `{name}`
 @msg	not in pattern editing mode	不在圖樣編輯模式中
+@msg	finish editing the pattern first	請先完成圖樣編輯
 @msg	pattern missing	找不到圖樣
 @msg	select a repeat	請選取重複物件
 @msg	select an Intertwine group	請選取交織群組

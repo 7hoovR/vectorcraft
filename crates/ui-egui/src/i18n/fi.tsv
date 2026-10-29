@@ -4412,6 +4412,7 @@ imageTrace	Outline	Ääriviiva
 @msg	not an EMF or WMF file	ei EMF- tai WMF-tiedosto
 @msg	not found	ei löytynyt
 @msg	not in pattern editing mode	ei kuvion muokkaustilassa
+@msg	finish editing the pattern first	lopeta ensin kuvion muokkaus
 @msg	nothing encoded	mitään ei koodattu
 @msg	nothing selected	mitään ei ole valittu
 @msg	nothing selected is in a group	mikään valituista ei ole ryhmässä

@@ -4147,6 +4147,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	already editing a pattern	すでにパターンを編集中です
 @msg	no pattern `{name}`	パターン `{name}` が見つかりません
 @msg	not in pattern editing mode	パターン編集モードではありません
+@msg	finish editing the pattern first	先にパターンの編集を終了してください
 @msg	pattern missing	パターンが見つかりません
 @msg	select a repeat	リピートを選択してください
 @msg	select an Intertwine group	織り交ぜグループを選択してください

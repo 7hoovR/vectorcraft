@@ -4234,6 +4234,7 @@ axis	Both	Entrambi
 @msg	not an EMF or WMF file	non è un file EMF o WMF
 @msg	not found	non trovato
 @msg	not in pattern editing mode	non sei in modalità modifica motivo
+@msg	finish editing the pattern first	termina prima la modifica del motivo
 @msg	nothing encoded	nessun dato codificato
 @msg	nothing selected	nessuna selezione
 @msg	nothing selected is in a group	nessun elemento selezionato si trova in un gruppo

@@ -4326,6 +4326,7 @@ imageTrace	Outline	Kontur
 @msg	not an EMF or WMF file	to nie jest plik EMF ani WMF
 @msg	not found	nie znaleziono
 @msg	not in pattern editing mode	nie jest w trybie edycji wzorka
+@msg	finish editing the pattern first	najpierw zakończ edycję wzorka
 @msg	nothing encoded	nic nie zakodowano
 @msg	nothing selected	nic nie zaznaczono
 @msg	nothing selected is in a group	nic z zaznaczenia nie należy do grupy

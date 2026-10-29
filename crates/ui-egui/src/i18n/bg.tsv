@@ -4095,6 +4095,7 @@ axis	Both	И двете
 @msg	not an EMF or WMF file	не е EMF или WMF файл
 @msg	not found	не е открито
 @msg	not in pattern editing mode	не е в режим на редактиране на мостра
+@msg	finish editing the pattern first	първо завършете редактирането на мострата
 @msg	nothing encoded	нищо не е кодирано
 @msg	nothing selected	нищо не е избрано
 @msg	nothing selected is in a group	нищо от избраното не е в група

@@ -4218,6 +4218,7 @@ axis	Both	Обидві
 @msg	not an EMF or WMF file	не є файлом EMF або WMF
 @msg	not found	не знайдено
 @msg	not in pattern editing mode	не в режимі редагування візерунка
+@msg	finish editing the pattern first	спочатку завершіть редагування візерунка
 @msg	nothing encoded	нічого не закодовано
 @msg	nothing selected	нічого не виділено
 @msg	nothing selected is in a group	нічого з виділеного не перебуває в групі

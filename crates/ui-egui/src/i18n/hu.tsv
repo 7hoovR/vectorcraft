@@ -4867,6 +4867,7 @@ imageTrace	Outline	Körvonal
 @msg	not an EMF or WMF file	nem EMF- vagy WMF-fájl
 @msg	not found	nem található
 @msg	not in pattern editing mode	nem mintázatszerkesztő módban vagy
+@msg	finish editing the pattern first	előbb fejezd be a mintázat szerkesztését
 @msg	nothing encoded	nincs kódolt adat
 @msg	nothing selected	nincs kijelölés
 @msg	nothing selected is in a group	a kijelölésből semmi sincs csoportban
