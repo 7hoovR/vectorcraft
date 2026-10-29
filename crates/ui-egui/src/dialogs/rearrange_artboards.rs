@@ -180,7 +180,7 @@ mod tests {
         assert_eq!(app.session.doc().unwrap().history.undo.len(), undo + 1);
     }
 
-    /// Clicking the layout and order toggles sets the fields (the toggles' rects from the frame).
+    /// The spacing confirmed last is the one the dialog opens with next time (#4558).
     #[test]
     fn keeps_spacing_when_reopening_after_rearranging() {
         let mut app = VectorcraftApp::new(Session::new(), Default::default());
@@ -193,6 +193,7 @@ mod tests {
         assert_eq!(app.ui.dialog.as_ref().unwrap().f64("spacing", 20.0), 37.0);
     }
 
+    /// Clicking the layout and order toggles sets the fields (the toggles' rects from the frame).
     #[test]
     fn the_toggles_set_layout_and_order() {
         let mut app = VectorcraftApp::new(Session::new(), Default::default());
