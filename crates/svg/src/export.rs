@@ -41,7 +41,7 @@ pub(crate) fn export(doc: &Document, opts: &ExportOptions, native: Option<&[u8]>
     if opts.object_ids != ObjectIds::Unique {
         return write(doc, opts, native, "");
     }
-    // Unique ids: write the body once with a placeholder prefix of fixed length (12 bytes),
+    // Unique ids: write the body once with a placeholder prefix ([`UNIQUE_PLACEHOLDER`]),
     // hash the result, and replace the placeholder with the computed prefix in a single pass.
     let mut out = write(doc, opts, native, UNIQUE_PLACEHOLDER);
     let prefix = format!("u{:010x}-", fnv1a(out.svg.as_bytes()) & 0xff_ffff_ffff);
