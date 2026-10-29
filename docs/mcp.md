@@ -3718,7 +3718,8 @@ slice ids and the ids of objects with an object slice.
 ## Export for Screens
 
 `document.exportForScreens` writes every chosen artboard (`range`, `artboards`; default all) in every format row
-into `folder`, or returns the files as `dataBase64` without one; `zip: true` packs them into one store-only `.zip`.
+into `folder`, or returns the files as `dataBase64` without one; `zip: true` packs them into one `.zip`,
+each file deflated, or stored when deflating does not make it smaller.
 A row is `{format, scale?}` where `scale` is a factor (`2`, `"2x"`), a pixel width (`"100w"` or `width: 100`), a
 height (`"100h"`) or a resolution (`"72ppi"`); raster rows name their files `@2x`, `@100w`… unless `suffix` says
 otherwise. `fullDocument` writes one file per row instead (a PDF of every artboard, other formats the bounds of all
