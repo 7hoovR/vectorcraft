@@ -598,6 +598,34 @@ fn hide_unselected_artwork_keeps_locked_guides_and_is_disabled_in_isolation_mode
     assert_eq!(shown(&s, &[g, c, outer, hole]), [false, true, true, true]);
 }
 
+/// While Lock Guides is on, Hide › Unselected Artwork keeps a group that holds a guide path visible and hides its other
+/// members one by one. With a layer selected, the objects on that layer stay visible and the rest are hidden.
+#[test]
+fn hide_unselected_artwork_keeps_groups_with_locked_guides_and_the_selected_layers_art() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 10.0, 10.0);
+    let b = rect(&mut s, 20.0, 0.0, 10.0, 10.0);
+    let guide = rect(&mut s, 40.0, 0.0, 10.0, 10.0);
+    let x = rect(&mut s, 60.0, 0.0, 10.0, 10.0);
+    sel(&mut s, &[guide, x]);
+    let g = id_of(&s.execute("object.group", &json!({})).unwrap());
+    sel(&mut s, &[guide]);
+    s.execute("view.guides.make", &json!({})).unwrap();
+    s.execute("view.guides.lock", &json!({"locked": true})).unwrap();
+    let other = id_of(&s.execute("layer.new", &json!({})).unwrap());
+    let p = rect(&mut s, 0.0, 100.0, 10.0, 10.0);
+    let hide = |s: &mut Session| s.execute("object.hide.unselected", &json!({})).unwrap();
+    let shown = |s: &Session, ids: &[NodeId]| ids.iter().map(|id| node(s, *id).visible).collect::<Vec<_>>();
+    sel(&mut s, &[a]);
+    assert_eq!(hide(&mut s), json!({"count": 3}));
+    assert_eq!(shown(&s, &[a, b, g, guide, x, p]), [true, false, true, true, false, false]);
+    s.execute("object.showAll", &json!({})).unwrap();
+    sel(&mut s, &[other]);
+    assert_eq!(hide(&mut s), json!({"count": 3}));
+    assert_eq!(shown(&s, &[a, b, g, guide, x, p]), [false, false, true, true, false, true]);
+    assert_eq!(selected(&s), [other]);
+}
+
 // ---------- Transform Each ----------
 
 #[test]
