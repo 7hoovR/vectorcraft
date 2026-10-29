@@ -5284,7 +5284,9 @@ shows, and so do the click-to-size dialogs (`perspective.draw` with `at`: the cl
 `object.blend.make` blends the selected objects (or `ids`) into a live blend. Spacing and orientation default to
 what `object.blend.options` set with no blend selected (`object.blend.info` reads them: `target: "defaults"`),
 else Smooth Color and Align to Page. `starts` gives, per object, the anchor of its first subpath the blend starts
-from (as the Blend tool's clicks on anchor points do; an open path's last anchor runs it the other way). A blend
+from (as the Blend tool's clicks on anchor points do; an open path's last anchor runs it the other way). With the
+Blend tool, `press_key` Escape drops the object clicked first and stops the next click adding to the blend
+just made; the document and the selection stay as they are. A blend
 among the objects takes the others in as more key objects, keeping its options, name and transparency:
 
 ```json
