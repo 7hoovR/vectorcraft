@@ -354,9 +354,12 @@ fn canvas_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
         handle_input(app, ui, resp, rect);
         // `hover_doc` is the document point under the pointer in the view `handle_input` left. The
         // wheel, a pan, a Rotate View drag, the Zoom tool and a Presentation Mode click move the view
-        // there.
+        // there. A dialog, floating panel or menu over the canvas hides it (Object Highlighting
+        // showed through them: #4518), unless a drag that began on the canvas goes on there.
         let moved = Xf::new(rect, app.view().unwrap_or(&View::default()));
-        app.hover_doc = ui.input(|i| i.pointer.hover_pos()).filter(|p| rect.contains(*p)).map(|p| moved.to_doc(p));
+        let dragging = ui.data(|d| d.get_temp::<Drag>(drag_id()).is_some());
+        app.hover_doc =
+            ui.input(|i| i.pointer.hover_pos()).filter(|p| rect.contains(*p) && (dragging || drag::on_canvas(ui, resp, *p))).map(|p| moved.to_doc(p));
     }
 }
 

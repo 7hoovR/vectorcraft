@@ -7328,6 +7328,28 @@ fn distance_guides_follow_what_lies_under_a_still_pointer() {
     assert_eq!(gap_label(&run(&mut app, vec![])), None, "another document");
 }
 
+/// #4518: a floating panel or a modal dialog over the canvas hides the pointer from it, so Object
+/// Highlighting, the rulers and the Info panel don't follow a pointer that is over the dialog.
+#[test]
+fn a_panel_or_dialog_over_the_canvas_hides_the_pointer_from_it() {
+    let (mut app, ctx, _, over, _) = distance_scene(true);
+    let run = |app: &mut VectorcraftApp, events, cover| distance_frame_covered(app, &ctx, events, cover);
+    run(&mut app, vec![egui::Event::PointerMoved(over)], None);
+    run(&mut app, vec![], None);
+    assert!(app.hover_doc.is_some(), "over the canvas");
+    for cover in [Cover::Panel(egui::Rect::from_center_size(over, vec2(120.0, 120.0))), Cover::Dialog] {
+        // A new window takes a sizing pass before it covers anything, as in the test above.
+        for _ in 0..3 {
+            run(&mut app, vec![], Some(cover));
+        }
+        assert_eq!(app.hover_doc, None, "under it");
+        for _ in 0..3 {
+            run(&mut app, vec![], None);
+        }
+        assert!(app.hover_doc.is_some(), "back once it closes");
+    }
+}
+
 /// The 800 × 600 window [`frame`] draws the canvas in.
 const WINDOW: egui::Rect = egui::Rect { min: Pos2::ZERO, max: Pos2 { x: 800.0, y: 600.0 } };
 
