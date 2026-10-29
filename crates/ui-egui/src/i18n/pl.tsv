@@ -4105,6 +4105,7 @@ imageTrace	Outline	Kontur
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` to kolor triadowy: tinty dotyczą kolorów globalnych i dodatkowych
 @msg	`{name}` is no recovery entry name	`{name}` nie jest nazwą wpisu odzyskiwania
 @msg	`{name}` isn't a colour swatch	`{name}` nie jest próbką koloru
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	kolor triadowy nie może zabarwić obrazu w skali szarości z przezroczystością: użyj koloru dodatkowego, czarnego lub białego
 @msg	`{path}` must be a bool or an object of bools	`{path}` musi być wartością logiczną lub obiektem wartości logicznych
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` nie jest kolorem (#rrggbb lub nazwa ustawienia)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` nie jest narzędziem upłynniania

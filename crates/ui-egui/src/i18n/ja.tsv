@@ -4149,6 +4149,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	the object already has an opacity mask	オブジェクトにはすでに不透明マスクがあります
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` はプロセスカラーです: 濃淡を適用できるのはグローバルカラーと特色だけです
 @msg	`{name}` isn't a colour swatch	`{name}` はカラースウォッチではありません
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	プロセスカラーでは透明部分のあるグレースケール画像に色を付けられません: 特色、黒、白のいずれかを使用してください
 @msg	a document needs at least one artboard	ドキュメントには少なくとも 1 つのアートボードが必要です
 @msg	empty path	パスが空です
 @msg	join needs open paths	連結にはオープンパスが必要です

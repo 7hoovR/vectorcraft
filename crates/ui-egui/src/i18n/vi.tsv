@@ -4153,6 +4153,7 @@ theme	Appearance	Giao diện
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` là màu quy trình: sắc độ áp dụng cho màu toàn cục và màu chuyên biệt
 @msg	`{name}` is no recovery entry name	`{name}` không phải là tên mục phục hồi
 @msg	`{name}` isn't a colour swatch	`{name}` không phải là mẫu màu
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	màu quy trình không thể tô màu ảnh thang xám có độ trong suốt: hãy dùng màu chuyên biệt, đen hoặc trắng
 @msg	`{path}` must be a bool or an object of bools	`{path}` phải là bool hoặc đối tượng bool
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` không phải là màu (#rrggbb hoặc tên thiết lập sẵn)
 @msg	`{text}`: step {i}'s result has no such value (write $$ for a literal $)	`{text}`: kết quả bước {i} không có giá trị này (viết $$ cho ký tự $)

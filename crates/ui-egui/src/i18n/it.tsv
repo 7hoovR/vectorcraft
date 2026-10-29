@@ -4014,6 +4014,7 @@ axis	Both	Entrambi
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` è un colore quadricromia: le tinte si applicano ai colori globali e spot
 @msg	`{name}` is no recovery entry name	`{name}` non è il nome di una voce di recupero
 @msg	`{name}` isn't a colour swatch	`{name}` non è un campione di colore
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	un colore quadricromia non può colorare un'immagine in scala di grigi con trasparenza: usa un colore spot, il nero o il bianco
 @msg	`{path}` must be a bool or an object of bools	`{path}` deve essere un booleano o un oggetto di booleani
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` non è un colore (#rrggbb o il nome di un preset)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` non è uno strumento Fluidifica

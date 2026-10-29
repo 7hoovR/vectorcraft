@@ -4281,6 +4281,7 @@ imageTrace	Outline	Obrys
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` je procesní barva: tóny platí pro globální a přímé barvy
 @msg	`{name}` is no recovery entry name	`{name}` není název položky obnovení
 @msg	`{name}` isn't a colour swatch	`{name}` není barevná položka vzorníku
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	procesní barva nemůže obarvit obraz ve stupních šedi s průhledností: použijte přímou barvu, černou nebo bílou
 @msg	`{path}` must be a bool or an object of bools	`{path}` musí být bool nebo objekt hodnot bool
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` není barva (#rrggbb nebo název přednastavení)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` není nástroj zkapalnění

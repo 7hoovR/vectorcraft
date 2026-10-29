@@ -1826,6 +1826,7 @@ file-filter	Templates	範本
 @msg	the object already has an opacity mask	物件已有不透明度遮色片
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` 是印刷色：色調只適用於全域色和特別色
 @msg	`{name}` isn't a colour swatch	`{name}` 不是顏色色票
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	印刷色無法為帶有透明度的灰階影像上色：請使用特別色、黑色或白色
 @msg	a document needs at least one artboard	文件至少需要一個工作區域
 @msg	empty path	路徑是空的
 @msg	join needs open paths	連接需要開放路徑

@@ -3777,6 +3777,7 @@ axis	Both	Her İkisi
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` bir proses renktir: renk tonları global ve spot renklere uygulanır
 @msg	`{name}` is no recovery entry name	`{name}`, kurtarma girişi adı değil
 @msg	`{name}` isn't a colour swatch	`{name}` bir renk örneği değil
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	proses renk, saydamlık içeren gri tonlamalı bir görüntüyü renklendiremez: spot renk, siyah veya beyaz kullanın
 @msg	`{path}` must be a bool or an object of bools	`{path}` bir bool veya bool nesnesi olmalıdır
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` bir renk değildir (#rrggbb veya önceden ayarlanmış bir ad)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` bir Sıvılaştırma aracı değil

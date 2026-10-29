@@ -3894,6 +3894,7 @@ theme	Appearance	Erscheinungsbild
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` ist eine Prozessfarbe: Tonwerte gelten für globale Farben und Volltonfarben
 @msg	`{name}` is no recovery entry name	`{name}` ist kein Name eines Wiederherstellungseintrags
 @msg	`{name}` isn't a colour swatch	`{name}` ist kein Farbfeld mit einer Farbe
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	eine Prozessfarbe kann ein Graustufenbild mit Transparenz nicht einfärben: Verwenden Sie eine Volltonfarbe, Schwarz oder Weiß
 @msg	`{path}` must be a bool or an object of bools	`{path}` muss ein boolescher Wert oder ein Objekt mit booleschen Werten sein
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` ist keine Farbe (#rrggbb oder ein Vorgabename)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` ist kein Verflüssigen-Werkzeug

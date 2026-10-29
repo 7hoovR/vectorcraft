@@ -4503,6 +4503,7 @@ imageTrace	Outline	Körvonal
 @msg	`{name}` is a process colour: tints apply to global and spot colours	skálaszín: `{name}`; tónus csak globális és direktszínhez adható
 @msg	`{name}` is no recovery entry name	nem helyreállítási bejegyzés neve: `{name}`
 @msg	`{name}` isn't a colour swatch	nem színes színminta: `{name}`
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	skálaszín nem színezhet átlátszóságot tartalmazó szürkeárnyalatos képet: használjon direktszínt, feketét vagy fehéret
 @msg	`{path}` must be a bool or an object of bools	`{path}`: logikai érték vagy logikai értékeket tartalmazó objektum kell
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	nem szín: `{s}` (#rrggbb vagy előbeállítás neve)
 @msg	`{text}`: step {i}'s result has no such value (write $$ for a literal $)	`{text}`: a lépés eredményében nincs ilyen érték: {i} (a $ jelhez írj $$-t)

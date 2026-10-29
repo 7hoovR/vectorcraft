@@ -26,6 +26,7 @@ mod cmdsplit;
 mod cmykflatten;
 mod colorguide;
 mod colorguidelib;
+mod colorize;
 pub(super) mod colormgmt;
 mod colorthemes;
 mod colourfonts;
