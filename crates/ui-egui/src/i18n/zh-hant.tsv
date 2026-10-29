@@ -1763,7 +1763,9 @@ file-filter	Templates	範本
 @msg	unknown freeform mode `{m}` (points, lines)	未知的任意形狀模式 `{m}` (points、lines)
 @msg	`aspect` must be a number (%)	`aspect` 必須是數字 (%)
 @msg	`gradient` must be an object	`gradient` 必須是物件
+@msg	`groupColors` must be an array	`groupColors` 必須是陣列
 @msg	`mode` applies to freeform gradients	`mode` 只適用於任意形狀漸層
+@msg	`preserve` must be an object	`preserve` 必須是物件
 @msg	`stops` must be an array	`stops` 必須是陣列
 @msg	`{k}` must be [x, y]	`{k}` 必須是 [x, y]
 @msg	a gradient needs at least two stops	漸層至少需要兩個色標

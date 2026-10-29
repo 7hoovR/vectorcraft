@@ -538,7 +538,9 @@ Colors blends, inversions and Recolor Artwork keep each colour's model (a blend 
 Guide panel shows: the harmony rule's colours, base first, and per colour its row of `2·steps+1` variations
 (shades, cool or muted on the left, tints, warm or vivid on the right). With `limitTo` (a swatch library id or name,
 or `"document"` for the document's swatches) every colour snaps to the library's nearest colour (ΔE 2000), as the
-panel's Limit to Library does (`ui.colorGuideLimit`); Recolor Artwork's `limitTo` takes the same values.
+panel's Limit to Library does (`ui.colorGuideLimit`); Recolor Artwork's `limitTo` takes the same values. A `limitTo`
+that is not a string, such as `5`, names no library and gets the same error as an unknown name; `null` or `""` sets no
+limit.
 
 Color Themes (local only: no online service) keeps five-colour themes in the preferences. `colorTheme.save
 {colors: [...]}` saves up to five colours as they are, `colorTheme.save {color, rule}` saves the five-colour theme a
@@ -1835,6 +1837,13 @@ is linked to a swatch rewritten with another color keeps its row's new color, ev
 linked to the swatch, as does art whose color the row converts into the art's own color model. Without `group`,
 the swatch keeps its color and the recolored art is no longer linked to it.
 
+The `recolor.*` commands refuse parameters of the wrong form. A `limitTo` or `method` that is not a string gets the
+error for an unknown library or method. Other wrong-form parameters get an error that names them.
+`includeImages`, `includePatterns`, a row's `exclude`, `order`, `saturationBrightness` and the `white`, `black` and
+`grays` switches of `preserve` must be true or false; `colors` and `seed` must be whole numbers; `group` and `rename`
+must be strings, `groupColors` must be an array and `preserve` must be an object. Each refusal leaves the document unchanged and records no undo step. A `null`
+counts as a value left out except for `recolor.apply`'s `model`, which must be a string when given.
+
 ```json
 {"name":"run_command","arguments":{"command":"recolor.reduce","params":{"colors":2,"preserve":{"grays":true}}}}
 {"name":"run_command","arguments":{"command":"recolor.apply","params":{"map":[{"from":["cmyk 0 100 100 0","cmyk 0 40 40 0"],"to":"cmyk 100 50 0 0"}],"method":"scaleTints"}}}
@@ -1908,6 +1917,11 @@ app (a library file as it is; a document's swatches or a library loaded from `da
 as `.vcswatches`) under a name no file there has, and lists it as User Defined from then on; until the app
 quits, commands given its loaded id use the copy → `{library, name, count, path, copied}` (`copied: false`
 when the folder already held the same file). Without a user library folder the command is disabled.
+These commands refuse a parameter of the wrong form with an error that names it: `library`, `apply`, `path`, `data`,
+`dataBase64`, `format` and `name` must be strings, `names` must be a list of names, and `focus`, `replace` and `user`
+must be true or false. `graphicStyle.saveLibrary` checks `path`, `name`, `names` and `user` the same way,
+`graphicStyle.addFromLibrary` checks `name`, `names`, `apply`, `add` and `ids` before it adds a style, and `graphicStyle.loadLibrary` checks `path`, `data`, `dataBase64` and `name`. A `null` for one of these parameters counts
+as a value left out.
 
 ## Graphic style libraries
 

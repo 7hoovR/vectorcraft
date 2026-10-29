@@ -4462,10 +4462,12 @@ imageTrace	Outline	Körvonal
 @msg	`freeform.lines` must be an array	`freeform.lines`: tömb kell
 @msg	`freeform.points` must be an array	`freeform.points`: tömb kell
 @msg	`gradient` must be an object	`gradient`: objektum kell
+@msg	`groupColors` must be an array	`groupColors`: tömb kell
 @msg	`id` is the step reference {r}, which only `run` and `command_batch` resolve	az `id` lépéshivatkozás ({r}), ezt csak a `run` és a `command_batch` oldja fel
 @msg	`ids` must be an array of object ids, not {v}	`ids`: objektumazonosítók tömbje kell, ez nem az: {v}
 @msg	`library` is a library id or name (see {list})	a `library` könyvtárazonosító vagy -név lehet (lásd: {list})
 @msg	`mode` applies to freeform gradients	a `mode` a szabad formájú színátmenetekre vonatkozik
+@msg	`preserve` must be an object	`preserve`: objektum kell
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize`: 1, 3 vagy 5 kell
 @msg	`stops` must be an array	`stops`: tömb kell
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg`: SVG-beállításokat tartalmazó objektum kell (lásd: document.formats)

@@ -3972,8 +3972,10 @@ axis	Both	Оба
 @msg	`freeform.points` must be an array	`freeform.points` должно быть массивом
 @msg	`freeform.lines` must be an array	`freeform.lines` должно быть массивом
 @msg	`gradient` must be an object	`gradient` должно быть объектом
+@msg	`groupColors` must be an array	`groupColors` должно быть массивом
 @msg	`library` is a library id or name (see {list})	`library` — это идентификатор или имя библиотеки (см. {list})
 @msg	`mode` applies to freeform gradients	`mode` применяется к произвольным градиентам
+@msg	`preserve` must be an object	`preserve` должно быть объектом
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize` должно быть 1, 3 или 5
 @msg	`stops` must be an array	`stops` должно быть массивом
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg` должно быть объектом параметров SVG (см. document.formats)
