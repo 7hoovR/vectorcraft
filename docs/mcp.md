@@ -2275,7 +2275,8 @@ is edited the panel lists only an `<Opacity Mask>` entry and the document tab sa
 
 `effect.expandAppearance {ids?, target?}` (Object → Expand Appearance, enabled when a selected or targeted object's appearance isn't basic)
 turns appearances into plain objects in one undo step: each visible fill becomes a copy of the path painted by that
-fill alone and each stroke its outline filled with its paint (a brushed stroke: its brush art), grouped in paint order
+fill alone and each stroke a copy of the path stroked by that stroke alone, its weight, caps, joins, dashes, arrowheads,
+alignment and width profile kept as stroke attributes (a brushed stroke: its brush art), grouped in paint order
 under the object's id; each piece takes its fill's or stroke's opacity and blend mode, and the group keeps the
 object's transparency and opacity mask. Geometry effects are baked; raster effects become an embedded image at the
 document's raster effects resolution (shadows and outer glows under the art; a blur, feather or inner glow replaces
@@ -2284,6 +2285,12 @@ is outlined; type that has no fills or strokes of its own and whose only effects
 type, with the image under it. A group's or layer's own fills and strokes become objects among its members, and its
 members are expanded too. The result is `{ids}`; when an image in the art can't be decoded, the images made from
 raster effects do not show it, and the result also carries the `warning` that Flatten Transparency gives.
+A path's strokes stay strokes, as the
+[Expand objects](https://helpx.adobe.com/illustrator/desktop/manage-objects/arrange-objects/expand-objects.html) help
+page's two steps imply (Expand Appearance first, then Expand, whose Stroke option outlines strokes): `object.expand`
+or `object.path.outlineStroke` outline them (#3089). Object → Expand… in the menus is dimmed while the selection has
+an appearance Expand Appearance expands (`object.expand.info`'s `appearance`); `object.expand` itself still bakes
+effects and outlines strokes in one step.
 
 ```json
 {"name":"run_command","arguments":{"command":"effect.expandAppearance","params":{"ids":[12]}}}
@@ -2400,7 +2407,8 @@ an instance when the effects in the symbol's art, or the instance's own, paint o
 
 `object.expand {object?, fill?, stroke?, gradient?, steps?}` (Object → Expand…) turns the selection into plain art in
 one undo step. `object` (on by default) outlines type, turns live shapes into paths and bakes effects; `stroke` (on)
-outlines strokes into filled paths; `fill` (on) expands gradient fills: with `gradient: "objects"` (the default) into
+outlines strokes into filled paths, the stroked paths that baking effects leaves included (a group's own stroke among
+them, #3089); `fill` (on) expands gradient fills: with `gradient: "objects"` (the default) into
 `steps` (1–1000, default 255) solid objects (rectangles across a linear gradient, each from its band to the far end so
 no seams show; concentric ellipses for a radial one, largest first; just the bands when stops are translucent), with
 `gradient: "mesh"` into a gradient mesh that paints the gradient (columns or rings where its colour changes, sharp at
@@ -2426,9 +2434,10 @@ or a geometry effect on a group or type, which the canvas draws turned or scaled
 and those of the object shape the outline of the clip group, the gradient fits that outline and the tiles reach its
 box, as the canvas paints the fill; the expanded art does not keep them. With `fill: false` gradient and pattern fills
 stay live. `object.expand.info` answers which options have something to expand in the selection
-(`{object, fill, stroke, gradient}`; `gradient` says whether Fill has a gradient fill, which Expand Gradient To
-applies to), and `object.mesh.create` on a gradient-filled object colours the mesh points as the
-gradient paints them, with the colors Object › Expand gives them.
+(`{object, fill, stroke, gradient, appearance}`; `gradient` says whether Fill has a gradient fill, which Expand
+Gradient To applies to; `appearance` whether the selection has appearance attributes Expand Appearance expands first,
+for which Object → Expand… is dimmed in the menus), and `object.mesh.create` on a gradient-filled object colours the
+mesh points as the gradient paints them, with the colors Object › Expand gives them.
 
 ```json
 {"name":"run_command","arguments":{"command":"object.expand","params":{"stroke":false,"gradient":"mesh"}}}
