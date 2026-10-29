@@ -59,6 +59,7 @@ impl Session {
             plugin_dir: None,
             plugin_output: None,
             recent_urls: vec![],
+            trace_preset_changes: Default::default(),
             ui_language: None,
             journal_note: Default::default(),
             note_depth: 1,

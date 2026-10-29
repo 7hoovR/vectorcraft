@@ -650,6 +650,7 @@ fn run_ui_part9(app: &mut VectorcraftApp, id: &str, p: &Value) -> Option<Result<
             crate::dialogs::flattener_presets::open(app, s("selected").as_deref());
             Ok(Value::Null)
         }
+        "ui.imageTracePresetDialog" => crate::dialogs::trace_presets::open(app, p),
         "ui.flattenerPreview" => crate::panels::flattener_preview::command(app, p),
         "window.graphicStyleLibrary" => crate::panels::graphic_styles::open_library(app, p),
         "ui.libraryPanel" => crate::panels::library_panel::command(app, p),
