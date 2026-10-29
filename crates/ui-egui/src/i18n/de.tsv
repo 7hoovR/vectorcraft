@@ -543,6 +543,7 @@ font-technology	Variable	Variabel
 	Complexity:	Komplexität:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Composite-Farben werden in dieses Profil konvertiert; Separationen werden damit erzeugt, wenn es ein CMYK-Profil ist.
 	Compound Path	Zusammengesetzter Pfad
+	Compound Shape	Zusammengesetzte Form
 	Compress (RLE)	Komprimieren (RLE)
 	Compress text and line art	Text und Strichgrafiken komprimieren
 	Compression	Komprimierung
@@ -968,7 +969,6 @@ font-technology	Variable	Variabel
 	Exit Isolation Mode	Isolationsmodus beenden
 	Expand	Umwandeln
 	Expand Appearance	Aussehen umwandeln
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	„Umwandeln“ gilt für zusammengesetzte Formen (Alt-Klick auf einen Formmodus) – geplant
 	Expand Brush Strokes	Pinselkonturen umwandeln
 	Expand Compound Shape	Zusammengesetzte Form umwandeln
 	Expand Gradient Mesh	Verlaufsgitter umwandeln
@@ -2939,6 +2939,7 @@ mark-style	Japanese	Japanisch
 	Shape Builder Regions	Formerstellungsbereiche
 	Shape Builder Tool	Formerstellungs-Werkzeug
 	Shape Effects	Formeffekte
+	Shape Mode	Formmodus
 	Shape Modes:	Formmodi:
 	Shape Properties:	Formeigenschaften:
 	Shaper Tool	Shaper-Werkzeug

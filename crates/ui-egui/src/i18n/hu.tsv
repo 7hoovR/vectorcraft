@@ -749,6 +749,7 @@ font-technology	Variable	Változó
 	Compound	Összetett
 	Compound 2	Összetett 2
 	Compound Path	Összetett útvonal
+	Compound Shape	Összetett alakzat
 	Compress (RLE)	Tömörítés (RLE)
 	Compress text and line art	Szöveg és vonalas grafika tömörítése
 	Compression	Tömörítés
@@ -1269,7 +1270,6 @@ font-technology	Variable	Változó
 	Expand	Kibontás
 	Expand 1 Selected	1 kijelölt kibontása
 	Expand Appearance	Megjelenés kibontása
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	A Kibontás összetett alakzatokra vonatkozik (Alt+kattintás egy alakzatmódra) – tervezett funkció
 	Expand Brush Strokes	Ecsetvonások kibontása
 	Expand Compound Shape	Összetett alakzat kibontása
 	Expand Gradient Mesh	Színátmenetes háló kibontása
@@ -3584,6 +3584,7 @@ mark-style	Japanese	Japán
 	Shape Builder Regions	Alakzatépítő területei
 	Shape Builder Tool	Alakzatépítő
 	Shape Effects	Alakzateffektusok
+	Shape Mode	Alakzatmód
 	Shape Modes:	Alakzatmódok:
 	Shape Properties:	Alakzat tulajdonságai:
 	Shape:	Alak:

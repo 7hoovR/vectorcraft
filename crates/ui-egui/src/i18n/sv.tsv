@@ -552,6 +552,7 @@ font-technology	Variable	Variabla
 	Complexity:	Komplexitet:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Sammansatta färger konverteras till den; separationer separeras med den när den är en CMYK-profil.
 	Compound Path	Sammansatt bana
+	Compound Shape	Sammansatt form
 	Compress (RLE)	Komprimera (RLE)
 	Compress text and line art	Komprimera text och linjegrafik
 	Compression	Komprimering
@@ -976,7 +977,6 @@ font-technology	Variable	Variabla
 	Exit Isolation Mode	Avsluta isoleringsläge
 	Expand	Expandera
 	Expand Appearance	Expandera utseende
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Expandera gäller för sammansatta former (Alt-klicka på ett formläge) – planerat
 	Expand Brush Strokes	Expandera penseldrag
 	Expand Compound Shape	Expandera sammansatt form
 	Expand Gradient Mesh	Expandera gradientnät
@@ -2904,6 +2904,7 @@ font-technology	Variable	Variabla
 	Shape Builder Regions	Formbyggarområden
 	Shape Builder Tool	Formbyggarverktyg
 	Shape Effects	Figureffekter
+	Shape Mode	Formläge
 	Shape Modes:	Formlägen:
 	Shape Properties:	Formegenskaper:
 	Shaper Tool	Formningsverktyg

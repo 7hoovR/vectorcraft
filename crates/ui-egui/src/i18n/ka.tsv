@@ -220,6 +220,7 @@
 	Clipping Mask	მომჭრელი ნიღაბი
 	Edit Clipping Path	მომჭრელი ტრაექტორიის რედაქტირება
 	Compound Path	შედგენილი ტრაექტორია
+	Compound Shape	შედგენილი ფიგურა
 	Artboards	სამუშაო დაფები
 	Convert to Artboards	სამუშაო დაფებად გარდაქმნა
 	Rearrange All Artboards…	ყველა სამუშაო დაფის გადალაგება…
@@ -1547,7 +1548,6 @@ lighting	Light	სინათლე
 	Bottom-to-Bottom Leading	სტრიქონთა დაშორება ქვედა კიდიდან ქვედა კიდემდე
 	Burasagari	Burasagari
 	Force	იძულებით
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	გაშლა შედგენილ ფიგურებზე მოქმედებს (Alt-დაწკაპუნება ფიგურის რეჟიმზე) — სამომავლო გეგმაშია
 	Expand Compound Shape	შედგენილი ფიგურის გაშლა
 	Make Compound Shape	შედგენილი ფიგურის შექმნა
 	Pathfinder Options…	ტრაექტორიების ოპერაციების პარამეტრები…
@@ -3507,6 +3507,7 @@ font-technology	Variable	ცვლადი
 	Default Fill and Stroke (D)	ნაგულისხმევი შევსება და კონტური (D)
 	Fill (X), double-click for the Color Picker	შევსება (X), ორმაგი დაწკაპუნება — ფერის ამრჩევი
 	Opacity:	გაუმჭვირვალობა:
+	Shape Mode	ფიგურის რეჟიმი
 	Shape Modes:	ფიგურის რეჟიმები:
 	Stroke (X), double-click for the Color Picker	კონტური (X), ორმაგი დაწკაპუნება — ფერის ამრჩევი
 	Stroke:	კონტური:

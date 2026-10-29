@@ -290,6 +290,7 @@ font-technology	Variable	가변
 	Clipping Mask	클리핑 마스크
 	Edit Clipping Path	클리핑 패스 편집
 	Compound Path	컴파운드 패스
+	Compound Shape	컴파운드 모양
 	Artboards	아트보드
 	Convert to Artboards	아트보드로 변환
 	Rearrange All Artboards…	모든 아트보드 재정렬…
@@ -1458,7 +1459,6 @@ font-technology	Variable	가변
 	Expand Layers Panel Rows	레이어 패널 행 펼치기
 	Expand Options	옵션 펼치기
 	Expand Repeat	반복 확장
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	확장은 컴파운드 모양(모양 모드를 Alt-클릭)에 적용됩니다 — 개발 예정
 	Expand:	확장:
 	Export All…	모두 내보내기…
 	Export Artboard	아트보드 내보내기
@@ -2840,6 +2840,7 @@ mark-style	Japanese	일본식
 	Shape Builder	모양 빌더
 	Shape Builder Regions	모양 빌더 영역
 	Shape Builder Tool	모양 빌더 도구
+	Shape Mode	모양 모드
 	Shape Modes:	모양 모드:
 	Shape Properties:	모양 속성:
 	Shaper Tool	셰이퍼 도구

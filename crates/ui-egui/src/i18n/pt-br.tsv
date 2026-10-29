@@ -514,6 +514,7 @@
 	Complexity:	Complexidade:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	As cores compostas são convertidas para ele; as separações separam com ele quando é um perfil CMYK.
 	Compound Path	Caminho Composto
+	Compound Shape	Forma Composta
 	Compress (RLE)	Comprimir (RLE)
 	Compress text and line art	Comprimir texto e arte de linha
 	Compression:	Compressão:
@@ -884,7 +885,6 @@
 	Expand Panels	Expandir Painéis
 	Expand Repeat	Expandir Repetição
 	Expand Shape	Expandir Forma
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Expandir se aplica a formas compostas (Alt-clique em um modo de forma) — no roadmap
 	Expand:	Expandir:
 	Expand…	Expandir…
 	Export	Exportar
@@ -2465,6 +2465,7 @@
 	Shape Builder Regions	Regiões do Construtor de Formas
 	Shape Builder Tool	Ferramenta Construtor de Formas
 	Shape Effects	Efeitos de Forma
+	Shape Mode	Modo de Forma
 	Shape Modes:	Modos de Forma:
 	Shape Properties:	Propriedades da Forma:
 	Shaper Tool	Ferramenta Formador

@@ -127,6 +127,7 @@ impl Node {
             NodeKind::Layer { .. } => "Layer",
             NodeKind::Group { clip: true, .. } => "Clip Group",
             NodeKind::Group { .. } if self.extras().objects_on_path.is_some() => "Objects on Path",
+            NodeKind::Group { .. } if self.extras().compound_shape => "Compound Shape",
             NodeKind::Group { .. } => "Group",
             NodeKind::Path { live: Some(l), .. } => l.label(),
             NodeKind::Path { guide: true, .. } => "Guide",

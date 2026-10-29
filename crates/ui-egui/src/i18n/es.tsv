@@ -565,6 +565,7 @@ font-technology	Variable	Variables
 	Complexity:	Complejidad:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Los colores compuestos se convierten a este perfil; las separaciones lo usan cuando es un perfil CMYK.
 	Compound Path	Trazado compuesto
+	Compound Shape	Forma compuesta
 	Compress (RLE)	Comprimir (RLE)
 	Compress text and line art	Comprimir texto y arte lineal
 	Compression	Compresión
@@ -991,7 +992,6 @@ font-technology	Variable	Variables
 	Exit Isolation Mode	Salir del modo de aislamiento
 	Expand	Expandir
 	Expand Appearance	Expandir apariencia
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Expandir se aplica a formas compuestas (Alt+clic en un modo de forma): en la hoja de ruta
 	Expand Brush Strokes	Expandir trazos de pincel
 	Expand Compound Shape	Expandir forma compuesta
 	Expand Gradient Mesh	Expandir malla de degradado
@@ -2974,6 +2974,7 @@ font-technology	Variable	Variables
 	Shape Builder Regions	Regiones del generador de formas
 	Shape Builder Tool	Herramienta Generador de formas
 	Shape Effects	Efectos de forma
+	Shape Mode	Modo de forma
 	Shape Modes:	Modos de forma:
 	Shape Properties:	Propiedades de forma:
 	Shaper Tool	Herramienta Shaper

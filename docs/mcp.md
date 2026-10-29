@@ -2199,6 +2199,23 @@ whatever the options are then.
 {"name":"run_command","arguments":{"command":"object.pathfinder.options","params":{"precision":0.1,"removeUnpainted":true}}}
 ```
 
+Compound shapes (the Pathfinder panel menu, and Alt-clicking a Shape Mode button): `object.compoundShape.make
+{mode?, ids?}` makes the two or more selected objects (paths, compound paths, groups, compound shapes, type) the
+members of one live compound shape, each in shape mode `mode` (`"add"`, the default, `"subtract"`, `"intersect"` or
+`"exclude"`). It draws, prints and exports as the area its members make from the backmost up, painted with its own
+appearance, which it takes from the topmost member not in Subtract (with every member subtracting, the backmost); a
+fill or stroke given to it or to a member paints the compound shape. The members stay editable (Direct Selection,
+the Layers panel, isolation mode). `object.compoundShape.setMode {mode, ids?}` sets the mode of the members the
+selection is or is in, `object.compoundShape.release` gives the members back as they were, and
+`object.compoundShape.expand` turns each compound shape into the path, or compound path, of its area. A saved file
+keeps the compound shape (`compound_shape` on the group, `shape_mode` on each member); a mode the file doesn't name
+reads as Add.
+
+```json
+{"name":"run_command","arguments":{"command":"object.compoundShape.make","params":{"mode":"subtract"}}}
+{"name":"run_command","arguments":{"command":"object.compoundShape.expand","params":{}}}
+```
+
 The Eyedropper: `appearance.copyFrom {source}` copies what the Eyedropper Options pick up and apply from `source` to the
 selection (`ids`); `reverse: true` copies the selection's attributes onto `source` (Alt-click), or with nothing selected
 what the last copy without `reverse` picked up (a copy made then, kept for the session), and `append: true` adds
