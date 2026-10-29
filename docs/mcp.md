@@ -1369,6 +1369,14 @@ and `dataset.prev` also deselect every selected object that is hidden or locked 
 moved into a hidden or locked layer or group, or objects that a data set hides. The key object is cleared when it
 is one of them, and `edit.undo` selects them again with the key object.
 
+`object.hide.unselected` (Object › Hide › Unselected Artwork, Cmd+Alt+Shift+3) hides, in one undo step, every
+object that `select.all` takes and that is neither selected nor holds a selected object, and returns `{count}`. In a
+group that holds a selected object it hides the group's other members one by one; a clip group, a compound path or
+another object that holds a selected object stays as it is with its members. While Lock Guides is on it leaves the
+guide paths as they are. The selection stays as it is, and `object.showAll` shows the objects again. With nothing to
+hide it records no undo step. In isolation mode the menu item is disabled, and the command returns the error "exit
+isolation mode first" and changes nothing.
+
 These Select menu commands select only the objects that `select.all` selects and the objects inside them: every
 `select.same.*` and `select.object.*` command except `select.object.slices`, `select.nextAbove`, `select.nextBelow`
 and `select.recall`. They leave out hidden and locked objects with the objects inside them, the objects on hidden,
