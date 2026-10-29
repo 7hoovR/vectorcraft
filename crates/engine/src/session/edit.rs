@@ -19,6 +19,7 @@ impl Session {
         let doc = Arc::make_mut(&mut st.doc);
         // The Global Edit members the edit reached besides the selection.
         let mut spread = vec![];
+        let mut dim_changed = false;
         // Objects attached to a path follow it, and dimensions follow the art they measure.
         let result = match f(doc, &mut st.selection).and_then(|v| {
             // Global Edit: the other members take what the edit changed about the one it edited.
@@ -26,14 +27,14 @@ impl Session {
                 spread = cmd::globaledit::propagate(&before, doc, ge, [&before_sel.objects, &st.selection.objects]);
             }
             cmd::objects_on_path::refresh(&before, doc);
-            cmd::dimension::refresh(&before, doc)?;
+            dim_changed = cmd::dimension::refresh(&before, doc)?;
             Ok(v)
         }) {
             Ok(v) => match cmd::shaper::refresh(&before, Arc::make_mut(&mut st.doc)) {
                 Err(e) => Err(e),
                 Ok(shaper_changed) => {
                     // Attached Shaper groups whose art was rebuilt go back on their path.
-                    if shaper_changed {
+                    if shaper_changed || dim_changed {
                         cmd::objects_on_path::refresh(&before, Arc::make_mut(&mut st.doc));
                     }
                     // Inline graphics in text follow their symbols.
