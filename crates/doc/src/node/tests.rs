@@ -449,3 +449,21 @@ fn objects_are_read_within_the_node_budget() {
     assert!(with_node_budget(1, read).is_err());
     assert!(with_node_budget(3, read).is_ok());
 }
+
+/// #3587: fields read before an object's `type` are buffered value by value within
+/// [`with_buffered_value_budget`], each counted once: a group read back from the buffer buffers
+/// its own fields again without counting them twice. VectorCraft writes `type` first, which
+/// buffers nothing.
+#[test]
+fn fields_before_the_type_are_buffered_within_the_value_budget() {
+    let reordered = r#"{"id":1,"kind":{"children":[{"id":2,"kind":{"children":[],"type":"group"}}],"type":"group"}}"#;
+    let read = |json: &str| serde_json::from_str::<Node>(json);
+    // The children's array, the inner object, its id, its kind, the kind's empty children and
+    // its type: six values.
+    assert!(with_buffered_value_budget(6, || read(reordered)).is_ok());
+    let why = with_buffered_value_budget(5, || read(reordered)).unwrap_err().to_string();
+    assert!(why.contains("more than 5 values before its type"), "{why}");
+    let written = serde_json::to_string(&Node::group(NodeId(1), vec![Arc::new(Node::group(NodeId(2), vec![]))])).unwrap();
+    assert!(with_buffered_value_budget(0, || read(&written)).is_ok(), "a saved object buffers nothing: {written}");
+    assert!(read(reordered).is_ok(), "no budget outside a read");
+}

@@ -28,7 +28,7 @@ pub use attributes::{ForeignAttribute, ImageMap, MAX_SVG_SCRIPTS, ObjectAttribut
 pub use clip::{ClipPaint, Uniter};
 pub use extras::{Extras, ExtrasMut, NodeExtras};
 pub use ids::{LAYER_COLORS, LayerColor, NodeId};
-pub use kind::{ImageObject, NodeKind};
+pub use kind::{ImageObject, MAX_BUFFERED_VALUES, NodeKind, with_buffered_value_budget};
 pub use live_shape::{LiveShape, Scaling};
 pub use opacity::{Knockout, OpacityMask, whiten};
 use wire::NodeWire;
