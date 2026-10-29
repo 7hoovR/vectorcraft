@@ -376,6 +376,9 @@ font-technology	Variable	가변
 	Increase Font Size by Five Steps	글꼴 크기 5단계 키우기
 	Reset Tracking and Kerning	자간 및 커닝 재설정
 	Reset Horizontal Scale	가로 비율 재설정
+	Highlight Font Name	글꼴 이름 강조 표시
+	Highlight Kerning	커닝 강조 표시
+	Highlight Tracking	자간 강조 표시
 	Step Type	단계별 문자
 	Find Font…	글꼴 찾기…
 	Change Case	대소문자 변경

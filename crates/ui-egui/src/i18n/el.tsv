@@ -5281,6 +5281,9 @@ effect	Points	Σημεία
 	Registration:	Σημείο αναφοράς:
 	Reset Horizontal Scale	Επαναφορά οριζόντιας κλίμακας
 	Reset Tracking and Kerning	Επαναφορά απόστασης χαρακτήρων και διαγραμμάτωσης
+	Highlight Font Name	Επισήμανση ονόματος γραμματοσειράς
+	Highlight Kerning	Επισήμανση διαγραμμάτωσης
+	Highlight Tracking	Επισήμανση απόστασης χαρακτήρων
 	Sample Color from Screen	Δειγματοληψία χρώματος από την οθόνη
 	Set as Default	Ορισμός ως προεπιλογή
 	Show Template	Εμφάνιση προτύπου

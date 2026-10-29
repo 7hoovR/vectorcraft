@@ -1126,6 +1126,9 @@ font-technology	Variable	Variabel
 	Increase Font Size by Five Steps	Schriftgrad um fünf Schritte erhöhen
 	Reset Tracking and Kerning	Laufweite und Kerning zurücksetzen
 	Reset Horizontal Scale	Horizontale Skalierung zurücksetzen
+	Highlight Font Name	Schriftname hervorheben
+	Highlight Kerning	Kerning hervorheben
+	Highlight Tracking	Laufweite hervorheben
 	Spacing	Abstand
 	Step Type	Text schrittweise ändern
 	Fit in View	In Ansicht einpassen
