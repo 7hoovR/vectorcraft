@@ -136,7 +136,9 @@ pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &
             .rev()
             .skip(1)
             .any(|n| n.clips() && n.children().and_then(|c| c.first()).is_some_and(|clip| clip.id != id && !clip_contains(clip, p)));
-        masked && nodes.last().is_some_and(|n| hit_any(n, p, opt, &symbols).is_some())
+        // Its own art is what a click would hit in it: a group's hidden, locked or masked
+        // contents don't count.
+        masked && nodes.last().is_some_and(|n| object_hit(n, p, opt, &symbols, true))
     })
 }
 
@@ -307,7 +309,14 @@ fn locked_children(parent: &Node, p: Point, opt: HitOptions, symbols: &SymbolBox
 
 /// Would a click at `p` hit the locked object `n` if it were not locked?
 fn locked_hit(n: &Node, p: Point, opt: HitOptions, symbols: &SymbolBoxes) -> bool {
-    let inside = || hit_children(n, p, opt, symbols, &|_| false, &mut Vec::new(), false).is_some();
+    object_hit(n, p, opt, symbols, false)
+}
+
+/// Would a click at `p` hit the object `n`, wherever it is? A container is hit by its contents as
+/// [`hit_test`] tries them (its own clipping mask, and with `editable_only` none of its hidden,
+/// locked or template contents).
+fn object_hit(n: &Node, p: Point, opt: HitOptions, symbols: &SymbolBoxes, editable_only: bool) -> bool {
+    let inside = || hit_children(n, p, opt, symbols, &|_| false, &mut Vec::new(), editable_only).is_some();
     match &n.kind {
         NodeKind::Group { .. } | NodeKind::Intertwine { .. } | NodeKind::Envelope { editing: true, .. } => inside(),
         NodeKind::Blend { .. } => inside() || hit_leaf(n, p, opt, symbols).is_some(),

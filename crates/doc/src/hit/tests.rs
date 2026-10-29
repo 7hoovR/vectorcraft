@@ -119,6 +119,42 @@ fn a_selected_objects_art_hidden_by_a_mask_is_found_under_the_pointer() {
     assert_eq!(selected_hidden_at(&d, hidden, opt, &[art_id]), Some(art_id));
 }
 
+/// A selected group's own art is what a click would hit in it: not a hidden or locked child, nor
+/// art its own clipping mask hides, all under the pointer where an outer mask hides them.
+#[test]
+fn a_selected_groups_hidden_art_counts_only_where_a_click_would_hit_it() {
+    // An outer clip group masking to the left half (0..100); the selected group inside it holds
+    // `child` (100..200 × 0..100, under the pointer at (150, 50)) and `shown` (inside the mask).
+    let build = |change: &dyn Fn(&mut Node, &mut Node)| {
+        let mut d = Document::new(300.0, 200.0);
+        let l = d.layers[0].id;
+        let outer_mask = Node::path(d.alloc_id(), shapes::rectangle(Rect::new(0.0, 0.0, 100.0, 100.0)), Appearance::default());
+        let mut child = Node::path(d.alloc_id(), shapes::rectangle(Rect::new(100.0, 0.0, 200.0, 100.0)), Appearance::default_art());
+        let shown = Node::path(d.alloc_id(), shapes::rectangle(Rect::new(10.0, 10.0, 40.0, 40.0)), Appearance::default_art());
+        let (gid, cid) = (d.alloc_id(), d.alloc_id());
+        let mut group = Node::group(gid, vec![Arc::new(shown)]);
+        change(&mut group, &mut child);
+        if let NodeKind::Group { children, .. } = &mut group.kind {
+            children.push(Arc::new(child));
+        }
+        let mut clip = Node::group(cid, vec![Arc::new(outer_mask), Arc::new(group)]);
+        clip.set_clips(true);
+        d.insert(Some(l), 0, clip).unwrap();
+        (d, gid)
+    };
+    let (hidden, opt) = (Point::new(150.0, 50.0), HitOptions::default());
+    let (d, g) = build(&|_, _| {});
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), Some(g));
+    let (d, g) = build(&|_, child| child.visible = false);
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), None, "a hidden child");
+    let (d, g) = build(&|_, child| child.locked = true);
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), None, "a locked child");
+    // The selected group is a clip group too, whose own mask (its first child, 10..40) leaves
+    // `child` out.
+    let (d, g) = build(&|group, _| group.set_clips(true));
+    assert_eq!(selected_hidden_at(&d, hidden, opt, &[g]), None, "its own mask");
+}
+
 /// #2345: a marquee touches a clip group only where its art shows. Over the clipped-away
 /// half alone it selects nothing, and around a rectangle drawn beside the group's mask it
 /// takes that rectangle alone; reaching into the mask takes the group. The same holds for
