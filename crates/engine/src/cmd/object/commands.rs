@@ -6,6 +6,7 @@ use super::props::set_props;
 use super::shape::{expand_shape, set_live_shape};
 use super::transform::{move_cmd, nudge, reflect, rotate, scale, shear, transform, transform_again};
 use super::{CommandSpec, cmd, has_doc, has_multi, has_selection, has_selection_or_guides};
+use crate::cmd::{has_selection_outside_isolation, outside_isolation};
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
