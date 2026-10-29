@@ -6,6 +6,9 @@
 //! ends the editing, and the next click makes new type. Point type placed by a click and left
 //! empty is discarded when editing ends (`text.discardEmpty`); frames keep their shape. Where new
 //! type goes (the click, the frame's corners) snaps to Smart Guides ([`DrawSnap`]), hovering too.
+//! While no type is being edited, a press with Shift held makes the new type with the tool's
+//! horizontal or vertical counterpart, and a press with Alt (Option) held makes it with Type on a
+//! Path in place of Area Type or the reverse ([`TypeTool::acting`]); the pointer shows that tool.
 //!
 //! While editing: caret movement by character / word (Cmd or Alt) / line (Up/Down) / line ends
 //! (Home/End; Cmd = whole text), Shift extends the selection, drag selects, double-click selects a
@@ -136,6 +139,8 @@ pub struct TypeTool {
     press: Option<(Point, Point)>,
     /// The other corner of an area dragged out (snapped).
     drag: Option<Point>,
+    /// The Type tool the press acts as, with the keys held at the press ([`Self::acting`]).
+    held: Option<(Mode, bool)>,
     /// Smart Guides for where new type goes.
     snap: DrawSnap,
     /// The press landed in the edited text: dragging selects.
@@ -158,6 +163,22 @@ impl TypeTool {
             _ => Mode::Type,
         };
         Self { mode, vertical: id.starts_with("vertical"), ..Default::default() }
+    }
+
+    /// The Type tool (which tool, and whether vertical) that a press with `mods` held acts as.
+    /// While no type is being edited, Shift switches between the horizontal and the vertical tool,
+    /// and Alt switches between Area Type and Type on a Path (the Type tool has no counterpart for
+    /// Alt); both together do both. While type is being edited, it is the tool chosen.
+    fn acting(&self, mods: Mods) -> (Mode, bool) {
+        if self.editing.is_some() {
+            return (self.mode, self.vertical);
+        }
+        let mode = match self.mode {
+            Mode::Area if mods.alt => Mode::OnPath,
+            Mode::OnPath if mods.alt => Mode::Area,
+            mode => mode,
+        };
+        (mode, self.vertical != mods.shift)
     }
 
     fn text<'a>(cx: &'a ToolContext, id: NodeId) -> Option<&'a TextObject> {
@@ -437,6 +458,7 @@ impl TypeTool {
     /// edited, a click that lands on no type only ends the editing; the next click makes new type
     /// (#2871). A drag that draws an area-type frame makes it either way.
     fn on_up(&mut self, cx: &ToolContext, start: Point, at: Point) -> Vec<Action> {
+        let (mode, vertical) = self.held.take().unwrap_or((self.mode, self.vertical));
         // Click into existing text: place the caret.
         if let Some(out) = self.edit_at(cx, start) {
             return out;
@@ -459,13 +481,13 @@ impl TypeTool {
             return out;
         }
         // Area Type / Type on a Path: click a path.
-        if self.mode != Mode::Type && drag.is_none() {
-            let on_path = self.mode == Mode::OnPath;
+        if mode != Mode::Type && drag.is_none() {
+            let on_path = mode == Mode::OnPath;
             if let Some(pid) = Self::path_at(cx, start, !on_path) {
                 let mode = if on_path { "onPath" } else { "area" };
                 out.push(Action::Exec(
                     "text.createInPath".into(),
-                    json!({"path": pid.0, "mode": mode, "text": "", "at": [start.x, start.y], "vertical": self.vertical, "placeholder": cx.placeholder_text}),
+                    json!({"path": pid.0, "mode": mode, "text": "", "at": [start.x, start.y], "vertical": vertical, "placeholder": cx.placeholder_text}),
                 ));
                 out.push(Action::Notify("text.editNew".into()));
                 return out;
@@ -481,7 +503,7 @@ impl TypeTool {
         if let Some(rotation) = vectorcraft_geom::constrain_rotation(cx.constrain_angle) {
             params["rotation"] = json!(rotation);
         }
-        params["vertical"] = json!(self.vertical);
+        params["vertical"] = json!(vertical);
         params["placeholder"] = json!(cx.placeholder_text);
         out.push(Action::Exec("text.create".into(), params));
         out.push(Action::Notify("text.editNew".into()));
