@@ -1108,6 +1108,9 @@ font-technology	Variable	Değişken
 	Increase Font Size by Five Steps	Yazı Tipi Boyutunu Beş Adım Artırın
 	Reset Tracking and Kerning	Takip ve Karakter Aralığını Sıfırla
 	Reset Horizontal Scale	Yatay Ölçeği Sıfırla
+	Highlight Font Name	Yazı Tipi Adını Vurgula
+	Highlight Kerning	Karakter Aralığını Vurgula
+	Highlight Tracking	Takibi Vurgula
 	Spacing	Aralık
 	Step Type	Adım Türü
 	Fit in View	Görünüme Sığdır

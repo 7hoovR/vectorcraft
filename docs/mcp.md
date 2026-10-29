@@ -3095,7 +3095,11 @@ Pen's second anchor at (150, 431), in line with the square's centre.
   kerning to Auto in the type objects in `ids`, the Type tool's selected text or the selected type objects; at a caret
   it resets only the kerning of the character before it. `type.resetHorizontalScale` (Cmd+Shift+X,
   `press_key {key: "X", mods: {cmd: true, shift: true}}`) sets the horizontal scale to 100%, as the Character panel
-  shows it, in the same text; at a caret it leaves the text as it is.
+  shows it, in the same text; at a caret it leaves the text as it is. In the app, `type.highlightKerning` (Cmd+Alt+K),
+  `type.highlightTracking` (no default key) and `type.highlightFontName` (Cmd+Alt+Shift+F) show the Character panel and
+  give its Kerning or Tracking field the keyboard focus with the value selected, or open its font family menu with the
+  search field focused; each replies `{field: "kerning" | "tracking" | "fontName"}`. Without selected type or text the
+  Type tool edits, the panel shows and the command fails.
 - `missingGlyphProtection` (on by default): `text.setStyle` and `text.setRangeStyle` changing the font leave the
   characters the new font has no glyph for in the font that had one.
 - `typeSelectionByPathOnly` (off by default): on, the Selection tools (`pointer_gesture` with `selection`, and the

@@ -5285,6 +5285,9 @@ theme	Appearance	Utseende
 	Registration:	Registreringspunkt:
 	Reset Horizontal Scale	Återställ horisontell skala
 	Reset Tracking and Kerning	Återställ spärrning och kerning
+	Highlight Font Name	Framhäv typsnittsnamn
+	Highlight Kerning	Framhäv kerning
+	Highlight Tracking	Framhäv spärrning
 	Sample Color from Screen	Hämta färg från skärmen
 	Set as Default	Ange som standard
 	Show Template	Visa mall

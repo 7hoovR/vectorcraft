@@ -5074,6 +5074,9 @@ mark-style	Japanese	Japans
 	Panels Except Tools and Control	Alle panelen behalve Gereedschap en Bediening
 	Reset Tracking and Kerning	Tracking en kerning herstellen
 	Reset Horizontal Scale	Horizontale schaal herstellen
+	Highlight Font Name	Lettertypenaam markeren
+	Highlight Kerning	Kerning markeren
+	Highlight Tracking	Tracking markeren
 @msg	span must be "object" or "selection", got {v}	span moet "object" of "selection" zijn, maar is {v}
 @msg	span: "selection" places a `gradient`, not a swatch	span: "selection" plaatst een `gradient`, geen staal
 @msg	span: "selection" places a gradient: give `gradient`	span: "selection" plaatst een verloop: geef `gradient`

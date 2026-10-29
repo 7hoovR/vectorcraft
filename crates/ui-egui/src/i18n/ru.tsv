@@ -1147,6 +1147,9 @@ font-technology	Variable	Вариативные
 	Increase Font Size by Five Steps	Увеличить размер шрифта на пять шагов
 	Reset Tracking and Kerning	Сбросить трекинг и кернинг
 	Reset Horizontal Scale	Сбросить масштаб по горизонтали
+	Highlight Font Name	Выделить имя шрифта
+	Highlight Kerning	Выделить кернинг
+	Highlight Tracking	Выделить трекинг
 	Spacing	Интервал
 	Step Type	Подгонять текст по шагам
 	Fit in View	Вписать в вид
