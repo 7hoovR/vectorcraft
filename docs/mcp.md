@@ -4388,7 +4388,9 @@ As in the reference app, dragging a bounding-box handle of area type resizes its
 type: the Selection tool sends `object.transform {matrix, typeAreas: true}`, which reshapes the frame of each area
 type object it transforms (other objects, type inside groups and point type transform as usual) and reflows the
 text at its size, through its thread too. `text.reshapeArea {id, anchors: [[subpath, anchor]…], dx, dy}` moves
-frame anchors with their handles (Direct Selection dragging a corner, or an edge's two ends), and
+frame anchors with their handles (Direct Selection dragging a corner, an edge's two ends or the frame anchors its
+marquee selected, and the arrow keys nudging those); `{items: [{id, anchors}…], dx, dy}` moves the anchors of several
+frames in one step, and
 `text.areaOptions {width?, height?}` sizes the area from its top-left corner (the query returns both). Each is one
 undo step. Object › Transform › Scale, the Scale tool and the Transform panel still scale the type.
 `text.reshapePath {id, anchors: [[subpath, anchor]…], dx, dy}` does the same for the path of type on a path
