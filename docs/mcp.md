@@ -1141,8 +1141,8 @@ and `type.fractionalWidths`; `remove` and `overhang` in `type.ruby`; `expandInst
 These commands refuse a string or another value that is not a number with `` `radius` must be a number, not "2" ``,
 naming the key, and change nothing: `radius` in `shape.rectangle`; `sides` and `rotation` in `shape.polygon`;
 `radius2`, `points` and `rotation` in `shape.star`; `diameter`, `opacity`, `brightness`, `growth`, `fuzziness`,
-`rays`, `longest`, `rayFuzziness`, `rings`, `largest`, `x2`, `y2`, `direction`, `pathLength` and `seed` in
-`shape.flare`; `decay` and `segments` in `shape.spiral`; `rows` and `columns` in `shape.rectangularGrid`; `concentric`
+`rays`, `longest`, `rayFuzziness`, `rotation`, `rings`, `largest`, `x2`, `y2`, `direction`, `pathLength` and `seed`
+in `shape.flare`; `decay` and `segments` in `shape.spiral`; `rows` and `columns` in `shape.rectangularGrid`; `concentric`
 and `radial` in `shape.polarGrid`; `size` and the `width`, `height` and `fitMinPercent` of `area` in `text.create`;
 `size` and `fitMinPercent` in `text.createInPath`; `start`, `end`, `size`, `tracking`,
 `baselineShift`, `hScale`, `vScale`, `rotation` and `strokeWidth` in `text.setRangeStyle`; `start` and `end` in
@@ -5133,7 +5133,11 @@ desktop app. The Flare tool's are its Flare Tool Options (dialog `flareOptions`)
 (Option on macOS) is held, the dialog's Cancel button reads Reset. Reset puts every option back to the tool's default,
 leaves a click's `x` and `y` unchanged and keeps the dialog open; `ui.dialogReset` does the same. OK keeps the options
 (`tool.setOption {tool: "flare", values}`) and the next flare dragged out uses them; a click with the tool opens the
-same dialog, and its OK also draws a flare there. The Artboard tool's are the active artboard's Artboard Options
+same dialog, and its OK also draws a flare there. While the center is dragged out, each drag update in which the
+pointer's document y grows adds one degree per document point to `shape.flare`'s `rotation` (it turns
+only the rays), decreasing y subtracts the same rate, and unchanged y leaves it. This application rate is independent of event frequency; Shift held keeps
+the turn as it is. Space held keeps the turn as well. Once the center drag has passed its starting distance, and in the
+drag that places the rings' end point, Space held moves the flare at its current size. The Artboard tool's are the active artboard's Artboard Options
 (dialog `artboardOptions`; the Artboard tool's active artboard while it is in use, else the window's; its `x` and `y`
 are the artboard's top-left corner in document points, while the dialog shows X and Y at the reference point the
 Transform panel uses, counted from the ruler origin), a graph tool's
