@@ -851,6 +851,63 @@ fn mesh_point_colour_move_and_undo() {
     assert!(s.execute("object.mesh.setPointColor", &json!({"id": a.0, "index": 99, "color": "#000000"})).is_err());
 }
 
+/// `object.mesh.movePoints` moves just the points it names (their handles with them), over one or
+/// several meshes, as one undo step; `object.mesh.setPointColor` colours and fades several points
+/// alike. A bad index, a non-number or a move past the coordinate range fails and changes nothing
+/// (#4207, #4208).
+#[test]
+fn mesh_points_move_and_colour_together() {
+    let mut s = session();
+    let a = rect(&mut s, 0.0, 0.0, 100.0, 100.0);
+    let b = rect(&mut s, 200.0, 0.0, 100.0, 100.0);
+    sel(&mut s, &[a, b]);
+    s.execute("object.mesh.create", &json!({"rows": 2, "cols": 2})).unwrap();
+    let (ma, mb) = (mesh_of(&s, a), mesh_of(&s, b));
+    let n = undo_len(&s);
+    s.execute("object.mesh.movePoints", &json!({"id": a.0, "points": [0, 4, 4], "dx": 10, "dy": -5})).unwrap();
+    let m = mesh_of(&s, a);
+    for (i, (q, was)) in m.points.iter().zip(&ma.points).enumerate() {
+        let want = if i == 0 || i == 4 { Point::new(was.p.x + 10.0, was.p.y - 5.0) } else { was.p };
+        assert_eq!((q.p, q.handles), (want, was.handles), "point {i}: moved once if named, its handles with it");
+    }
+    assert_eq!(undo_len(&s), n + 1);
+    s.execute("object.mesh.movePoints", &json!({"items": [{"id": a.0, "points": [1]}, {"id": b.0, "index": 2}], "dx": 1, "dy": 1})).unwrap();
+    assert_eq!(mesh_of(&s, a).points[1].p, Point::new(ma.points[1].p.x + 1.0, ma.points[1].p.y + 1.0));
+    assert_eq!(mesh_of(&s, b).points[2].p, Point::new(mb.points[2].p.x + 1.0, mb.points[2].p.y + 1.0));
+    assert_eq!(undo_len(&s), n + 2, "both meshes in one step");
+    // A move that would take a point past the coordinate range fails.
+    assert!(s.execute("object.mesh.movePoints", &json!({"id": a.0, "points": [0], "dx": 1e308, "dy": 0})).is_err());
+    assert_eq!(undo_len(&s), n + 2);
+    for _ in 0..2 {
+        s.execute("edit.undo", &json!({})).unwrap();
+    }
+    assert_eq!((mesh_of(&s, a), mesh_of(&s, b)), (ma.clone(), mb.clone()));
+    // Several points take one colour and opacity, in one step.
+    s.execute("object.mesh.setPointColor", &json!({"id": a.0, "points": [2, 6], "color": "#0000ff", "opacity": 0.25})).unwrap();
+    for (i, q) in mesh_of(&s, a).points.iter().enumerate() {
+        let named = i == 2 || i == 6;
+        assert_eq!((q.color.to_hex() == "#0000ff", q.opacity == 0.25), (named, named), "point {i}");
+    }
+    assert_eq!(undo_len(&s), n + 1);
+    let n = undo_len(&s);
+    let before = (mesh_of(&s, a), mesh_of(&s, b));
+    for p in [
+        json!({"id": a.0, "points": [0, 99], "dx": 1, "dy": 1}),
+        json!({"items": [{"id": a.0, "points": [0]}, {"id": b.0, "points": [99]}], "dx": 1, "dy": 1}),
+        json!({"id": a.0, "points": [-1], "dx": 1, "dy": 1}),
+        json!({"id": a.0, "points": [1.5], "dx": 1, "dy": 1}),
+        json!({"id": a.0, "points": ["1"], "dx": 1, "dy": 1}),
+        json!({"id": a.0, "points": 1, "dx": 1, "dy": 1}),
+        json!({"id": a.0, "points": [0], "dx": "1", "dy": 1}),
+        json!({"items": 3, "dx": 1, "dy": 1}),
+        json!({"points": [0], "dx": 1, "dy": 1}),
+    ] {
+        assert!(s.execute("object.mesh.movePoints", &p).is_err(), "{p}");
+    }
+    assert!(s.execute("object.mesh.setPointColor", &json!({"id": a.0, "points": [0, 9], "color": "#000000"})).is_err());
+    assert_eq!(((mesh_of(&s, a), mesh_of(&s, b)), undo_len(&s)), (before, n), "nothing changed");
+}
+
 #[test]
 fn mesh_add_line_and_delete_point() {
     let mut s = session();

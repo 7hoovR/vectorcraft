@@ -2885,6 +2885,7 @@ theme	Appearance	იერსახე
 	Make Envelope	გარსის შექმნა
 	Move Envelope Mesh Point	გარსის ბადის წერტილის გადაადგილება
 	Move Mesh Point	ბადის წერტილის გადაადგილება
+	Move Mesh Points	ბადის წერტილების გადაადგილება
 	Move Spine Point	ხერხემლის წერტილის გადაადგილება
 	Reshape Spine Segment	ხერხემლის სეგმენტის ფორმის შეცვლა
 	Reset with Mesh	ბადით ჩამოყრა

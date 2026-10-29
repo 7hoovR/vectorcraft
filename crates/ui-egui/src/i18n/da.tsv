@@ -3072,6 +3072,7 @@ theme	Appearance	Udseende
 	Make Envelope	Opret konvolut
 	Move Envelope Mesh Point	Flyt konvolut-meshpunkt
 	Move Mesh Point	Flyt meshpunkt
+	Move Mesh Points	Flyt meshpunkter
 	Move Spine Point	Flyt rygradpunkt
 	Reshape Spine Segment	Omform rygradsegment
 	Reset with Mesh	Nulstil med mesh

@@ -1249,7 +1249,7 @@ the Transparency panel's values, with `null` where the objects differ. Making a 
 empty mask and enters mask editing: art drawn then becomes the mask, and the mask commands act on the masked object
 until `transparency.stopEditingOpacityMask`. While a mask is edited, `object.exitIsolation` (Esc, the isolation bar's
 back arrow, Exit Isolation Mode) leaves mask editing the same way, in one undo step. Saves and exports never include
-the editing layer.
+the editing layer. With gradient mesh points picked, `opacity` goes to those points (see Picking several mesh points).
 
 ```json
 {"name":"run_command","arguments":{"command":"transparency.set","params":{"ids":[12],"opacity":40,"blend":"Multiply"}}}
@@ -5597,6 +5597,29 @@ Envelope Options.
 ```json
 {"name":"run_command","arguments":{"command":"object.envelope.editContents","params":{"editing":true}}}
 {"name":"run_command","arguments":{"command":"object.mesh.movePoint","params":{"id":12,"index":4,"x":220,"y":140,"handle":0}}}
+```
+
+## Picking several mesh points
+
+The Mesh tool and Direct Selection pick mesh points on gradient meshes and mesh envelopes. A click picks one point
+(its handles show); Shift-click adds a point or takes a picked one away. Direct Selection's marquee picks the points
+inside it (Shift toggles them) and selects their meshes; its click on a gradient mesh's line picks the line's two
+ends, and a click inside a patch picks the four points around it. The picked points show filled. Dragging one of them
+moves them all as one undo step (`object.mesh.movePoints`), a click on one of several picked points picks it alone,
+and the arrow keys nudge them by the keyboard increment. The active tool lists them in its options
+(`tool.setOption {}` returns them as `meshPoints: [{id, index}…]`). On gradient meshes a solid fill colour (`paint.setFill`, from the
+Color panel, Swatches or the Eyedropper) recolours just the picked points, and when every target of
+`transparency.set` is a gradient mesh with points picked, its `opacity` fades those points instead of the objects
+(`transparency.info` then shows their opacity, `null` when it differs). Both are one undo step.
+
+`object.mesh.movePoints {id, points: [index…], dx, dy}` (or `{items: [{id, points}…], dx, dy}` over several meshes)
+moves points by (dx, dy), their handles with them; `object.mesh.setPointColor` takes `points` or `items` the same
+way to colour or fade several points at once. An index out of range, an index that is not a whole number ≥ 0, or a
+move past the coordinate range fails and changes nothing.
+
+```json
+{"name":"run_command","arguments":{"command":"object.mesh.movePoints","params":{"id":12,"points":[0,4],"dx":10,"dy":-5}}}
+{"name":"run_command","arguments":{"command":"object.mesh.setPointColor","params":{"id":12,"points":[0,4],"color":"#3366ff","opacity":0.5}}}
 ```
 
 ## Shortcut sets from other apps
