@@ -842,6 +842,6 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 | 2026-10-22 | minor | Tab-drag follow-up: reconcile upstream progress updates and document drag lifecycle, insertion behavior and regression contracts; behavior, scores and estimates unchanged. |
 | 2026-10-22 | minor | Artwork dragged with Selection switches visible document tabs after a 400 ms hover, then copies editable artwork on canvas release; source and clipboard stay intact; scores and hours unchanged |
 
+2026-10-28 behavior correction: Flare ray rotation follows vertical travel at one degree per document point, independent of pointer event count. Shift freezes the current orientation; Space also freezes rotation on the first update. This is the chosen application interaction rate. Scores and estimates unchanged.
 ## EPS Save evidence (2026-10-26)
-
 Ordinary Save and Save As keep EPS as EPS, with the chosen page frame, transparent margins and the complete editable VectorCraft document. Existing import-loss confirmation and transparency warnings remain; the Save TIFF preview is capped at 1024 pixels, while Export retains 2048. See [file-format-parity.md](file-format-parity.md#eps-save-and-source-protection) for limits and regression evidence. This narrows G9 save-back workflow coverage; native Illustrator editing-data fidelity, parity scores and hour estimates are unchanged.

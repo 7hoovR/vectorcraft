@@ -5134,8 +5134,8 @@ desktop app. The Flare tool's are its Flare Tool Options (dialog `flareOptions`)
 leaves a click's `x` and `y` unchanged and keeps the dialog open; `ui.dialogReset` does the same. OK keeps the options
 (`tool.setOption {tool: "flare", values}`) and the next flare dragged out uses them; a click with the tool opens the
 same dialog, and its OK also draws a flare there. While the center is dragged out, each drag update in which the
-pointer's document y grows adds 0.1 radian (about 5.73°) to `shape.flare`'s `rotation` (degrees clockwise, it turns
-only the rays), each one in which it falls takes 0.1 radian away, and one at the same y leaves it; Shift held keeps
+pointer's document y grows adds one degree per document point to `shape.flare`'s `rotation` (it turns
+only the rays), decreasing y subtracts the same rate, and unchanged y leaves it. This application rate is independent of event frequency; Shift held keeps
 the turn as it is. Space held during the center drag or the drag that
 places the rings' end point moves the flare at its current size. The Artboard tool's are the active artboard's Artboard Options
 (dialog `artboardOptions`; the Artboard tool's active artboard while it is in use, else the window's; its `x` and `y`
