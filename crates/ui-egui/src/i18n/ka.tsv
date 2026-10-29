@@ -4078,6 +4078,7 @@ font-technology	Variable	ცვლადი
 @msg	the object already has an opacity mask	ობიექტს უკვე აქვს გაუმჭვირვალობის ნიღაბი
 @msg	the object has no geometry	ობიექტს გეომეტრია არ აქვს
 @msg	the object has no opacity mask	ობიექტს გაუმჭვირვალობის ნიღაბი არ აქვს
+@msg	stop editing the opacity mask first	ჯერ დაასრულეთ გაუმჭვირვალობის ნიღბის რედაქტირება
 @msg	the object has no stroke	ობიექტს კონტური არ აქვს
 @msg	the object is beyond the plane's horizon	ობიექტი სიბრტყის ჰორიზონტს მიღმაა
 @msg	the object isn't in perspective	ობიექტი პერსპექტივაში არ არის

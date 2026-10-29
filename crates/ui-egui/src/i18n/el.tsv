@@ -4275,6 +4275,7 @@ theme	Appearance	Εμφάνιση
 @msg	the object already has an opacity mask	το αντικείμενο έχει ήδη μάσκα αδιαφάνειας
 @msg	the object has no geometry	το αντικείμενο δεν έχει γεωμετρία
 @msg	the object has no opacity mask	το αντικείμενο δεν έχει μάσκα αδιαφάνειας
+@msg	stop editing the opacity mask first	τερματίστε πρώτα την επεξεργασία της μάσκας αδιαφάνειας
 @msg	the object has no stroke	το αντικείμενο δεν έχει περίγραμμα
 @msg	the object is beyond the plane's horizon	το αντικείμενο βρίσκεται πέρα από τον ορίζοντα του επιπέδου
 @msg	the object isn't in perspective	το αντικείμενο δεν βρίσκεται σε προοπτική

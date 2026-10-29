@@ -3823,6 +3823,7 @@ imageTrace	Outline	轮廓
 @msg	select a blend	请选择一个混合对象
 @msg	select a gradient mesh	请选择一个渐变网格
 @msg	the object has no opacity mask	该对象没有不透明度蒙版
+@msg	stop editing the opacity mask first	请先停止编辑不透明度蒙版
 @msg	Convert to Artboards: selection has no area	转换为画板：所选对象没有面积
 @msg	Convert to Shape: no rectangles or ellipses selected	转换为形状：未选择矩形或椭圆
 @msg	image would be too large; lower the resolution	图像将过大；请降低分辨率

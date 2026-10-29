@@ -117,7 +117,10 @@ pub(super) fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
             items.push((tl!("Release Clipping Mask"), "ungroup", "object.clippingMask.release", none()));
         } else if is_group {
             items.push((tl!("Ungroup"), "ungroup", "object.ungroup", none()));
-            items.push((tl!("Isolate"), "square-dashed", "object.isolate", none()));
+            // Isolate is left out while Enter Isolation Mode is off, as it is while an opacity mask is edited.
+            if crate::menus::enabled(app, "object.isolate") {
+                items.push((tl!("Isolate"), "square-dashed", "object.isolate", none()));
+            }
         } else if is_compound {
             items.push(edit_path());
             items.push((tl!("Release Compound Path"), "ungroup", "object.compoundPath.release", none()));

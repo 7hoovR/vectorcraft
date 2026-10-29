@@ -4086,6 +4086,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	select a blend or give `id`	ブレンドを選択するか、`id` を指定してください
 @msg	select a gradient mesh	グラデーションメッシュを選択してください
 @msg	the object has no opacity mask	オブジェクトに不透明マスクがありません
+@msg	stop editing the opacity mask first	先に不透明マスクの編集を終了してください
 @msg	Convert to Artboards: selection has no area	アートボードに変換: 選択範囲に面積がありません
 @msg	Convert to Shape: no rectangles or ellipses selected	シェイプに変換: 長方形または楕円形が選択されていません
 @msg	image would be too large; lower the resolution	画像が大きくなりすぎるため、解像度を下げてください

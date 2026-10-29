@@ -4018,6 +4018,7 @@ theme	Appearance	외관
 @msg	select a blend or give `id`	블렌드를 선택하거나 `id`를 지정하세요
 @msg	select a gradient mesh	그레이디언트 메시를 선택하세요
 @msg	the object has no opacity mask	개체에 불투명 마스크가 없습니다
+@msg	stop editing the opacity mask first	먼저 불투명 마스크 편집을 종료하세요
 @msg	Convert to Artboards: selection has no area	아트보드로 변환: 선택 항목에 면적이 없습니다
 @msg	Convert to Shape: no rectangles or ellipses selected	모양으로 변환: 선택한 사각형이나 타원이 없습니다
 @msg	image would be too large; lower the resolution	이미지가 너무 커집니다. 해상도를 낮추세요
