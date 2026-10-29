@@ -829,6 +829,7 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 | 2026-10-10 | minor | G9 evidence counted from the tracker (28 `.ai`/EPS issues, 20 fixed); impact narrowed to handing files back |
 | 2026-10-10 | minor | Alpha blockers checked against the core-workflow gate: none |
 | 2026-10-10 | major | Moved from the ROADMAP's "Where we're lacking"; kept ids G1–G8, added G9–G19 (file formats, stability, bugs, preferences, 30.x additions, pen hardware, performance, localization, ecosystem, AI, accessibility) and re-ranked |
+| 2026-10-28 | minor | Blob Brush Shift locks after clear axial movement, keeps earlier samples fixed, and waits without an off-axis trail. Activation uses raw press displacement in logical screen pixels, with exact quarter-turn boundaries. Explicit application rule; scores and estimates unchanged. |
 | 2026-10-28 | minor | Flare Tool Options opened by a canvas click previews its settings at that click. Reset refreshes the enabled preview while keeping the dialog open. Cancel discards preview art and tentative options; OK accepts one flare in one Undo step. Editing existing flare artwork remains outside this dialog scope. Scores and estimates unchanged. |
 
 > **Tab-drag status (2026-10-22):** updated from upstream, including the Turkish catalog and all three tab-drag translations requested in #3479; Selection-tool reset regression-checked and clipboard evidence scoped to internal state; drag lifecycle, insertion and regression contracts documented; behavior, scores and estimates unchanged.
