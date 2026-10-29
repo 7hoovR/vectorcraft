@@ -597,6 +597,40 @@ fn curvature_click_first_point_closes() {
     assert_eq!(p.anchor_count(), 3);
 }
 
+/// Delete on a point of a finished Curvature path re-curves the rest through the remaining points,
+/// as if they had been drawn without it, in one undo step.
+#[test]
+fn curvature_delete_curves_through_the_remaining_points() {
+    let mut s = session();
+    let v = view();
+    s.select_tool("curvature", v).unwrap();
+    let pts = [(100.0, 300.0), (200.0, 200.0), (300.0, 320.0), (400.0, 220.0), (500.0, 300.0)];
+    for (x, y) in pts {
+        gesture(&mut s, &[(x, y)], Mods::default());
+    }
+    s.tool_key(ToolKey::Escape, Mods::default(), v).unwrap();
+    let id = paths(&s)[0].0;
+    let before = path(&s, id).subpaths[0].clone();
+    let remaining = |gone: usize| -> Vec<(Point, bool)> {
+        pts.iter().enumerate().filter(|&(i, _)| i != gone).map(|(_, &(x, y))| (Point::new(x, y), false)).collect()
+    };
+    for (gone, &(x, y)) in pts.iter().enumerate() {
+        s.execute("select.set", &json!({"ids": [id.0]})).unwrap();
+        let steps = undo_steps(&s);
+        gesture(&mut s, &[(x, y)], Mods::default());
+        s.tool_key(ToolKey::Delete, Mods::default(), v).unwrap();
+        assert_eq!(undo_steps(&s), steps + 1, "one step");
+        let want = vectorcraft_tools::draw2::curvature_spline(&remaining(gone), false);
+        let got = path(&s, id).subpaths[0].clone();
+        assert_eq!(got.anchors.len(), want.anchors.len());
+        for (a, b) in got.anchors.iter().zip(&want.anchors) {
+            assert!(a.p.distance(b.p) < 1e-9 && a.h_in.distance(b.h_in) < 1e-6 && a.h_out.distance(b.h_out) < 1e-6, "point {gone}: {a:?} != {b:?}");
+        }
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert_eq!(path(&s, id).subpaths[0], before);
+    }
+}
+
 /// The Curvature tool edits a path another tool drew (#798), one undo step per edit, keeping its
 /// shape except where edited.
 #[test]
