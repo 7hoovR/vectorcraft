@@ -566,6 +566,7 @@ font-technology	Variable	Variables
 	Complexity:	Complexité :
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Les couleurs composites sont converties vers ce profil ; les séparations l’utilisent lorsqu’il s’agit d’un profil CMJN.
 	Compound Path	Tracé transparent
+	Compound Shape	Forme composée
 	Compress (RLE)	Compresser (RLE)
 	Compress text and line art	Compresser le texte et les dessins au trait
 	Compression	Compression
@@ -991,7 +992,6 @@ font-technology	Variable	Variables
 	Exit Isolation Mode	Quitter le mode Isolation
 	Expand	Décomposer
 	Expand Appearance	Décomposer l’aspect
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Décomposer s’applique aux formes composées (Alt+clic sur un mode de forme) — prévu dans la feuille de route
 	Expand Brush Strokes	Décomposer les contours de forme
 	Expand Compound Shape	Décomposer la forme composée
 	Expand Gradient Mesh	Décomposer le filet de dégradé
@@ -2971,6 +2971,7 @@ font-technology	Variable	Variables
 	Shape Builder Regions	Zones du Concepteur de forme
 	Shape Builder Tool	Outil Concepteur de forme
 	Shape Effects	Effets de forme
+	Shape Mode	Mode de forme
 	Shape Modes:	Modes de forme :
 	Shape Properties:	Propriétés de la forme :
 	Shaper Tool	Outil Shaper

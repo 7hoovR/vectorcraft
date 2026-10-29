@@ -524,6 +524,7 @@ font-technology	Variable	Μεταβλητές
 	Complement	Συμπληρωματικό
 	Complexity:	Πολυπλοκότητα:
 	Compound Path	Σύνθετη διαδρομή
+	Compound Shape	Σύνθετο σχήμα
 	Compress (RLE)	Συμπίεση (RLE)
 	Compress text and line art	Συμπίεση κειμένου και γραμμικών γραφικών
 	Compression	Συμπίεση
@@ -2500,7 +2501,6 @@ theme	Appearance	Εμφάνιση
 	Each page prints as one image, at the document's raster effects resolution.	Κάθε σελίδα εκτυπώνεται ως μία εικόνα, στην ανάλυση εφέ ράστερ του εγγράφου.
 	English: UK	Αγγλικά: Ηνωμένο Βασίλειο
 	English: USA	Αγγλικά: ΗΠΑ
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Η ανάπτυξη εφαρμόζεται σε σύνθετα σχήματα (Alt-κλικ σε λειτουργία σχήματος) — προγραμματισμένη λειτουργία
 	French	Γαλλικά
 	Generate CSS: the whole document's CSS while nothing is selected	Δημιουργία CSS: το CSS ολόκληρου του εγγράφου όταν δεν υπάρχει επιλογή
 	German	Γερμανικά
@@ -3409,6 +3409,7 @@ theme	Appearance	Εμφάνιση
 	Shadows and Glows	Σκιές και λάμψεις
 	Shape Builder Regions	Περιοχές δημιουργίας σχημάτων
 	Shape Effects	Εφέ σχημάτων
+	Shape Mode	Λειτουργία σχήματος
 	Shape Modes:	Λειτουργίες σχημάτων:
 	Shape Properties:	Ιδιότητες σχήματος:
 	Shaper Tool	Διαμορφωτής σχημάτων (Shaper Tool)

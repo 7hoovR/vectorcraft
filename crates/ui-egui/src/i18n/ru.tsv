@@ -563,6 +563,7 @@ font-technology	Variable	Вариативные
 	Complexity:	Сложность:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Составные цвета преобразуются в него; цветоделения разделяются с ним, если это профиль CMYK.
 	Compound Path	Составной контур
+	Compound Shape	Составная фигура
 	Compress (RLE)	Сжать (RLE)
 	Compress text and line art	Сжимать текст и штриховой рисунок
 	Compression	Сжатие
@@ -989,7 +990,6 @@ font-technology	Variable	Вариативные
 	Exit Isolation Mode	Выйти из режима изоляции
 	Expand	Разобрать
 	Expand Appearance	Разобрать оформление
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	«Разобрать» применяется к составным фигурам (Alt+щелчок по режиму фигуры) — в плане развития
 	Expand Brush Strokes	Разобрать мазки кисти
 	Expand Compound Shape	Разобрать составную фигуру
 	Expand Gradient Mesh	Разобрать градиентную сетку
@@ -3004,6 +3004,7 @@ mark-style	Japanese	Японский
 	Shape Builder Regions	Области создания фигур
 	Shape Builder Tool	Инструмент «Создание фигур»
 	Shape Effects	Эффекты формы
+	Shape Mode	Режим фигуры
 	Shape Modes:	Режимы фигур:
 	Shape Properties:	Свойства фигуры:
 	Shaper Tool	Инструмент «Формообразование»

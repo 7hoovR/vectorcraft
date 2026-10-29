@@ -259,6 +259,7 @@
 	Clipping Mask	Masker kliping
 	Edit Clipping Path	Edit jalur kliping
 	Compound Path	Jalur majemuk
+	Compound Shape	Bentuk majemuk
 	Artboards	Artboard
 	Convert to Artboards	Konversi ke artboard
 	Rearrange All Artboards…	Atur ulang semua artboard…
@@ -1644,7 +1645,6 @@ lighting	Light	Cahaya
 	Bottom-to-Bottom Leading	Leading dari bawah ke bawah
 	Burasagari	Burasagari
 	Force	Paksa
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Perluas berlaku untuk bentuk majemuk (Alt+klik mode bentuk) — masih dalam roadmap
 	Expand Compound Shape	Perluas bentuk majemuk
 	Make Compound Shape	Buat bentuk majemuk
 	Pathfinder Options…	Opsi Pathfinder…
@@ -3725,6 +3725,7 @@ font-technology	Variable	Variabel
 	Default Fill and Stroke (D)	Isi dan goresan default (D)
 	Fill (X), double-click for the Color Picker	Isi (X), klik ganda untuk pemilih warna
 	Opacity:	Opasitas:
+	Shape Mode	Mode bentuk
 	Shape Modes:	Mode bentuk:
 	Stroke (X), double-click for the Color Picker	Goresan (X), klik ganda untuk pemilih warna
 	Stroke:	Goresan:

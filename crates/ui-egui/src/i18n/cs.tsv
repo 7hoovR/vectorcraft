@@ -287,6 +287,7 @@
 	Clipping Mask	Ořezová maska
 	Edit Clipping Path	Upravit ořezovou cestu
 	Compound Path	Složená cesta
+	Compound Shape	Složený tvar
 	Artboards	Pracovní plochy
 	Convert to Artboards	Převést na pracovní plochy
 	Rearrange All Artboards…	Přeuspořádat všechny pracovní plochy…
@@ -1832,7 +1833,6 @@ lighting	Light	Světlo
 	Bottom-to-Bottom Leading	Proklad od dolní k dolní
 	Burasagari	Burasagari
 	Force	Vynutit
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Rozložení se týká složených tvarů (Alt+kliknutí na režim tvaru) — v plánu
 	Expand Compound Shape	Rozložit složený tvar
 	Make Compound Shape	Vytvořit složený tvar
 	Pathfinder Options…	Možnosti operací s cestami…
@@ -3990,6 +3990,7 @@ font-technology	Variable	Variabilní
 	Default Fill and Stroke (D)	Výchozí výplň a tah (D)
 	Fill (X), double-click for the Color Picker	Výplň (X), dvojklikem otevřete výběr barvy
 	Opacity:	Krytí:
+	Shape Mode	Režim tvaru
 	Shape Modes:	Režimy tvarů:
 	Stroke (X), double-click for the Color Picker	Tah (X), dvojklikem otevřete výběr barvy
 	Stroke:	Tah:

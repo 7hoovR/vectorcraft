@@ -527,6 +527,7 @@ font-technology	Variable	可變
 	Complexity:	複雜度：
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	複合顏色會轉換為此描述檔；其為 CMYK 描述檔時，分色也會使用它。
 	Compound Path	複合路徑
+	Compound Shape	複合形狀
 	Compress (RLE)	壓縮 (RLE)
 	Compress text and line art	壓縮文字與線條圖
 	Compression	壓縮
@@ -955,7 +956,6 @@ font-technology	Variable	可變
 	Exit Isolation Mode	結束隔離模式
 	Expand	展開
 	Expand Appearance	展開外觀
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	展開適用於複合形狀 (按住 Alt 按一下形狀模式)，已列入開發計畫
 	Expand Brush Strokes	展開筆刷筆畫
 	Expand Compound Shape	展開複合形狀
 	Expand Gradient Mesh	展開漸層網格
@@ -3812,6 +3812,7 @@ font-script	Japanese	漢字
 	Shape Builder Regions	形狀建立區域
 	Shape Builder Tool	形狀建立工具
 	Shape Effects	形狀效果
+	Shape Mode	形狀模式
 	Shape Modes:	形狀模式：
 	Shape Properties:	形狀內容：
 	Shaper Tool	Shaper 工具

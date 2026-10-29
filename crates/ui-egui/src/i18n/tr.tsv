@@ -546,6 +546,7 @@ font-technology	Variable	Değişken
 	Complexity:	Karmaşıklık:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Bileşik renkler buna dönüştürülür; CMYK profili olduğunda ayrımlar onunla ayrılır.
 	Compound Path	Bileşik Yol
+	Compound Shape	Bileşik Şekil
 	Compress (RLE)	Sıkıştır (RLE)
 	Compress text and line art	Metni ve çizgi resmini sıkıştır
 	Compression	Sıkıştırma
@@ -968,7 +969,6 @@ font-technology	Variable	Değişken
 	Exit Isolation Mode	İzolasyon Modundan Çık
 	Expand	Genişlet
 	Expand Appearance	Görünümü Genişlet
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Genişletme, yol haritasındaki bileşik şekillere uygulanır (Alt tuşuyla bir şekil moduna tıklayın)
 	Expand Brush Strokes	Fırça Darbelerini Genişlet
 	Expand Compound Shape	Bileşik Şekli Genişlet
 	Expand Gradient Mesh	Degrade Mesh'i Genişlet
@@ -2816,6 +2816,7 @@ shape	Open	Açık
 	Shape Builder Regions	Şekil Oluşturucu Bölgeleri
 	Shape Builder Tool	Şekil Oluşturucu Aracı
 	Shape Effects	Şekil Efektleri
+	Shape Mode	Şekil Modu
 	Shape Modes:	Şekil Modları:
 	Shape Properties:	Şekil Özellikleri:
 	Shaper Tool	Şekillendirici Aracı

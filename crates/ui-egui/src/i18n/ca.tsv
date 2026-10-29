@@ -789,6 +789,7 @@
 	Compound	Compost
 	Compound 2	Compost 2
 	Compound Path	Traçat compost
+	Compound Shape	Forma composta
 	Compress (RLE)	Comprimeix (RLE)
 	Compress text and line art	Comprimeix text i dibuix de línies
 	Compression	Compressió
@@ -1399,7 +1400,6 @@
 	Expand	Expandeix
 	Expand 1 Selected	Expandeix 1 seleccionat
 	Expand Appearance	Expandeix l’aparença
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Expandeix s’aplica a les formes compostes (fes Alt-clic en un mode de forma) — previst a la llista de funcions
 	Expand Blend	Expandeix la fusió
 	Expand Brush Strokes	Expandeix els traços del pinzell
 	Expand Compound Shape	Expandeix la forma composta
@@ -3735,6 +3735,7 @@
 	Shape Builder Regions	Regions del constructor de formes
 	Shape Builder Tool	Eina Constructor de formes
 	Shape Effects	Efectes de forma
+	Shape Mode	Mode de forma
 	Shape Modes:	Modes de forma:
 	Shape Properties:	Propietats de la forma:
 	Shape:	Forma:

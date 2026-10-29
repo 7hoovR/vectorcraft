@@ -53,6 +53,11 @@ pub struct NodeExtras {
     /// colorizes it. Each pixel is drawn in this color, as opaque as the pixel is dark, so white
     /// pixels are transparent. `None`: the image shows its own pixels.
     pub colorize: Option<Box<vectorcraft_color::Paint>>,
+    /// Pathfinder panel › Make Compound Shape: this group is a compound shape
+    /// ([`Node::is_compound_shape`], [`crate::compound_shape`]).
+    pub compound_shape: bool,
+    /// As a member of a compound shape, how this object combines with the members below it.
+    pub shape_mode: crate::ShapeMode,
 }
 
 /// No extras: what [`Node::extras`] gives for a node without any.
@@ -74,6 +79,8 @@ pub(super) static NO_EXTRAS: NodeExtras = NodeExtras {
     live_paint_gaps: None,
     objects_on_path: None,
     colorize: None,
+    compound_shape: false,
+    shape_mode: crate::ShapeMode::Add,
 };
 
 /// A node's [`NodeExtras`], if it has any ([`Node::extras`]). Extras that are all unset equal

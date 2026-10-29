@@ -248,6 +248,7 @@
 	Clipping Mask	Maska przycinająca
 	Edit Clipping Path	Edytuj ścieżkę przycinającą
 	Compound Path	Ścieżka złożona
+	Compound Shape	Kształt złożony
 	Artboards	Obszary kompozycji
 	Convert to Artboards	Konwertuj na obszary kompozycji
 	Rearrange All Artboards…	Przestaw wszystkie obszary kompozycji…
@@ -1752,7 +1753,6 @@ lighting	Light	Światło
 	Bottom-to-Bottom Leading	Interlinia od dołu do dołu
 	Burasagari	Burasagari
 	Force	Wymuś
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Rozszerzanie dotyczy kształtów złożonych (kliknij tryb kształtu z Alt) — w planach
 	Expand Compound Shape	Rozszerz kształt złożony
 	Make Compound Shape	Utwórz kształt złożony
 	Pathfinder Options…	Opcje odnajdywania ścieżek…
@@ -3831,6 +3831,7 @@ font-technology	Variable	Zmienne
 	Default Fill and Stroke (D)	Domyślne wypełnienie i obrys (D)
 	Fill (X), double-click for the Color Picker	Wypełnienie (X), kliknij dwukrotnie, aby otworzyć próbnik kolorów
 	Opacity:	Krycie:
+	Shape Mode	Tryb kształtu
 	Shape Modes:	Tryby kształtu:
 	Stroke (X), double-click for the Color Picker	Obrys (X), kliknij dwukrotnie, aby otworzyć próbnik kolorów
 	Stroke:	Obrys:

@@ -294,6 +294,7 @@
 	Clipping Mask	Leikkausmaski
 	Edit Clipping Path	Muokkaa leikkauspolkua
 	Compound Path	Yhdistelmäpolku
+	Compound Shape	Yhdistelmämuoto
 	Artboards	Piirtoalustat
 	Convert to Artboards	Muunna piirtoalustoiksi
 	Rearrange All Artboards…	Järjestä kaikki piirtoalustat uudelleen…
@@ -1794,7 +1795,6 @@ lighting	Light	Valo
 	Bottom-to-Bottom Leading	Riviväli alareunasta alareunaan
 	Burasagari	Burasagari
 	Force	Pakota
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Laajenna koskee yhdistelmämuotoja (Alt-napsauta muototilaa) — suunnitteilla
 	Expand Compound Shape	Laajenna yhdistelmämuoto
 	Make Compound Shape	Tee yhdistelmämuoto
 	Pathfinder Options…	Polunetsimen asetukset…
@@ -3910,6 +3910,7 @@ font-technology	Variable	Muuttuvat
 	Default Fill and Stroke (D)	Oletustäyttö ja -viiva (D)
 	Fill (X), double-click for the Color Picker	Täyttö (X), kaksoisnapsauta avataksesi värinvalitsimen
 	Opacity:	Peittävyys:
+	Shape Mode	Muototila
 	Shape Modes:	Muototilat:
 	Stroke (X), double-click for the Color Picker	Viiva (X), kaksoisnapsauta avataksesi värinvalitsimen
 	Stroke:	Viiva:

@@ -653,6 +653,7 @@ font-technology	Variable	Biến thiên
 	Complexity:	Độ phức tạp:
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	Màu tổng hợp được chuyển sang đây; tách màu sẽ tách với nó khi là hồ sơ CMYK.
 	Compound Path	Đường dẫn phức
+	Compound Shape	Hình phức hợp
 	Compress (RLE)	Nén (RLE)
 	Compress text and line art	Nén văn bản và đường nét
 	Compression	Nén
@@ -1148,7 +1149,6 @@ font-technology	Variable	Biến thiên
 	Exit Isolation Mode	Thoát chế độ cô lập
 	Expand	Mở rộng
 	Expand Appearance	Mở rộng diện mạo
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	Mở rộng áp dụng cho hình ghép (Alt-bấm chế độ hình dạng) — trong lộ trình
 	Expand Brush Strokes	Mở rộng nét cọ
 	Expand Compound Shape	Mở rộng hình ghép
 	Expand Gradient Mesh	Mở rộng lưới chuyển sắc
@@ -3328,6 +3328,7 @@ mark-style	Japanese	Kiểu Nhật
 	Shape Builder Regions	Vùng Tạo hình dạng
 	Shape Builder Tool	Công cụ Tạo hình dạng
 	Shape Effects	Hiệu ứng hình dạng
+	Shape Mode	Chế độ hình dạng
 	Shape Modes:	Chế độ hình dạng:
 	Shape Properties:	Thuộc tính hình dạng:
 	Shape:	Hình dạng:

@@ -511,6 +511,7 @@
 	Complexity:	复杂度：
 	Composite colours are converted to it; separations separate with it when it is a CMYK profile.	复合颜色会转换为此配置文件；其为 CMYK 配置文件时，分色也会使用它。
 	Compound Path	复合路径
+	Compound Shape	复合形状
 	Compress (RLE)	压缩 (RLE)
 	Compress text and line art	压缩文字与线条图
 	Compression	压缩
@@ -933,7 +934,6 @@
 	Exit Isolation Mode	退出隔离模式
 	Expand	扩展
 	Expand Appearance	扩展外观
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	扩展仅适用于复合形状 (Alt+单击形状模式)——已在路线图中
 	Expand Brush Strokes	扩展画笔描边
 	Expand Compound Shape	扩展复合形状
 	Expand Gradient Mesh	扩展渐变网格
@@ -2841,6 +2841,7 @@ font-script	Japanese	汉字
 	Shape Builder Regions	形状生成器区域
 	Shape Builder Tool	形状生成器工具
 	Shape Effects	形状效果
+	Shape Mode	形状模式
 	Shape Modes:	形状模式：
 	Shape Properties:	形状属性：
 	Shaper Tool	Shaper 工具

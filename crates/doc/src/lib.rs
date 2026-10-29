@@ -11,6 +11,7 @@ pub mod blend;
 pub mod cancel;
 pub mod clipnest;
 pub mod cmyk;
+pub mod compound_shape;
 pub mod corners;
 pub mod depth;
 pub mod dimension;
@@ -76,6 +77,7 @@ pub use appearance::{
     StrokeAlign, StrokeLayer, WidthProfile,
 };
 pub use assets::ExportAsset;
+pub use compound_shape::ShapeMode;
 pub use corners::LiveCorners;
 pub use depth::{MAX_DEPTH, MAX_SYMBOL_NODES};
 pub use graph::{
