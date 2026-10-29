@@ -3564,6 +3564,11 @@ mark-style	Japanese	Kiểu Nhật
 	Stroke	Nét
 	Stroke (X), double-click for the Color Picker	Nét (X), bấm đúp để mở bộ chọn màu
 	Stroke Color	Màu nét
+	Fill Gradient	Chuyển sắc tô
+	Stroke Gradient	Chuyển sắc nét
+	Fill Pattern	Họa tiết tô
+	Stroke Pattern	Họa tiết nét
+	Patterns	Họa tiết
 	Stroke Direction	Hướng nét
 	Stroke Length	Độ dài nét
 	Stroke Options	Tùy chọn nét
@@ -4656,6 +4661,13 @@ theme	Appearance	Giao diện
 @msg	select paths or anchor points	chọn đường dẫn hoặc điểm neo
 @msg	select paths to join	hãy chọn đường dẫn để nối
 @msg	select some type first	hãy chọn chữ trước
+@msg	the selection has no gradient fill	vùng chọn không có tô chuyển sắc
+@msg	the selection has no gradient stroke	vùng chọn không có nét chuyển sắc
+@msg	the selection has no pattern fill	vùng chọn không có tô họa tiết
+@msg	the selection has no pattern stroke	vùng chọn không có nét họa tiết
+@msg	no gradient swatch `{name}`	không có mẫu màu chuyển sắc `{name}`
+@msg	no pattern swatch `{name}`	không có mẫu họa tiết `{name}`
+@msg	the library item is damaged	mục thư viện bị hỏng
 @msg	Select text or click into text with the Type tool to insert glyphs	Chọn văn bản hoặc bấm vào văn bản bằng công cụ Chữ để chèn glyph
 @msg	select the art to repeat	hãy chọn tác phẩm để lặp lại
 @msg	select the artwork to warp	hãy chọn tác phẩm để biến dạng

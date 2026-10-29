@@ -414,6 +414,11 @@
 	Fill Color	Barva výplně
 	Opacity	Krytí
 	Stroke Color	Barva tahu
+	Fill Gradient	Přechod výplně
+	Stroke Gradient	Přechod tahu
+	Fill Pattern	Vzorek výplně
+	Stroke Pattern	Vzorek tahu
+	Patterns	Vzorky
 	Stroke Weight	Tloušťka tahu
 	Graphic Style	Grafický styl
 	Symbol Instance	Instance symbolu
@@ -4117,6 +4122,13 @@ imageTrace	Outline	Obrys
 # Status and error messages
 @msg	no library `{id}`	knihovna `{id}` neexistuje
 @msg	select some type first	nejprve vyberte text
+@msg	the selection has no gradient fill	výběr nemá přechodovou výplň
+@msg	the selection has no gradient stroke	výběr nemá přechodový tah
+@msg	the selection has no pattern fill	výběr nemá vzorkovou výplň
+@msg	the selection has no pattern stroke	výběr nemá vzorkový tah
+@msg	no gradient swatch `{name}`	přechodová položka vzorníku `{name}` neexistuje
+@msg	no pattern swatch `{name}`	vzorková položka vzorníku `{name}` neexistuje
+@msg	the library item is damaged	položka knihovny je poškozená
 @msg	{_1} has no {_2} style	{_1} nemá styl {_2}
 @msg	a layer couldn't be read	vrstvu nelze přečíst
 @msg	it has more than one artboard	má více než jednu pracovní plochu

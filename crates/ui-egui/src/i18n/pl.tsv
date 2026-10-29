@@ -374,6 +374,11 @@
 	Fill Color	Kolor wypełnienia
 	Opacity	Krycie
 	Stroke Color	Kolor obrysu
+	Fill Gradient	Gradient wypełnienia
+	Stroke Gradient	Gradient obrysu
+	Fill Pattern	Wzorek wypełnienia
+	Stroke Pattern	Wzorek obrysu
+	Patterns	Wzorki
 	Stroke Weight	Grubość obrysu
 	Graphic Style	Styl graficzny
 	Symbol Instance	Wystąpienie symbolu
@@ -3941,6 +3946,13 @@ imageTrace	Outline	Kontur
 @plural	{n} stroke|{n} strokes	{n} obrys|{n} obrysy|{n} obrysów
 @msg	no library `{id}`	brak biblioteki `{id}`
 @msg	select some type first	najpierw zaznacz tekst
+@msg	the selection has no gradient fill	zaznaczenie nie ma gradientu wypełnienia
+@msg	the selection has no gradient stroke	zaznaczenie nie ma gradientu obrysu
+@msg	the selection has no pattern fill	zaznaczenie nie ma wzorka wypełnienia
+@msg	the selection has no pattern stroke	zaznaczenie nie ma wzorka obrysu
+@msg	no gradient swatch `{name}`	brak próbki gradientu `{name}`
+@msg	no pattern swatch `{name}`	brak próbki wzorka `{name}`
+@msg	the library item is damaged	element biblioteki jest uszkodzony
 @msg	{_1} has no {_2} style	{_1} nie ma stylu {_2}
 @msg	a layer couldn't be read	nie udało się odczytać warstwy
 @msg	it has more than one artboard	ma więcej niż jeden obszar kompozycji

@@ -417,6 +417,11 @@ font-technology	Variable	가변
 	Pie End Angle:	파이 끝 각도:
 	Pie Start Angle:	파이 시작 각도:
 	Stroke Color	선 색상
+	Fill Gradient	칠 그레이디언트
+	Stroke Gradient	선 그레이디언트
+	Fill Pattern	칠 패턴
+	Stroke Pattern	선 패턴
+	Patterns	패턴
 	Stroke Weight	선 두께
 	Graphic Style	그래픽 스타일
 	Symbol Instance	심볼 인스턴스
@@ -4461,6 +4466,13 @@ theme	Appearance	외관
 @msg	choose a folder to export to	내보낼 폴더를 선택하세요
 @msg	the selection has no URL (or they differ)	선택 항목에 URL이 없거나 서로 다릅니다
 @msg	select some type first	먼저 문자를 선택하세요
+@msg	the selection has no gradient fill	선택 항목에 칠 그레이디언트가 없습니다
+@msg	the selection has no gradient stroke	선택 항목에 선 그레이디언트가 없습니다
+@msg	the selection has no pattern fill	선택 항목에 칠 패턴이 없습니다
+@msg	the selection has no pattern stroke	선택 항목에 선 패턴이 없습니다
+@msg	no gradient swatch `{name}`	그레이디언트 견본 `{name}`이(가) 없습니다
+@msg	no pattern swatch `{name}`	패턴 견본 `{name}`이(가) 없습니다
+@msg	the library item is damaged	라이브러리 항목이 손상되었습니다
 @msg	{_1} font families available	사용 가능한 글꼴 패밀리 {_1}개
 @msg	{_1} has no {_2} style	{_1}에는 {_2} 스타일이 없습니다
 @msg	Copied the CSS of {rules} object(s)	개체 {rules}개의 CSS를 복사했습니다

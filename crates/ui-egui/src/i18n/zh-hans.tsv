@@ -3046,6 +3046,11 @@ font-script	Japanese	汉字
 	Stroke	描边
 	Stroke (X), double-click for the Color Picker	描边 (X)，双击打开拾色器
 	Stroke Color	描边颜色
+	Fill Gradient	填色渐变
+	Stroke Gradient	描边渐变
+	Fill Pattern	填色图案
+	Stroke Pattern	描边图案
+	Patterns	图案
 	Stroke Options	描边选项
 	Character:	字符：
 	Character options	字符选项
@@ -4250,6 +4255,13 @@ imageTrace	Outline	轮廓
 @msg	choose a folder to export to	请选择要导出到的文件夹
 @msg	the selection has no URL (or they differ)	所选对象没有 URL (或其 URL 各不相同)
 @msg	select some type first	请先选择一些文字
+@msg	the selection has no gradient fill	所选对象没有渐变填色
+@msg	the selection has no gradient stroke	所选对象没有渐变描边
+@msg	the selection has no pattern fill	所选对象没有图案填色
+@msg	the selection has no pattern stroke	所选对象没有图案描边
+@msg	no gradient swatch `{name}`	没有渐变色板 `{name}`
+@msg	no pattern swatch `{name}`	没有图案色板 `{name}`
+@msg	the library item is damaged	库项目已损坏
 @msg	{_1} font families available	有 {_1} 个可用的字体系列
 @msg	{_1} has no {_2} style	{_1} 没有 {_2} 样式
 @msg	Copied the CSS of {rules} object(s)	已复制 {rules} 个对象的 CSS

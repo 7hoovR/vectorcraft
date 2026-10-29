@@ -3017,6 +3017,11 @@ font-technology	Variable	Değişken
 	Stroke	Kontur
 	Stroke (X), double-click for the Color Picker	Kontur (X), Renk Seçici için çift tıklayın
 	Stroke Color	Kontur Rengi
+	Fill Gradient	Dolgu Degradesi
+	Stroke Gradient	Kontur Degradesi
+	Fill Pattern	Dolgu Deseni
+	Stroke Pattern	Kontur Deseni
+	Patterns	Desenler
 	Stroke Options	Kontur Seçenekleri
 	Character:	Karakter:
 	Character options	Karakter seçenekleri
@@ -3621,6 +3626,13 @@ axis	Both	Her İkisi
 	Float Tool Group	Araç Grubunu Yüzer Yap
 @msg	no library `{id}`	`{id}` kütüphanesi yok
 @msg	select some type first	önce bir tür seçin
+@msg	the selection has no gradient fill	seçimin degrade dolgusu yok
+@msg	the selection has no gradient stroke	seçimin degrade konturu yok
+@msg	the selection has no pattern fill	seçimin desen dolgusu yok
+@msg	the selection has no pattern stroke	seçimin desen konturu yok
+@msg	no gradient swatch `{name}`	degrade renk örneği yok `{name}`
+@msg	no pattern swatch `{name}`	desen renk örneği yok `{name}`
+@msg	the library item is damaged	kitaplık öğesi bozuk
 @msg	{_1} has no {_2} style	{_1}'nin {_2} stili yok
 @msg	a layer couldn't be read	bir katman okunamadı
 @msg	it has more than one artboard	birden fazla çalışma yüzeyi var

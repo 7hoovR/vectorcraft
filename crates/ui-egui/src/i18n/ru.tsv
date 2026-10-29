@@ -3211,6 +3211,11 @@ mark-style	Japanese	Японский
 	Stroke	Обводка
 	Stroke (X), double-click for the Color Picker	Обводка (X), дважды щёлкните для палитры цветов
 	Stroke Color	Цвет обводки
+	Fill Gradient	Градиент заливки
+	Stroke Gradient	Градиент обводки
+	Fill Pattern	Узор заливки
+	Stroke Pattern	Узор обводки
+	Patterns	Узоры
 	Stroke Options	Параметры обводки
 	Character:	Символ:
 	Character options	Параметры символа
@@ -3845,6 +3850,13 @@ axis	Both	Оба
 # names and values in backticks or code (`colorModel rgb`, `document.export`) stay as they are.
 @msg	no library `{id}`	нет библиотеки `{id}`
 @msg	select some type first	сначала выделите текст
+@msg	the selection has no gradient fill	у выделения нет градиентной заливки
+@msg	the selection has no gradient stroke	у выделения нет градиентной обводки
+@msg	the selection has no pattern fill	у выделения нет узорной заливки
+@msg	the selection has no pattern stroke	у выделения нет узорной обводки
+@msg	no gradient swatch `{name}`	нет градиентного образца `{name}`
+@msg	no pattern swatch `{name}`	нет образца узора `{name}`
+@msg	the library item is damaged	элемент библиотеки повреждён
 @msg	{_1} has no {_2} style	у {_1} нет начертания {_2}
 @msg	a layer couldn't be read	не удалось прочитать слой
 @msg	it has more than one artboard	в нём несколько монтажных областей

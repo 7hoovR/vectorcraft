@@ -3112,6 +3112,11 @@ font-technology	Variable	Променливи
 	Stroke	Щрих
 	Stroke (X), double-click for the Color Picker	Щрих (X), щракнете двукратно за палитрата с цветове
 	Stroke Color	Цвят на щриха
+	Fill Gradient	Градиент на запълване
+	Stroke Gradient	Градиент на щриха
+	Fill Pattern	Мостра на запълване
+	Stroke Pattern	Мостра на щриха
+	Patterns	Мостри
 	Stroke Options	Опции на щриха
 	Character:	Знак:
 	Character options	Опции на знака

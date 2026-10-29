@@ -3147,6 +3147,11 @@ effect	Points	Punkte
 	Stroke	Kontur
 	Stroke (X), double-click for the Color Picker	Kontur (X), Doppelklick öffnet den Farbwähler
 	Stroke Color	Konturfarbe
+	Fill Gradient	Flächenverlauf
+	Stroke Gradient	Konturverlauf
+	Fill Pattern	Flächenmuster
+	Stroke Pattern	Konturmuster
+	Patterns	Muster
 	Stroke Options	Konturoptionen
 	Character:	Zeichen:
 	Character options	Zeichenoptionen
@@ -3729,6 +3734,13 @@ theme	Appearance	Erscheinungsbild
 # names and values in backticks or code (`colorModel rgb`, `document.export`) stay as they are.
 @msg	no library `{id}`	keine Bibliothek `{id}`
 @msg	select some type first	wählen Sie zuerst Text aus
+@msg	the selection has no gradient fill	die Auswahl hat keinen Flächenverlauf
+@msg	the selection has no gradient stroke	die Auswahl hat keinen Konturverlauf
+@msg	the selection has no pattern fill	die Auswahl hat kein Flächenmuster
+@msg	the selection has no pattern stroke	die Auswahl hat kein Konturmuster
+@msg	no gradient swatch `{name}`	kein Verlaufsfarbfeld `{name}`
+@msg	no pattern swatch `{name}`	kein Musterfarbfeld `{name}`
+@msg	the library item is damaged	das Bibliothekselement ist beschädigt
 @msg	{_1} has no {_2} style	{_1} hat keinen Schnitt „{_2}“
 @msg	a layer couldn't be read	eine Ebene konnte nicht gelesen werden
 @msg	it has more than one artboard	es enthält mehr als eine Zeichenfläche

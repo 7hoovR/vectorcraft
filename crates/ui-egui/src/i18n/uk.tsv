@@ -3208,6 +3208,11 @@ effect	Points	Точки
 	Stroke	Обведення
 	Stroke (X), double-click for the Color Picker	Обведення (X), двічі клацніть на палітрі кольорів
 	Stroke Color	Колір обведення
+	Fill Gradient	Градієнт заливки
+	Stroke Gradient	Градієнт обведення
+	Fill Pattern	Візерунок заливки
+	Stroke Pattern	Візерунок обведення
+	Patterns	Візерунки
 	Stroke Options	Параметри обведення
 	Character:	Символ:
 	Character options	Параметри символу
@@ -3833,6 +3838,13 @@ axis	Both	Обидві
 	Float Tool Group	Від’єднати групу інструментів
 @msg	no library `{id}`	немає бібліотеки `{id}`
 @msg	select some type first	спочатку виділіть текст
+@msg	the selection has no gradient fill	виділення не має градієнтної заливки
+@msg	the selection has no gradient stroke	виділення не має градієнтного обведення
+@msg	the selection has no pattern fill	виділення не має візерункової заливки
+@msg	the selection has no pattern stroke	виділення не має візерункового обведення
+@msg	no gradient swatch `{name}`	немає градієнтного зразка `{name}`
+@msg	no pattern swatch `{name}`	немає зразка візерунка `{name}`
+@msg	the library item is damaged	елемент бібліотеки пошкоджено
 @msg	{_1} has no {_2} style	{_1} не має накреслення {_2}
 @msg	a layer couldn't be read	не вдалося прочитати шар
 @msg	it has more than one artboard	у ньому кілька монтажних областей

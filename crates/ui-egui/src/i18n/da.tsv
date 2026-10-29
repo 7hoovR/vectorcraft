@@ -376,6 +376,11 @@
 	Fill Color	Fyldfarve
 	Opacity	Opacitet
 	Stroke Color	Stregfarve
+	Fill Gradient	Fyldgradient
+	Stroke Gradient	Streggradient
+	Fill Pattern	Fyldmønster
+	Stroke Pattern	Stregmønster
+	Patterns	Mønstre
 	Stroke Weight	Stregtykkelse
 	Graphic Style	Grafisk stil
 	Symbol Instance	Symbolforekomst

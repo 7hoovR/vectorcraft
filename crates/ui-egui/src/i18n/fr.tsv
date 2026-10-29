@@ -3178,6 +3178,11 @@ font-technology	Variable	Variables
 	Stroke	Contour
 	Stroke (X), double-click for the Color Picker	Contour (X), double-cliquez pour ouvrir le sélecteur de couleurs
 	Stroke Color	Couleur du contour
+	Fill Gradient	Dégradé de fond
+	Stroke Gradient	Dégradé de contour
+	Fill Pattern	Motif de fond
+	Stroke Pattern	Motif de contour
+	Patterns	Motifs
 	Stroke Options	Options de contour
 	Character:	Caractère :
 	Character options	Options de caractère
@@ -3806,6 +3811,13 @@ axis	Both	Les deux
 # names and values in backticks or code (`colorModel rgb`, `document.export`) stay as they are.
 @msg	no library `{id}`	aucune bibliothèque `{id}`
 @msg	select some type first	sélectionnez d’abord du texte
+@msg	the selection has no gradient fill	la sélection n’a pas de dégradé de fond
+@msg	the selection has no gradient stroke	la sélection n’a pas de dégradé de contour
+@msg	the selection has no pattern fill	la sélection n’a pas de motif de fond
+@msg	the selection has no pattern stroke	la sélection n’a pas de motif de contour
+@msg	no gradient swatch `{name}`	aucune nuance de dégradé `{name}`
+@msg	no pattern swatch `{name}`	aucune nuance de motif `{name}`
+@msg	the library item is damaged	l’élément de bibliothèque est endommagé
 @msg	{_1} has no {_2} style	{_1} n’a pas de style {_2}
 @msg	a layer couldn't be read	un calque n’a pas pu être lu
 @msg	it has more than one artboard	il a plus d'un plan de travail

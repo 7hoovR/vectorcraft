@@ -1912,6 +1912,11 @@ font-technology	Variable	Μεταβλητές
 	Strikethrough	Διακριτή διαγραφή
 	Stroke	Περίγραμμα
 	Stroke Color	Χρώμα περιγράμματος
+	Fill Gradient	Ντεγκραντέ γεμίσματος
+	Stroke Gradient	Ντεγκραντέ περιγράμματος
+	Fill Pattern	Μοτίβο γεμίσματος
+	Stroke Pattern	Μοτίβο περιγράμματος
+	Patterns	Μοτίβα
 	Stroke Options	Επιλογές περιγράμματος
 	Character:	Χαρακτήρας:
 	Stroke:	Περίγραμμα:
@@ -2054,6 +2059,13 @@ axis	Both	Και τα δύο
 	Dock Panel	Αγκύρωση πάνελ
 @msg	no library `{id}`	Δεν υπάρχει βιβλιοθήκη με αναγνωριστικό `{id}`
 @msg	select some type first	Επιλέξτε πρώτα κάποιο κείμενο
+@msg	the selection has no gradient fill	η επιλογή δεν έχει ντεγκραντέ γεμίσματος
+@msg	the selection has no gradient stroke	η επιλογή δεν έχει ντεγκραντέ περιγράμματος
+@msg	the selection has no pattern fill	η επιλογή δεν έχει μοτίβο γεμίσματος
+@msg	the selection has no pattern stroke	η επιλογή δεν έχει μοτίβο περιγράμματος
+@msg	no gradient swatch `{name}`	δεν υπάρχει δείγμα ντεγκραντέ `{name}`
+@msg	no pattern swatch `{name}`	δεν υπάρχει δείγμα μοτίβου `{name}`
+@msg	the library item is damaged	το στοιχείο της βιβλιοθήκης είναι κατεστραμμένο
 @msg	{_1} has no {_2} style	Το {_1} δεν έχει στυλ {_2}
 @msg	a layer couldn't be read	Δεν ήταν δυνατή η ανάγνωση ενός επιπέδου
 @msg	it has more than one artboard	Περιέχει περισσότερους από έναν πίνακες σχεδίασης

@@ -4033,6 +4033,11 @@
 	Stroke	Traç
 	Stroke (X), double-click for the Color Picker	Traç (X), fes doble clic per al selector de color
 	Stroke Color	Color del traç
+	Fill Gradient	Degradat de farciment
+	Stroke Gradient	Degradat del traç
+	Fill Pattern	Motiu de farciment
+	Stroke Pattern	Motiu del traç
+	Patterns	Motius
 	Stroke Direction	Direcció del traç
 	Stroke Length	Longitud del traç
 	Stroke Options	Opcions del traç
@@ -5103,6 +5108,7 @@
 @msg	No fonts are missing in this document	No falta cap tipus de lletra en aquest document
 @msg	no format to export to	no hi ha cap format per exportar-hi
 @msg	no free recovery area	no hi ha àrea de recuperació lliure
+@msg	no gradient swatch `{name}`	no hi ha la mostra de degradat `{name}`
 @msg	no gradient stop or freeform point is selected	no hi ha cap parada de degradat ni cap punt de forma lliure seleccionat
 @msg	no graphic style `{name}`	no hi ha l’estil gràfic `{name}`
 @msg	no graphic style `{n}`	no hi ha l’estil gràfic `{n}`
@@ -5117,6 +5123,7 @@
 @msg	no native format	no hi ha format natiu
 @msg	no pages	no hi ha pàgines
 @msg	no pattern `{name}`	no hi ha el motiu `{name}`
+@msg	no pattern swatch `{name}`	no hi ha la mostra de motiu `{name}`
 @msg	no perspective grid preset named `{name}`	no hi ha cap preajust de quadrícula de perspectiva anomenat `{name}`
 @msg	no plug-in {0} is installed	no hi ha instal·lat el complement {0}
 @msg	no plug-in {id} is installed	no hi ha instal·lat el complement {id}
@@ -5404,6 +5411,7 @@
 @msg	the image's pixels don't match its size	els píxels de la imatge no coincideixen amb la seva mida
 @msg	The last start of VectorCraft ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	L’últim inici de VectorCraft va acabar a {name} abans que aparegués la seva finestra, així que s’ha iniciat amb {summary}. Per tornar a provar aquell processador gràfic, canvia Preferències › Rendiment › Processador gràfic o inicia amb WGPU_BACKEND definit
 @msg	The last start of VectorCraft ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	L’últim inici de VectorCraft va acabar mentre llistava els processadors gràfics, així que s’ha iniciat amb {summary} només amb OpenGL. Per tornar a provar els altres sistemes gràfics, canvia Preferències › Rendiment › Processador gràfic o inicia amb WGPU_BACKEND definit
+@msg	the library item is damaged	l’element de la biblioteca està malmès
 @msg	the layer has no objects to clip by	la capa no té objectes amb què retallar
 @msg	the layer or group is locked	la capa o el grup està bloquejat
 @msg	the layer to flatten into is hidden	la capa on aplanar està oculta
@@ -5444,6 +5452,10 @@
 @msg	the screen color sampler is already open	el mostrejador de color de pantalla ja és obert
 @msg	the search couldn't start: try again in a moment	la cerca no s’ha pogut iniciar: torna-ho a provar d’aquí a un moment
 @msg	the selected stroke's profile is already listed as {_1}	el perfil del traç seleccionat ja apareix com a {_1}
+@msg	the selection has no gradient fill	la selecció no té farciment de degradat
+@msg	the selection has no gradient stroke	la selecció no té traç de degradat
+@msg	the selection has no pattern fill	la selecció no té farciment de motiu
+@msg	the selection has no pattern stroke	la selecció no té traç de motiu
 @msg	the selection has no URL (or they differ)	la selecció no té cap URL (o difereixen)
 @msg	the selection isn't in perspective	la selecció no és en perspectiva
 @msg	The shape is too complex for a 3D effect	La forma és massa complexa per a un efecte 3D

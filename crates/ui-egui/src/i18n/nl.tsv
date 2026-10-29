@@ -390,6 +390,11 @@
 	Fill Color	Vulkleur
 	Opacity	Dekking
 	Stroke Color	Contourkleur
+	Fill Gradient	Vulverloop
+	Stroke Gradient	Contourverloop
+	Fill Pattern	Vulpatroon
+	Stroke Pattern	Contourpatroon
+	Patterns	Patronen
 	Stroke Weight	Contourdikte
 	Graphic Style	Grafische stijl
 	Symbol Instance	Symboolinstantie

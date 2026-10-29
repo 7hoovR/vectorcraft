@@ -3843,6 +3843,11 @@ mark-style	Japanese	Japán
 	Stroke	Körvonal
 	Stroke (X), double-click for the Color Picker	Körvonal (X), dupla kattintás: Színválasztó
 	Stroke Color	Körvonalszín
+	Fill Gradient	Kitöltés színátmenete
+	Stroke Gradient	Körvonal színátmenete
+	Fill Pattern	Kitöltés mintázata
+	Stroke Pattern	Körvonal mintázata
+	Patterns	Mintázatok
 	Stroke Direction	Vonásirány
 	Stroke Length	Vonáshossz
 	Stroke options	Körvonal beállításai
@@ -5004,6 +5009,13 @@ imageTrace	Outline	Körvonal
 @msg	select paths or anchor points	jelölj ki útvonalakat vagy horgonypontokat
 @msg	select paths to join	jelöld ki az összekapcsolandó útvonalakat
 @msg	select some type first	előbb jelölj ki szöveget
+@msg	the selection has no gradient fill	a kijelölésnek nincs színátmenetes kitöltése
+@msg	the selection has no gradient stroke	a kijelölésnek nincs színátmenetes körvonala
+@msg	the selection has no pattern fill	a kijelölésnek nincs mintázatos kitöltése
+@msg	the selection has no pattern stroke	a kijelölésnek nincs mintázatos körvonala
+@msg	no gradient swatch `{name}`	nincs `{name}` nevű színátmenet-színminta
+@msg	no pattern swatch `{name}`	nincs `{name}` nevű mintázat-színminta
+@msg	the library item is damaged	a könyvtárelem sérült
 @msg	Select text or click into text with the Type tool to insert glyphs	Glifák beszúrásához jelölj ki szöveget, vagy kattints bele egy szövegbe a Szöveg eszközzel
 @msg	select the art to repeat	jelöld ki az ismétlendő grafikát
 @msg	select the artwork to warp	jelöld ki a torzítandó grafikát
