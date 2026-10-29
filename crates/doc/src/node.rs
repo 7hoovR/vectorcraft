@@ -32,6 +32,7 @@ pub use kind::{ImageObject, NodeKind};
 pub use live_shape::{LiveShape, Scaling};
 pub use opacity::{Knockout, OpacityMask, whiten};
 use wire::NodeWire;
+pub use wire::{MAX_READ_NODES, with_node_budget};
 
 fn yes() -> bool {
     true

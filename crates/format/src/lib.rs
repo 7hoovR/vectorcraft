@@ -552,10 +552,16 @@ pub fn load_info(bytes: &[u8]) -> Result<(Document, FileInfo), FormatError> {
 
 /// [`load`], with everything else the file carries.
 pub fn load_file(bytes: &[u8]) -> Result<NativeFile, FormatError> {
+    load_file_within(bytes, vectorcraft_doc::node::MAX_READ_NODES)
+}
+
+/// [`load_file`] reading at most `max_nodes` objects, so a test can exercise the object budget
+/// without a document of [`vectorcraft_doc::node::MAX_READ_NODES`] objects.
+fn load_file_within(bytes: &[u8], max_nodes: usize) -> Result<NativeFile, FormatError> {
     let file = unpack::Unpacked::new(bytes)?;
-    // The JSON reader stops at 128 levels (a document's objects use three each), and the paths
-    // read at `MAX_READ_ANCHORS` anchors together.
-    let read = || serde_json::from_slice::<File>(file.json());
+    // The JSON reader stops at 128 levels (a document's objects use three each), the paths read
+    // at `MAX_READ_ANCHORS` anchors together, and the document at `MAX_READ_NODES` objects.
+    let read = || vectorcraft_doc::node::with_node_budget(max_nodes, || serde_json::from_slice::<File>(file.json()));
     let f: File = vectorcraft_doc::geom::path::with_anchor_budget(vectorcraft_doc::geom::path::MAX_READ_ANCHORS, read).map_err(|e| {
         let why = if e.to_string().contains("recursion limit") { format!("its objects are nested too deep ({e})") } else { e.to_string() };
         FormatError::NotVectorcraft(why)
@@ -774,6 +780,27 @@ mod tests {
         assert_eq!(back.node_count(), d.node_count());
         assert_eq!(back.images["k"].bytes.as_slice(), &[1, 2, 3, 250]);
         assert_eq!(back.node(id).unwrap().path_data(), d.node(id).unwrap().path_data());
+    }
+
+    /// #3587: objects are read within a budget. A compressed file of many small objects stays
+    /// small on disk while they take far more memory once read, so past the budget it is refused
+    /// with a message naming it, before the rest of the document is read.
+    #[test]
+    fn a_documents_objects_are_capped() {
+        assert_eq!(vectorcraft_doc::node::MAX_READ_NODES, if cfg!(target_arch = "wasm32") { 512 << 10 } else { 4 << 20 });
+        let mut d = Document::new(100.0, 100.0);
+        let l = d.add_layer(None);
+        for i in 0..200 {
+            let id = d.alloc_id();
+            d.insert(Some(l), i, Node::path(id, shapes::ellipse(Rect::new(0.0, 0.0, 10.0, 10.0)), Appearance::default_art())).unwrap();
+        }
+        let n = d.node_count();
+        let bytes = save_with(&d, &SaveOptions { compress: true, ..SaveOptions::default() }).unwrap();
+        assert!(is_compressed(&bytes));
+        assert_eq!(load_file_within(&bytes, n).unwrap().doc.node_count(), n, "a document of exactly the budget opens");
+        let Err(FormatError::NotVectorcraft(why)) = load_file_within(&bytes, n - 1) else { panic!("one object past the budget must be refused") };
+        assert!(why.contains(&format!("more than {} objects", n - 1)), "{why}");
+        assert_eq!(load(&bytes).unwrap().node_count(), n, "the real budget opens ordinary documents");
     }
 
     #[test]

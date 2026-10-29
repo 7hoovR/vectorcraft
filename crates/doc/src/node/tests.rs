@@ -433,3 +433,19 @@ fn bad_kinds_are_errors() {
         assert!(serde_json::from_str::<NodeKind>(bad).is_err(), "{bad}");
     }
 }
+
+/// #3587: [`with_node_budget`] counts every object read, nested ones included, refuses the one past
+/// it with a message naming the budget, and is gone once its reading is done.
+#[test]
+fn objects_are_read_within_the_node_budget() {
+    let group = Node::group(NodeId(1), vec![Arc::new(Node::group(NodeId(2), vec![])), Arc::new(Node::group(NodeId(3), vec![]))]);
+    let json = serde_json::to_string(&group).unwrap();
+    let read = || serde_json::from_str::<Node>(&json);
+    assert_eq!(with_node_budget(3, read).unwrap(), group, "three objects fit a budget of three");
+    let why = with_node_budget(2, read).unwrap_err().to_string();
+    assert!(why.contains("more than 2 objects"), "{why}");
+    assert_eq!(read().unwrap(), group, "no budget outside a read");
+    // A budget left by a read that failed doesn't carry over to the next one.
+    assert!(with_node_budget(1, read).is_err());
+    assert!(with_node_budget(3, read).is_ok());
+}
