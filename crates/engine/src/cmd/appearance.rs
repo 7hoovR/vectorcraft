@@ -852,7 +852,7 @@ fn copy_from(s: &mut Session, p: &Value) -> Result<Value> {
         let source = match leaf_targets(s, &selected)?.into_iter().next() {
             Some(first) => Some(first),
             None if s.eyedropper_sample.is_some() => None,
-            None => return Err(bad(C, "select the object to copy from, or click one to pick up its attributes first")),
+            None => return Err(bad(C, "select the object to copy from")),
         };
         (source, leaf_targets(s, &[clicked])?)
     } else {
