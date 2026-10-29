@@ -2569,6 +2569,23 @@ dialog `simplifySlider` with field `level`) at the Auto-Simplify level for the s
 opens the Simplify dialog at the slider's tolerance. When OK confirms the dialog with `retain` ticked, the menu item opens
 the dialog on those settings next time.
 
+## Smooth
+
+`object.path.smooth` smooths the selected paths (or the objects in `ids`), compound path members included, as one undo
+step. `level` is the Smooth slider's, a whole number from 0 (minimum smoothing: the path stays within 0.1% of its longer
+side) to 100 (maximum smoothing); `auto: true` (Auto-Smooth) uses level 50, the default. Each path is refitted with
+curves within 0.1% to 2.5% of its longer side, keeping a corner only where it turns back on itself, so jags and kinks
+become curves; a refit never has more anchor points than the path had, so a shape whose corners the tolerance can't
+round, such as a rectangle, stays as it is. Closed paths stay closed and open paths keep their end points. The reply has the anchor counts `before` and `after` and the `level` used:
+
+```json
+{"name":"run_command","arguments":{"command":"object.path.smooth","params":{"level":80}}}
+```
+
+In the desktop app, Object › Path › Smooth opens the slider (`ui.menuDialog {command: "object.path.smooth"}`, dialog
+`smoothSlider` with field `level`) at the Auto-Smooth level and previews the result until `ui.dialog.confirm`;
+`ui.smoothAuto` moves the open slider back to the Auto-Smooth level.
+
 ## Editing a path with the Curvature tool
 
 The Curvature tool edits any selected path, whatever drew it, keeping its shape except where edited (#798). Each edit

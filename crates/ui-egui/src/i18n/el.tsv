@@ -1866,6 +1866,7 @@ font-technology	Variable	Μεταβλητές
 	Simplify	Απλοποίηση
 	Simplify:	Απλοποίηση:
 	Simplify…	Απλοποίηση…
+	Smooth…	Εξομάλυνση…
 	Size	Μέγεθος
 	Size:	Μέγεθος:
 	Skew	Λοξότητα
@@ -3424,6 +3425,7 @@ theme	Appearance	Εμφάνιση
 	Show Original Path	Εμφάνιση αρχικής διαδρομής
 	Open this dialog with these settings next time	Άνοιγμα αυτού του παραθύρου με αυτές τις ρυθμίσεις την επόμενη φορά
 	Auto-Simplify	Αυτόματη απλοποίηση
+	Auto-Smooth	Αυτόματη εξομάλυνση
 	Show Package	Εμφάνιση συσκευασίας
 	Show Panel	Εμφάνιση πίνακα
 	Show Pattern Swatches	Εμφάνιση δειγμάτων μοτίβου
@@ -5300,6 +5302,7 @@ effect	Points	Σημεία
 @msg	span: "selection" places the gradient itself: leave out `start` and `end` (they already place it in document coordinates)	span: το "selection" τοποθετεί το ίδιο το ντεγκραντέ: παραλείψτε τα `start` και `end` (το τοποθετούν ήδη σε συντεταγμένες εγγράφου)
 @msg	the Color Picker is not open	ο επιλογέας χρώματος δεν είναι ανοιχτός
 @msg	the Simplify slider is not open	ο ρυθμιστής Απλοποίησης δεν είναι ανοιχτός
+@msg	the Smooth slider is not open	ο ρυθμιστής Εξομάλυνσης δεν είναι ανοιχτός
 @msg	the action has no steps	η ενέργεια δεν έχει βήματα
 @msg	the file's layers weren't read ({_1}): it comes in as its page, in one layer	τα επίπεδα του αρχείου δεν διαβάστηκαν ({_1}): εισάγεται ως η σελίδα του, σε ένα επίπεδο
 @msg	the file's layers weren't read from its editing data ({_1}): they come from its PDF part	τα επίπεδα του αρχείου δεν διαβάστηκαν από τα δεδομένα επεξεργασίας του ({_1}): προέρχονται από το τμήμα PDF του
