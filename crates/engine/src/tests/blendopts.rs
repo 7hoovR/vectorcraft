@@ -169,6 +169,23 @@ fn choosing_the_blend_tool_again_finishes_the_blend() {
 }
 
 #[test]
+fn the_blend_tool_picks_again_when_its_first_pick_is_deleted() {
+    let mut s = session();
+    let (a, b, c) = (rect(&mut s, 0.0, 0.0, 40.0), rect(&mut s, 200.0, 0.0, 40.0), rect(&mut s, 400.0, 0.0, 40.0));
+    s.select_tool("blend", ViewInfo::default()).unwrap();
+    let click = |s: &mut Session, x: f64, y: f64| s.pointer(&PointerEvent::new(PointerKind::Down, x, y), ViewInfo::default()).unwrap();
+    click(&mut s, 20.0, 20.0);
+    s.execute("edit.clear", &json!({"ids": [a.0]})).unwrap();
+    let (layers, depth) = (s.doc().unwrap().doc.layers.clone(), s.doc().unwrap().history.undo.len());
+    click(&mut s, 220.0, 20.0);
+    assert_eq!(s.doc().unwrap().selection.objects, vec![b], "b is picked first");
+    assert_eq!((&s.doc().unwrap().doc.layers, s.doc().unwrap().history.undo.len()), (&layers, depth), "the click changes no art");
+    click(&mut s, 420.0, 20.0);
+    let g = s.doc().unwrap().selection.objects[0];
+    assert_eq!(spec(&s, g).0, vec![b, c]);
+}
+
+#[test]
 fn the_blend_tool_blends_from_clicked_anchors_and_keeps_adding() {
     let mut s = session();
     let (a, b, c) = (rect(&mut s, 0.0, 0.0, 40.0), rect(&mut s, 200.0, 0.0, 40.0), rect(&mut s, 400.0, 0.0, 40.0));
