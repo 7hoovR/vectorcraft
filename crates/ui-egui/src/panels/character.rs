@@ -377,6 +377,14 @@ pub(crate) fn highlight(app: &mut VectorcraftApp, field: Field) -> Result<Value,
     Ok(json!({ "field": field.name() }))
 }
 
+/// `type.underline` (Cmd+Shift+U): what the Underline button does, on the text the panels act on.
+/// Returns whether the text is now underlined.
+pub(crate) fn toggle_underline(app: &mut VectorcraftApp) -> Result<Value, String> {
+    let (s, _) = text_style(app).ok_or("select some type first")?;
+    format(app, json!({"underline": !s.underline}));
+    Ok(json!(!s.underline))
+}
+
 /// `text.setRangeStyle` with `p` on the range the Type tool has selected (the whole text when
 /// nothing is selected). Does nothing unless the Type tool edits text.
 pub(crate) fn range_style(app: &mut VectorcraftApp, p: Value) {

@@ -182,7 +182,9 @@ pub fn enabled(app: &VectorcraftApp, id: &str) -> bool {
     match id {
         // Save is off for a clean document that already has its own file.
         "file.save" => app.session.active().is_some_and(|d| d.path.is_none() || d.converted || d.is_dirty()),
-        "type.bold" | "type.italic" => crate::panels::character::text_style(app).is_some(),
+        "type.bold" | "type.italic" | "type.underline" | "type.lineComposer" | "type.hyphenate" => {
+            crate::panels::character::text_style(app).is_some()
+        }
         id if crate::panels::paragraph::ALIGN_COMMANDS.iter().any(|c| c.0 == id) => crate::panels::character::text_style(app).is_some(),
         "type.applyBullets" | "type.applyNumbers" | "type.convertListToText" => crate::panels::character::text_style(app).is_some(),
         id if let Some(b) = crate::panels::align::button(id) => enabled(app, b.command()),

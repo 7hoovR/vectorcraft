@@ -3100,6 +3100,10 @@ Pen's second anchor at (150, 431), in line with the square's centre.
   give its Kerning or Tracking field the keyboard focus with the value selected, or open its font family menu with the
   search field focused; each replies `{field: "kerning" | "tracking" | "fontName"}`. Without selected type or text the
   Type tool edits, the panel shows and the command fails.
+  shows it, in the same text; at a caret it leaves the text as it is. The UI command `type.underline` (Cmd+Shift+U,
+  in remote mode `press_key {key: "U", mods: {cmd: true, shift: true}}` or `invoke_menu`) does what the Character
+  panel's Underline button does: it underlines the Type tool's selected text or the selected type objects, or removes
+  the underline when the text the panel shows is underlined, and returns whether the text is now underlined.
 - `missingGlyphProtection` (on by default): `text.setStyle` and `text.setRangeStyle` changing the font leave the
   characters the new font has no glyph for in the font that had one.
 - `typeSelectionByPathOnly` (off by default): on, the Selection tools (`pointer_gesture` with `selection`, and the
@@ -4542,7 +4546,10 @@ The letter and line counts are rounded, and every value is clamped to its range.
 listed word. The options are saved with the paragraph (`hyphenation` in `para`) only when they differ from the
 defaults, and paragraph styles carry them (`paraStyle.new {attrs: {hyphenation: {words_longer_than: 8}}}`). One undo
 step. `ui.hyphenation` opens the Hyphenation dialog on the values the Paragraph panel shows; OK sends the values that
-changed.
+changed. The UI command `type.hyphenate` (Cmd+Alt+Shift+H, in remote mode `press_key {key: "H", mods: {cmd: true,
+alt: true, shift: true}}` or `invoke_menu`) does what the Hyphenate checkbox does: it turns `hyphenate` off when
+every paragraph of the selected type (or every paragraph the Type tool's selection touches) hyphenates, else on, and
+returns the new value.
 
 ```json
 {"name":"run_command","arguments":{"command":"text.setFormat","params":{"hyphenate":true,"wordsLongerThan":8,"hyphenLimit":2}}}
@@ -5493,6 +5500,9 @@ Single-line fills each line as far as it goes. Point type and type on a path hav
 give the same result there. A paragraph whose characters differ in line metrics (type size, font, leading or vertical
 scale, or an inline graphic taller than the text) is composed with Every-line in rectangular area type, rows and
 columns included; in area type of another shape, or with text wrap, it falls back to Single-line.
+The UI command `type.lineComposer` (Cmd+Alt+Shift+C, in remote mode `press_key {key: "C", mods: {cmd: true, alt: true,
+shift: true}}` or `invoke_menu`) sets `singleLine` when every paragraph of the selected type (or every paragraph the
+Type tool's selection touches) uses Every-line, else `everyLine`, and returns the composer it set.
 
 ```json
 {"name":"run_command","arguments":{"command":"text.setFormat","params":{"ids":[7],"composer":"singleLine"}}}
