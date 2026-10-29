@@ -2369,6 +2369,8 @@ lighting	Light	Světlo
 	Locate Selected Objects	Najít vybrané objekty
 	Thumbnails:	Miniatury:
 	Anchor Points	Kotevní body
+	"In" Control Points	„Vstupní“ řídicí body
+	"Out" Control Points	„Výstupní“ řídicí body
 	Brush Affects:	Štětec ovlivňuje:
 	Complexity:	Složitost:
 	Detail:	Podrobnost:

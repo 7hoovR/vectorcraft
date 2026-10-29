@@ -182,6 +182,8 @@
 	Anchor Point	Point d’ancrage
 	Anchor Point Tool	Outil Point d’ancrage
 	Anchor Points	Points d’ancrage
+	"In" Control Points	Points de contrôle « entrants »
+	"Out" Control Points	Points de contrôle « sortants »
 	Anchor Points, Handle, and Bounding Box Display	Affichage des points d’ancrage, des poignées et du cadre de sélection
 	Anchor/Path Labels	Libellés de point d’ancrage/tracé
 	Anchors:	Points d’ancrage :

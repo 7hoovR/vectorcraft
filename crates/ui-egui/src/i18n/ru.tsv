@@ -179,6 +179,8 @@
 	Anchor Point	Опорная точка
 	Anchor Point Tool	Инструмент «Опорная точка»
 	Anchor Points	Опорные точки
+	"In" Control Points	«Входящие» управляющие точки
+	"Out" Control Points	«Исходящие» управляющие точки
 	Anchor Points, Handle, and Bounding Box Display	Отображение опорных точек, маркеров и ограничительной рамки
 	Anchor/Path Labels	Метки опорных точек/контуров
 	Anchors:	Опорные точки:

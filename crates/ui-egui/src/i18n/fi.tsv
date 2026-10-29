@@ -2314,6 +2314,8 @@ lighting	Light	Valo
 	Locate Selected Objects	Paikanna valitut objektit
 	Thumbnails:	Pikkukuvat:
 	Anchor Points	Ankkuripisteet
+	"In" Control Points	”Sisään”-ohjauspisteet
+	"Out" Control Points	”Ulos”-ohjauspisteet
 	Brush Affects:	Sivellin vaikuttaa:
 	Complexity:	Monimutkaisuus:
 	Detail:	Yksityiskohdat:
