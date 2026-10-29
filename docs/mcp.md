@@ -5355,6 +5355,10 @@ among the objects takes the others in as more key objects, keeping its options, 
 {"name":"run_command","arguments":{"command":"object.blend.info","params":{}}}
 ```
 
+With the Blend tool active, `tool.select {tool: "blend"}` finishes the blend, as a click on the tool's button or W
+does: it drops the object clicked first and stops the next click adding to the blend just made. The document and the
+selection stay as they are. Choosing any other tool that is already active leaves its work as it is.
+
 A blend's spine is the straight lines between its key centres until it is edited. `object.blend.info` lists it
 (`spine.anchors`, `keyAnchors`: the point each key sits on). `object.blend.spine.addAnchor {x, y}` adds a point where
 the spine passes nearest, `object.blend.spine.moveAnchor {anchor, x, y}` moves a point (a key on it moves along; with
