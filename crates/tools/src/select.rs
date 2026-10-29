@@ -120,6 +120,9 @@ pub struct SelectionTool {
     /// What a bounding-box handle being dragged snaps to.
     targets: Option<PointSnap>,
     moving: Option<MoveSnap>,
+    /// The params of the move's last preview: in Shaper's Construction mode the move ends with
+    /// them and `releaseOutside` ([`construction`]).
+    last_move: Option<Value>,
     /// The move snapped to a point or a guide at its last step: the arrow turns hollow.
     snapped: bool,
     guide: GuideEdit,
@@ -809,8 +812,17 @@ impl Tool for SelectionTool {
                 self.measure = None;
                 self.guides.clear();
                 self.moving = None;
+                let last = self.last_move.take();
                 match (began, deselect, key) {
-                    (true, ..) => vec![Action::Commit],
+                    // In Construction mode, an original shape dropped wholly outside the group's
+                    // bounds leaves the group, in the move's undo step (`releaseOutside`).
+                    (true, ..) => match last.filter(|p| construction(cx) && p["copy"] != json!(true)) {
+                        Some(mut params) => {
+                            params["releaseOutside"] = json!(true);
+                            vec![Action::Preview("object.transform".into(), params), Action::Commit]
+                        }
+                        None => vec![Action::Commit],
+                    },
                     (false, Some(id), _) => vec![Action::Exec("select.toggle".into(), json!({ "id": id.0 }))],
                     // A click on the key object again: no key.
                     (false, None, Some(id)) if cx.selection.key == Some(id) => vec![Action::Exec("select.key".into(), json!({}))],
@@ -963,6 +975,11 @@ fn can_be_key(cx: &ToolContext, id: NodeId) -> bool {
     // `paint_owner` returns a compound-path member's compound path.
     let member = crate::xform::paint_owner(cx.doc, id) != id;
     cx.doc.node(id).is_some_and(|n| !n.is_layer()) && !inside_selected && !member
+}
+
+/// Shaper's Construction mode: a Shaper Group's original shapes are isolated.
+fn construction(cx: &ToolContext) -> bool {
+    cx.isolation.and_then(|id| cx.doc.node(id)).is_some_and(|n| n.name.as_deref() == Some(vectorcraft_doc::shaper::SOURCES))
 }
 
 /// Is `n` area type (text in a frame) whose frame the tools reshape? Type in perspective isn't:
@@ -1192,7 +1209,9 @@ impl SelectionTool {
         self.snapped = (d - unsnapped).hypot() > 1e-9;
         self.state = State::Moving { start, press, hold, began: true, deselect: None, key: None };
         self.measure = cx.measurement_labels.then(|| (p, cx.offset_label(d.x, d.y)));
-        out.push(Action::Preview("object.transform".into(), json!({ "matrix": matrix_json(Affine::translate(d)), "copy": m.alt })));
+        let params = json!({ "matrix": matrix_json(Affine::translate(d)), "copy": m.alt });
+        self.last_move = Some(params.clone());
+        out.push(Action::Preview("object.transform".into(), params));
         out
     }
 }

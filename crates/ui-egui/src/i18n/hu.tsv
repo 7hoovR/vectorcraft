@@ -3100,6 +3100,10 @@ mark-style	Japanese	Japán
 	Release Opacity Mask	Átlátszósági maszk megszüntetése
 	Release Selection	Kijelölés felszabadítása
 	Release Shaper Group	Alakformáló csoport megszüntetése
+	Remove from Shaper Group	Eltávolítás az alakformáló csoportból
+@msg	source must be the id of a Shaper Group's original shape	A source értékének egy alakformáló csoport eredeti alakzatának azonosítójának kell lennie
+@msg	group must be the id of a Shaper Group	A group értékének egy alakformáló csoport azonosítójának kell lennie
+@msg	the shape is not an editable original shape of that Shaper Group	Az alakzat nem szerkeszthető eredeti alakzata ennek az alakformáló csoportnak
 	Release Text Wrap	Körbefuttatás megszüntetése
 	Release to Layers (Build)	Szétosztás rétegekre (építkezve)
 	Release to Layers (Sequence)	Szétosztás rétegekre (sorozatként)

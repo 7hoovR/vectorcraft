@@ -4831,6 +4831,10 @@ axis	Both	两者
 	The dialog was closed before its file dialog answered	文件对话框给出结果之前，对话框已关闭
 	Expand Shaper Group	扩展 Shaper 组
 	Release Shaper Group	释放 Shaper 组
+	Remove from Shaper Group	从 Shaper 组中移除
+@msg	source must be the id of a Shaper Group's original shape	source 必须是 Shaper 组中原始形状的 ID
+@msg	group must be the id of a Shaper Group	group 必须是 Shaper 组的 ID
+@msg	the shape is not an editable original shape of that Shaper Group	该形状不是该 Shaper 组中可编辑的原始形状
 	Select Shaper Face	选择 Shaper 区域
 	Constrain	约束
 	Perspective Distort	透视扭曲

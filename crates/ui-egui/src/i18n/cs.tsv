@@ -823,6 +823,10 @@
 	Shaper	Shaper
 	Expand Shaper Group	Rozložit skupinu Shaper
 	Release Shaper Group	Uvolnit skupinu Shaper
+	Remove from Shaper Group	Odebrat ze skupiny Shaper
+@msg	source must be the id of a Shaper Group's original shape	source musí být identifikátor původního tvaru skupiny Shaper
+@msg	group must be the id of a Shaper Group	group musí být identifikátor skupiny Shaper
+@msg	the shape is not an editable original shape of that Shaper Group	tvar není upravitelný původní tvar této skupiny Shaper
 	Select Shaper Face	Vybrat oblast Shaper
 	Constrain	Omezit
 	Free Transform	Volná transformace

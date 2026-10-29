@@ -3070,6 +3070,10 @@ imageTrace	Outline	Contorno
 	Shaper	Formador
 	Expand Shaper Group	Expandir Grupo Formador
 	Release Shaper Group	Liberar Grupo Formador
+	Remove from Shaper Group	Remover do Grupo Formador
+@msg	source must be the id of a Shaper Group's original shape	source deve ser o ID de uma forma original de um Grupo Formador
+@msg	group must be the id of a Shaper Group	group deve ser o ID de um Grupo Formador
+@msg	the shape is not an editable original shape of that Shaper Group	a forma não é uma forma original editável desse Grupo Formador
 	Select Shaper Face	Selecionar Face do Formador
 	Constrain	Restringir
 	Free Transform	Transformação Livre

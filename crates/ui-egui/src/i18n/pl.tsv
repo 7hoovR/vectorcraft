@@ -767,6 +767,10 @@
 	Shaper	Kształtowanie
 	Expand Shaper Group	Rozszerz grupę kształtowania
 	Release Shaper Group	Uwolnij grupę kształtowania
+	Remove from Shaper Group	Usuń z grupy kształtowania
+@msg	source must be the id of a Shaper Group's original shape	source musi być identyfikatorem oryginalnego kształtu grupy kształtowania
+@msg	group must be the id of a Shaper Group	group musi być identyfikatorem grupy kształtowania
+@msg	the shape is not an editable original shape of that Shaper Group	kształt nie jest edytowalnym oryginalnym kształtem tej grupy kształtowania
 	Select Shaper Face	Zaznacz ścianę kształtowania
 	Constrain	Ogranicz
 	Free Transform	Swobodne przekształcanie

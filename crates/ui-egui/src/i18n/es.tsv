@@ -4520,6 +4520,10 @@ axis	Both	Ambos
 	Shaper	Shaper
 	Expand Shaper Group	Expandir grupo Shaper
 	Release Shaper Group	Soltar grupo Shaper
+	Remove from Shaper Group	Quitar del grupo Shaper
+@msg	source must be the id of a Shaper Group's original shape	source debe ser el identificador de una forma original de un grupo Shaper
+@msg	group must be the id of a Shaper Group	group debe ser el identificador de un grupo Shaper
+@msg	the shape is not an editable original shape of that Shaper Group	la forma no es una forma original editable de ese grupo Shaper
 	Select Shaper Face	Seleccionar cara Shaper
 	Constrain	Restringir
 	Free Transform	Transformación libre

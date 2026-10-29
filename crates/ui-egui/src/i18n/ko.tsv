@@ -3778,6 +3778,10 @@ theme	Appearance	외관
 	Shaper	셰이퍼
 	Expand Shaper Group	셰이퍼 그룹 확장
 	Release Shaper Group	셰이퍼 그룹 해제
+	Remove from Shaper Group	셰이퍼 그룹에서 제거
+@msg	source must be the id of a Shaper Group's original shape	source는 셰이퍼 그룹의 원본 모양 ID여야 합니다
+@msg	group must be the id of a Shaper Group	group은 셰이퍼 그룹의 ID여야 합니다
+@msg	the shape is not an editable original shape of that Shaper Group	모양이 해당 셰이퍼 그룹의 편집 가능한 원본 모양이 아닙니다
 	Select Shaper Face	셰이퍼 면 선택
 	Constrain	제한
 	Free Transform	자유 변형
