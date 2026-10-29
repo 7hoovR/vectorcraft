@@ -62,20 +62,45 @@ fn beyond(n: &Node) -> bool {
     n.geometric_bounds().is_some_and(|b| !rect_in_range(b))
 }
 
-/// Remove the children of `node` that reach beyond the canvas: a layer or group that isn't
-/// clipping keeps those of its own children within it, anything else goes whole. Only a node
-/// with such a child is copied. Recursion follows the nesting, which [`Document::limit_depth`]
-/// bounds.
+/// Whether `n` is a layer or group, and if so whether it clips: the containers whose objects are
+/// looked at one by one. Anything else is one object, measured whole.
+fn clipping(n: &Node) -> Option<bool> {
+    match n.kind {
+        NodeKind::Layer { clip, .. } | NodeKind::Group { clip, .. } => Some(clip),
+        _ => None,
+    }
+}
+
+/// Does `n`, or any object in it, reach beyond the canvas? A container is looked into object by
+/// object: its own bounds leave out a layer's hidden objects and, when it clips, all but its
+/// clipping path.
+fn reaches_beyond(n: &Node) -> bool {
+    match clipping(n) {
+        None => beyond(n),
+        Some(_) => n.children().is_some_and(|c| c.iter().any(|c| reaches_beyond(c))),
+    }
+}
+
+/// Does `n` clip by a path that reaches beyond the canvas? Then the path and the objects it clips
+/// go together, so no other object becomes the clipping path.
+fn clips_beyond(n: &Node) -> bool {
+    clipping(n) == Some(true) && n.children().and_then(|c| c.first()).is_some_and(|c| reaches_beyond(c))
+}
+
+/// Remove the objects in `node` that reach beyond the canvas: a layer or group keeps those of its
+/// objects within it, unless its clipping path reaches beyond (see [`clips_beyond`]); anything
+/// else goes whole. Only containers holding such an object are copied. Recursion follows the
+/// nesting, which [`Document::limit_depth`] bounds.
 fn drop_children_beyond(node: &mut Arc<Node>, dropped: &mut usize) {
-    if !node.children().is_some_and(|c| c.iter().any(|c| beyond(c))) {
+    if !node.children().is_some_and(|c| c.iter().any(|c| reaches_beyond(c))) {
         return;
     }
     let Some(children) = Arc::make_mut(node).children_mut() else { return };
     children.retain_mut(|c| {
-        if !beyond(c) {
+        if !reaches_beyond(c) {
             return true;
         }
-        if matches!(c.kind, NodeKind::Layer { clip: false, .. } | NodeKind::Group { clip: false, .. }) {
+        if clipping(c).is_some() && !clips_beyond(c) {
             drop_children_beyond(c, dropped);
             return true;
         }
@@ -86,16 +111,31 @@ fn drop_children_beyond(node: &mut Arc<Node>, dropped: &mut usize) {
 
 impl Document {
     /// Remove what a read file has beyond the canvas ([`MAX_COORD`], or not finite): objects
-    /// (see [`BeyondCanvas::objects`]), artboards, and guides with the artboard guides of those
-    /// artboards, and put a ruler origin beyond it back at the origin. Run after
-    /// [`Document::limit_depth`]. A document whose artboards were all removed has none left.
+    /// (see [`BeyondCanvas::objects`]; a top-level layer clipping by a path beyond it is emptied
+    /// and stops clipping), artboards with their ruler origins and artboard guides (their ids
+    /// are retired, as deleting them does), and guides, and put a ruler origin beyond it back at
+    /// the origin. Run after [`Document::limit_depth`]. A document whose artboards were all
+    /// removed has none left.
     pub fn drop_beyond_canvas(&mut self) -> BeyondCanvas {
         let mut gone = BeyondCanvas::default();
         for layer in &mut self.layers {
-            drop_children_beyond(layer, &mut gone.objects);
+            if clips_beyond(layer) {
+                let layer = Arc::make_mut(layer);
+                if let NodeKind::Layer { children, clip, .. } = &mut layer.kind {
+                    gone.objects += children.len();
+                    children.clear();
+                    *clip = false;
+                }
+            } else {
+                drop_children_beyond(layer, &mut gone.objects);
+            }
         }
         let removed: Vec<u32> = self.artboards.iter().filter(|a| !rect_in_range(a.rect)).map(|a| a.id).collect();
         self.artboards.retain(|a| rect_in_range(a.rect));
+        for id in &removed {
+            self.artboard_ruler_origins.remove(id);
+            self.retire_artboard_id(*id);
+        }
         gone.artboards = removed.len();
         let guides = self.guides.len();
         self.guides.retain(|g| in_range(g.pos) && g.artboard.is_none_or(|a| !removed.contains(&a)));
@@ -181,5 +221,63 @@ mod tests {
                 "1 artboard, 3 guides beyond the canvas (more than {MAX_COORD} pt from the origin) were removed; the ruler origin, beyond it too, was reset"
             )
         );
+    }
+
+    /// A sublayer like the document's first layer, holding `children`.
+    fn sublayer(d: &Document, id: u64, children: Vec<Arc<Node>>, clip: bool) -> Arc<Node> {
+        let mut l = (*d.layers[0]).clone();
+        l.id = NodeId(id);
+        if let NodeKind::Layer { children: c, clip: k, .. } = &mut l.kind {
+            *c = children;
+            *k = clip;
+        }
+        Arc::new(l)
+    }
+
+    #[test]
+    fn objects_hidden_or_clipped_inside_a_container_are_looked_at_one_by_one() {
+        // A layer's bounds leave out its hidden objects, and a clip group's are its clipping path's.
+        let mut hidden = (*rect(41, 1e17)).clone();
+        hidden.visible = false;
+        let probe = Document::new(1.0, 1.0);
+        let sub = sublayer(&probe, 40, vec![Arc::new(hidden), rect(42, 0.0)], false);
+        let clip = Arc::new(Node::new(NodeId(30), NodeKind::Group { children: vec![rect(31, 0.0), rect(32, 1e17), rect(33, 5.0)], clip: true }));
+        let mut d = doc(vec![sub, clip]);
+        let layer = d.layers[0].id.0;
+        assert_eq!(d.drop_beyond_canvas().objects, 2);
+        assert_eq!(ids(&d), [layer, 40, 42, 30, 31, 33], "the far hidden object and the far clipped one go; the clipping path stays first");
+    }
+
+    #[test]
+    fn a_top_level_layer_clipping_by_a_path_beyond_the_canvas_is_emptied() {
+        let mut d = doc(vec![rect(10, 1e17), rect(11, 0.0), rect(12, 5.0)]);
+        if let NodeKind::Layer { clip, .. } = &mut Arc::make_mut(&mut d.layers[0]).kind {
+            *clip = true;
+        }
+        assert_eq!(d.drop_beyond_canvas().objects, 3, "the clipping path and what it clipped go together");
+        assert!(
+            matches!(&d.layers[0].kind, NodeKind::Layer { children, clip: false, .. } if children.is_empty()),
+            "no other object becomes the clipping path"
+        );
+        // A clipping sublayer goes whole, as a clip group does.
+        let mut d = doc(vec![]);
+        let sub = sublayer(&d, 40, vec![rect(41, 1e17), rect(42, 0.0)], true);
+        let mut d2 = doc(vec![sub, rect(10, 0.0)]);
+        let layer = d2.layers[0].id.0;
+        assert_eq!(d2.drop_beyond_canvas().objects, 1);
+        assert_eq!(ids(&d2), [layer, 10]);
+        assert_eq!(d.drop_beyond_canvas(), BeyondCanvas::default());
+    }
+
+    #[test]
+    fn a_removed_artboards_ruler_origin_goes_and_its_id_is_not_given_again() {
+        let mut d = doc(vec![]);
+        let kept = d.artboards[0].id;
+        d.artboards.push(Artboard { id: 9, rect: Rect::new(0.0, 1e17, 100.0, 1e17 + 100.0), ..d.artboards[0].clone() });
+        d.artboard_ruler_origins.insert(kept, vectorcraft_geom::Vec2::new(1.0, 2.0));
+        d.artboard_ruler_origins.insert(9, vectorcraft_geom::Vec2::new(3.0, 4.0));
+        assert_eq!(d.drop_beyond_canvas().artboards, 1);
+        assert_eq!(d.artboard_ruler_origins.keys().copied().collect::<Vec<_>>(), [kept]);
+        assert!(d.next_artboard_id() > 9, "a new artboard doesn't take the removed one's id");
     }
 }
