@@ -543,7 +543,7 @@ fn prepare_line_geometry(cx: &Ctx<'_>, t: &TextObject, paragraph: &ParagraphData
     // Justification adds nothing to the list marker's glyphs.
     let mut held = held;
     held.extend(index..paragraph.marker.min(body));
-    let last_of_para = position.end >= n || sg.get(position.end - 1).is_some_and(|g| g.ch == '\u{2028}');
+    let last_of_para = position.end >= n || position.end.checked_sub(1).and_then(|i| sg.get(i)).is_some_and(|g| g.ch == '\u{2028}');
     LineGeometry {
         position,
         index,
