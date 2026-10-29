@@ -2,7 +2,8 @@ use super::cache::RegionCache;
 use super::lookup::{is_live_paint, live_paint_at, live_paint_at_where, visible_edge_near, visible_face_at};
 use super::map::{HIGHLIGHT_RED, sorted_roots};
 use super::{
-    Action, Arc, BezPath, Cursor, Document, Mods, Node, NodeId, Overlay, Point, PointerEvent, PointerKind, Tool, ToolContext, Value, json, json_ids,
+    Action, Arc, BezPath, CLICK_TOL_PX, Cursor, Document, EDGE_NAME, FACE_NAME, FillRule, Mods, Node, NodeId, Overlay, Point, PointerEvent,
+    PointerKind, Rect, Tool, ToolContext, ToolKey, Value, json, json_ids, path_contains,
 };
 
 // ---------- Live Paint Bucket ----------
