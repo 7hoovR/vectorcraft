@@ -480,17 +480,10 @@ fn pdf_export_writes_patterns_nested_too_deep_as_tiles_with_a_warning() {
 
 #[test]
 fn every_raster_export_says_when_a_pattern_holds_an_image_that_could_not_be_decoded() {
-    // A PNG whose header reads (so it places at its size) but whose pixel data is cut short, made
-    // into a pattern and then cleared from the page: only the pattern's tile draws it.
+    // A PNG whose header reads but whose pixel data is cut short, made into a pattern and then
+    // cleared from the page: only the pattern's tile draws it.
     let mut s = session();
-    let mut png = Vec::new();
-    image::RgbaImage::from_pixel(20, 20, image::Rgba([200, 30, 30, 255]))
-        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
-        .unwrap();
-    let idat = png.windows(4).position(|w| w == b"IDAT").unwrap();
-    png.truncate(idat + 8);
-    let placed = s.execute("file.place", &json!({"name": "cut.png", "dataBase64": vectorcraft_format::base64_encode(&png)})).unwrap();
-    let placed = NodeId(placed["ids"][0].as_u64().unwrap());
+    let placed = crate::tests_menucmds::place_undecodable_png_sized(&mut s, 20, 20);
     sel(&mut s, &[placed]);
     s.execute("object.pattern.make", &json!({"name": "Cut", "width": 20, "height": 20})).unwrap();
     s.execute("object.pattern.done", &json!({})).unwrap();

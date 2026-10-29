@@ -38,8 +38,8 @@ fn sel(s: &mut Session, ids: &[NodeId]) {
     s.execute("select.set", &json!({"ids": ids.iter().map(|i| i.0).collect::<Vec<_>>()})).unwrap();
 }
 
-/// A placed 64 × 32 px PNG whose header reads (so it places at its size) but whose pixel data is
-/// cut short: the renderer can't decode it and draws nothing.
+/// A placed 64 × 32 px PNG whose header reads but whose pixel data is cut short
+/// ([`cut_pixels`]): the renderer can't decode it and draws nothing.
 pub(crate) fn place_undecodable_png(s: &mut Session) -> NodeId {
     place_undecodable_png_sized(s, 64, 32)
 }
@@ -51,10 +51,34 @@ pub(crate) fn place_undecodable_png_sized(s: &mut Session, w: u32, h: u32) -> No
     image::RgbaImage::from_pixel(w, h, image::Rgba([200, 30, 30, 255]))
         .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
         .unwrap();
+    let r = s.execute("file.place", &json!({"name": "cut.png", "dataBase64": vectorcraft_format::base64_encode(&png)})).unwrap();
+    let id = NodeId(r["ids"][0].as_u64().unwrap());
+    cut_pixels(s, id);
+    id
+}
+
+/// Cut the pixel data of the PNG that placed image `id` shows short, right after its first `IDAT`
+/// chunk's type, as a document saved with a damaged image holds it: the header still reads, but
+/// the renderer can't decode the image. Place refuses such a file, so tests cut a placed one. The
+/// image is stored under the key of its new bytes.
+pub(crate) fn cut_pixels(s: &mut Session, id: NodeId) {
+    let doc = std::sync::Arc::make_mut(&mut s.doc_mut().unwrap().doc);
+    let Some(NodeKind::Image(im)) = doc.node(id).map(|n| &n.kind) else { panic!("{id:?} is not an image") };
+    let old = im.key.clone();
+    let mut png = doc.images[&old].bytes.to_vec();
     let idat = png.windows(4).position(|w| w == b"IDAT").unwrap();
     png.truncate(idat + 8);
-    let r = s.execute("file.place", &json!({"name": "cut.png", "dataBase64": vectorcraft_format::base64_encode(&png)})).unwrap();
-    NodeId(r["ids"][0].as_u64().unwrap())
+    let cut = vectorcraft_doc::ImageBlob::new("image/png", png);
+    let key = cut.content_key();
+    doc.images.insert(key.clone(), cut);
+    if let Some(Node { kind: NodeKind::Image(im), .. }) = doc.node_mut(id) {
+        im.key = key;
+    }
+    let mut shown = false;
+    doc.visit_images(|_, im| shown |= im.key == old);
+    if !shown {
+        doc.images.remove(&old);
+    }
 }
 
 /// Whether reply `r` warns that an image couldn't be decoded, as raster exports do.

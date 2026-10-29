@@ -3241,6 +3241,11 @@ The art's bounds are the bounds of the art that shows, with its strokes and effe
 hidden objects, guides and template layers do not count, and symbol instances are measured by their art. A page or artboard holds the objects
 whose shown art lies on it; a hidden object on it is still placed and stays hidden, as do the hidden members of the groups placed.
 `replace` and the `width` and `height` that `file.place` answers also measure symbol instances by their art.
+`file.place` decodes the pixels of a PNG, JPEG, GIF or WebP file within the decode allowance before placing it. When
+they can't be read, as with a PNG cut short by a download or a sync still running, it fails with "the image's pixels
+can't be read" and places nothing; `clipboard.importImage` fails the same way. A JPEG cut short is placed when its
+pixels still decode. Both keep the decoded pixels (except a CMYK JPEG's) in the image store the renderers share, so the first render
+that draws the image does not decode the file again.
 `file.place.info` describes a file without placing it and `image.info` reports a placed image's link, colour mode and
 effective ppi. `file.place.queue` loads the place cursor (the `place` tool) with several files: headless, drive it
 with `pointer_gesture` (a click places at 100% with the top-left corner there, a drag at the dragged size) and
@@ -3524,8 +3529,10 @@ The result lists `missingLinks`
 path isn't followed) when it isn't. The desktop app also checks the active document's links when its window
 comes back to the front, following the same preference. `links.check` reports every link's `status` (`ok`, `modified`,
 `missing`), `links.update {ids?}` reads modified files again and `links.relink {ids?, path | folder}` points images at
-another file (or each at the file of its name in a folder); images keep their bounds, one undo step each. Without a
-file system (the web), linked images show their previews.
+another file (or each at the file of its name in a folder); images keep their bounds, one undo step each. A PNG, JPEG,
+GIF or WebP file whose pixels can't be read is not shown: `links.relink` fails with "the image's pixels can't be
+read", and `links.update`, or `document.open` when it reads the file, lists it as missing, its images keeping what they
+showed. Without a file system (the web), linked images show their previews.
 
 `links.findFiles {folder}` looks in an absolute folder and its subfolders, on separate threads, for the files of the
 active document's missing links, or of the images and placed documents `ids` whatever their status, and returns at once
