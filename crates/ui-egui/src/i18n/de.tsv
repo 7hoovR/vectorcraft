@@ -5267,3 +5267,11 @@ axis	Y Axis	Y-Achse
 # Align panel menu › Align to Glyph Bounds (#4231).
 	Point Text	Punkttext
 	Area Text	Flächentext
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Optionen für „An Glyphe ausrichten“ einblenden
+	Hide Snap to Glyph Options	Optionen für „An Glyphe ausrichten“ ausblenden
+	Snap to Glyph Options	Optionen für „An Glyphe ausrichten“
+	x-height	x-Höhe
+	Glyph Bounds	Glyphenbegrenzung
+	Proximity Guides	Näherungshilfslinien
+	Angular Guides	Winkelhilfslinien

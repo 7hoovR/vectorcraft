@@ -1868,3 +1868,27 @@ fn transform_panel_patterns_defaults_to_following_the_general_preference() {
     s.execute("prefs.reset", &json!({"category": "General"})).unwrap();
     assert_eq!(s.prefs.transform_panel_patterns, "default");
 }
+
+/// Character panel › Show Snap to Glyph Options (#4232): `view.snapToGlyph.options` reads and sets
+/// the options, all on by default, kept as the `glyphSnap` preference group; bad keys and values
+/// change nothing, and resetting the preferences turns them all back on.
+#[test]
+fn snap_to_glyph_options_read_set_and_reset() {
+    let mut s = Session::new();
+    let all = json!({"baseline": true, "xHeight": true, "bounds": true, "proximity": true, "angular": true, "anchors": true});
+    assert_eq!(s.execute("view.snapToGlyph.options", &json!({})).unwrap(), all);
+    let mut set = all.clone();
+    (set["xHeight"], set["angular"]) = (json!(false), json!(false));
+    assert_eq!(s.execute("view.snapToGlyph.options", &json!({"xHeight": false, "angular": false})).unwrap(), set);
+    assert_eq!(s.execute("prefs.get", &json!({"key": "glyphSnap"})).unwrap(), set);
+    assert!(!s.prefs.glyph_snap.x_height && s.prefs.glyph_snap.baseline);
+    for bad in [json!({"xHeight": 1}), json!({"glyphBounds": false})] {
+        assert!(s.execute("view.snapToGlyph.options", &bad).is_err(), "{bad}");
+        assert!(s.execute("prefs.set", &json!({"key": "glyphSnap", "value": bad})).is_err(), "{bad}");
+    }
+    s.execute("prefs.set", &json!({"key": "glyphSnap", "value": {"anchors": false}})).unwrap();
+    set["anchors"] = json!(false);
+    assert_eq!(s.execute("view.snapToGlyph.options", &json!({})).unwrap(), set);
+    s.execute("prefs.reset", &json!({})).unwrap();
+    assert_eq!(s.execute("view.snapToGlyph.options", &json!({})).unwrap(), all);
+}
