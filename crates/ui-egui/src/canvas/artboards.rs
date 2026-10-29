@@ -1,6 +1,6 @@
 use serde_json::{Value, json};
 
-use super::*;
+use super::{Color32, Point, Pos2, Rect, Shape, Stroke, Ui, VectorcraftApp, Xf, vec2};
 
 /// The width an artboard needs on screen for its name to show (px): narrower, the name is left
 /// out rather than spilling over its neighbours.
