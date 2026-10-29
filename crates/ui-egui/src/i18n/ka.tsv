@@ -5543,3 +5543,76 @@ axis	Y Axis	Y ღერძი
 @msg	a {width}×{height} screenshot's byte count overflows	{width}×{height} ეკრანის ანაბეჭდის ბაიტების რაოდენობა გადაივსო
 @msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	ფანჯრის {what} ({points} პუნქტი × {scale} DPI) ეკრანის ანაბეჭდის ზომას ვერ განსაზღვრავს
 	Live preview	ცოცხალი წინასწარი ნახვა
+# Batch dialog, PDF presets, Dimension Tool Options and the built-in swatch names (swatches.rs: t_name("swatch", …)).
+	Gutter	შუალედი
+	Gutter:	შუალედი:
+	Play:	შესრულება:
+	Override Action "Open" Commands	მოქმედების „გახსნის“ ბრძანებების უგულებელყოფა
+	Override Action "Save" Commands	მოქმედების „შენახვის“ ბრძანებების უგულებელყოფა
+	Override Action "Export" Commands	მოქმედების „ექსპორტის“ ბრძანებების უგულებელყოფა
+	Stop on Errors	შეცდომისას შეჩერება
+	▾ Default Actions	▾ ნაგულისხმევი მოქმედებები
+	High Quality Print	მაღალი ხარისხის ბეჭდვა
+	[High Quality Print]	[მაღალი ხარისხის ბეჭდვა]
+	Press Quality	სასტამბო ხარისხი
+	[Press Quality]	[სასტამბო ხარისხი]
+	Smallest File Size	ფაილის უმცირესი ზომა
+	[Smallest File Size]	[ფაილის უმცირესი ზომა]
+swatch	[None]	[არცერთი]
+swatch	[Registration]	[რეგისტრაცია]
+swatch	White	თეთრი
+swatch	Black	შავი
+swatch	Red	წითელი
+swatch	Orange Red	ნარინჯისფერ-წითელი
+swatch	Orange	ნარინჯისფერი
+swatch	Amber	ქარვისფერი
+swatch	Yellow	ყვითელი
+swatch	Yellow Green	ყვითელ-მწვანე
+swatch	Lime	ლაიმისფერი
+swatch	Green	მწვანე
+swatch	Emerald	ზურმუხტისფერი
+swatch	Teal	ზღვისფერი
+swatch	Aqua	ფირუზისფერი
+swatch	Cyan Green	ცისფერ-მწვანე
+swatch	Cyan	ცისფერი
+swatch	Azure	ლაჟვარდისფერი
+swatch	Blue	ლურჯი
+swatch	Indigo	ინდიგო
+swatch	Violet	იისფერი
+swatch	Purple	მუქი იისფერი
+swatch	Magenta	მეწამული
+swatch	Rose	ვარდისფერი
+swatch	Pink	ღია ვარდისფერი
+swatch	Brown	ყავისფერი
+swatch	Tan	ღია ყავისფერი
+swatch	Coffee	ყავა
+swatch	Chocolate	შოკოლადისფერი
+swatch	Sand	ქვიშისფერი
+swatch	Copper	სპილენძისფერი
+swatch	Rust	ჟანგისფერი
+swatch	Walnut	კაკლისფერი
+swatch	Espresso	ესპრესო
+swatch	White, Black	თეთრი, შავი
+swatch	Radial White, Black	რადიალური თეთრი, შავი
+swatch	Sunset	მზის ჩასვლა
+swatch	Ocean	ოკეანე
+swatch	Grays	ნაცრისფრები
+swatch	Brights	კაშკაშა ფერები
+swatch	Bright Red	კაშკაშა წითელი
+swatch	Bright Yellow	კაშკაშა ყვითელი
+swatch	Bright Green	კაშკაშა მწვანე
+swatch	Bright Blue	კაშკაშა ლურჯი
+swatch	Bright Violet	კაშკაშა იისფერი
+	Units & Scale	ერთეულები და მასშტაბი
+	Dimension Lines	ზომის ხაზები
+	Extension Lines	გამოსატანი ხაზები
+	Dimension Text	ზომის ტექსტი
+	Arrow Scale:	ისრის მასშტაბი:
+	Arrow Style:	ისრის სტილი:
+	Extension:	გამოტანა:
+	Hide Extension Lines	გამოსატანი ხაზების დამალვა
+	Hide Units	ერთეულების დამალვა
+	Line Type:	ხაზის ტიპი:
+	Line Weight:	ხაზის სისქე:
+	Position:	პოზიცია:
+	Font Size:	შრიფტის ზომა:
