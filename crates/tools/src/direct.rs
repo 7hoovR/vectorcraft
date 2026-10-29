@@ -920,7 +920,7 @@ impl DirectSelectionTool {
         }
         // A double-click edits what is drawn: not a clipping path's outline.
         let hit = hit_test(cx.doc, p, cx.hit_options());
-        if hit.and_then(|h| cx.doc.node(h.leaf)).is_some_and(|n| matches!(n.kind, NodeKind::Text(_))) {
+        if hit.as_ref().and_then(|h| cx.doc.node(h.leaf)).is_some_and(|n| matches!(n.kind, NodeKind::Text(_))) {
             return vec![Action::SwitchTool("type".into())];
         }
         // Outside the isolated art it leaves isolation mode, as with the Selection tool (#4466).
