@@ -126,6 +126,8 @@ pub struct Session {
     plugin_output: Option<cmd::plugin::HandedIn>,
     /// URLs recently given in the Attributes panel (`attributes.set {url}`), newest first; not saved.
     pub recent_urls: Vec<String>,
+    /// The saved tracing presets' revision and latest changes ([`Session::trace_presets_revision`]).
+    pub(crate) trace_preset_changes: cmd::TracePresetChanges,
     /// The language the UI is drawn in (a language code, never `auto`), set by the UI each frame;
     /// `None` without one (headless), where an explicit `interfaceLanguage` preference counts.
     /// Japanese gives new type the Japanese defaults ([`Session::japanese_interface`]).
