@@ -363,6 +363,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 |---|---|---|
 | 2026-10-30 | minor | Character panel menu › Show Snap to Glyph Options shows the Snap to Glyph section (Baseline, x-height, Glyph Bounds, Proximity Guides, Angular Guides, Anchor Point; `view.snapToGlyph.options`) (#4232); scores and estimates unchanged |
 | 2026-10-30 | minor | Align panel menu › Align to Glyph Bounds › Point Text and Area Text align and distribute type by the ink of its glyphs (#4231); the Character and Properties panels' controls for it are not done; scores and estimates unchanged |
+| 2026-10-30 | minor | Art moved whole with the Direct Selection or Group Selection tool and dragged off the canvas goes to the panels (Asset Export, Graphic Styles, Swatches, Symbols) as with the Selection tool; anchor points and segments dragged off stay a reshape (#4233). Tests in `crates/ui-egui/src/canvas/tests.rs`; scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush and Eraser Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590, #3961); scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590); scores and estimates unchanged |
 | 2026-10-29 | minor | Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act; scores and estimates unchanged |
