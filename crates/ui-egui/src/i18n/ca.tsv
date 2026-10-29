@@ -5673,3 +5673,6 @@ swatch	White, Black	Blanc, negre
 swatch	Yellow	Groc
 swatch	Yellow Green	Verd groc
 theme	Appearance	Aparença
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Text de punt
+	Area Text	Text d’àrea

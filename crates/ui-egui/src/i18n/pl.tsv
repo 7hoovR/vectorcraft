@@ -5536,3 +5536,6 @@ axis	Y Axis	Oś Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Najpierw rozszerz wygląd (Obiekt › Rozszerz wygląd)
 	Live preview	Podgląd na żywo
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Tekst punktowy
+	Area Text	Tekst akapitowy

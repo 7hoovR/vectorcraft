@@ -5660,3 +5660,6 @@ swatch	Yellow Green	Желто-зеленый
 swatch	[None]	[Нет]
 swatch	[Registration]	[Приводка]
 theme	Appearance	Оформление
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Точечный текст
+	Area Text	Текст в области

@@ -59,6 +59,7 @@ mod fontfiles;
 mod fontlist;
 mod freeform;
 mod globaledit;
+mod glyphbounds;
 mod gradient;
 mod gradpanel;
 mod gradspan;

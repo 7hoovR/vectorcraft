@@ -5634,3 +5634,6 @@ axis	Y Axis	Άξονας Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Επεκτείνετε πρώτα την εμφάνιση (Αντικείμενο › Επέκταση εμφάνισης)
 	Live preview	Ζωντανή προεπισκόπηση
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Κείμενο σημείου
+	Area Text	Κείμενο περιοχής

@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Blob Brush and Eraser Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590, #3961); scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Align panel menu › Align to Glyph Bounds › Point Text and Area Text align and distribute type by the ink of its glyphs (#4231); scores and estimates unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -115,6 +115,7 @@ tools, never checked side by side) isn't captured row by row.
 | Distribute Objects and Distribute Spacing with a spacing from a key guide: the guide stays put and the other items are spaced the Distribute Spacing value from it, as from a key object with no size | done | Key guide from #3165; a vertical guide spaces the horizontal options, a horizontal one the vertical ones, and a guide along the axis leaves everything |
 | Distribute ruler guides: the Distribute Objects and Distribute Spacing buttons space the selected guides across the axis with the selected objects, as items with no size; two or more guides selected alone are enough | done | #1597 in part; guides alone: select them, choose Align to Artboard and click Horizontal (Vertical) Distribute Center for equal columns (rows) ([public forum answer, 2017](https://community.adobe.com/questions-652/illustrator-equal-guides-822924)); with objects: a guide on each artboard edge, included in the selection, keeps the outermost lines there ([public forum answer, 2025](https://www.signs101.com/threads/is-there-a-way-to-distribute-shapes-like-this-in-illustrator.179556/)); a guide has no width, so the three options of an axis are the same for it; guides along the axis stay |
 | Ruler guides align to a key object: a click on an object selected with guides makes it the key (one object is enough); Align moves the selected guides to its edge or centre (vertical guides to left, centre or right, horizontal ones to top, centre or bottom) and the key stays put | done | #2143; aligning to the selection or the artboard leaves guides alone |
+| Align panel menu › Align to Glyph Bounds › Point Text and Area Text (checked while on): Align and Distribute measure point type or area type by the ink of its glyphs instead of its em box or frame | done | #4231; `alignGlyphBoundsPoint`, `alignGlyphBoundsArea` ([Align text](https://helpx.adobe.com/illustrator/desktop/design-with-text/edit-format-text/align-text.html)); `tests::glyphbounds`, `panels::align::tests::align_to_glyph_bounds_toggles_point_and_area_text`; the Character and Properties panels' Align to Glyph Bounds controls are not done |
 | A marquee selects the objects whose paths it touches (anchors or segments): drawn inside a filled shape, over a background, it leaves that shape (Preview and Outline) | done | #1103 |
 | Click a segment independently of its endpoint anchors; only its direction handles show | done | #1278: hollow endpoint squares, selected edge emphasized; headless egui checked |
 | Drag a curved segment to bend it, a straight one to move its anchors | done | |
@@ -360,6 +361,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | Align panel menu › Align to Glyph Bounds › Point Text and Area Text align and distribute type by the ink of its glyphs (#4231); the Character and Properties panels' controls for it are not done; scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush and Eraser Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590, #3961); scores and estimates unchanged |
 | 2026-10-30 | minor | Blob Brush Tool Options: Size follows the pen pressure, Fixed or Pressure with a Variation (#4590); scores and estimates unchanged |
 | 2026-10-29 | minor | Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act; scores and estimates unchanged |

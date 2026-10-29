@@ -456,6 +456,9 @@ Use Preview Bounds: the Align panel flyout's Use Preview Bounds item shows and t
 preference (`prefs.set`); while it is on, the bounding box and the Transform panel, Properties and Control bar
 fields measure visual bounds.
 
+Align to Glyph Bounds: the Align panel flyout's Align to Glyph Bounds submenu shows and toggles the
+`alignGlyphBoundsPoint` (Point Text) and `alignGlyphBoundsArea` (Area Text) preferences (`prefs.set`), checked while on.
+
 Align To: the Align panel's Align To choice is saved with the preferences, and `ui.inspect` reports it as
 `ui.align_to` (`"selection"` or `"artboard"`; Align to Key Object stores no choice). The align buttons of the Align
 panel, the Control bar and the Properties panel run `object.align` with `to: "artboard"` when one object is selected,

@@ -5587,3 +5587,6 @@ axis	Y Axis	Y-akse
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Udvid først udseendet (Objekt › Udvid udseende)
 	Live preview	Direkte forhåndsvisning
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttekst
+	Area Text	Områdetekst

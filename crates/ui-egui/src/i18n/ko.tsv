@@ -5261,3 +5261,6 @@ axis	Y Axis	Y축
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	먼저 모양새를 확장하세요 (개체 › 모양새 확장)
 	Live preview	실시간 미리 보기
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	포인트 문자
+	Area Text	영역 문자
