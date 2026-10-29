@@ -1076,6 +1076,22 @@ fn polar_grid_options_compound_fill_and_skew() {
     assert!(tips(&inward)[1..].iter().all(|t| t.x < 50.0), "counterclockwise of the top: {:?}", tips(&inward));
 }
 
+/// A divider count written as a whole float (`3.0`) is the same as `3`; a fraction gives the default 5.
+#[test]
+fn grid_divider_counts_accept_whole_floats() {
+    let mut s = session();
+    let size = json!({"x": 0, "y": 0, "width": 100, "height": 100});
+    let float = grid(&mut s, "shape.rectangularGrid", with(&size, json!({"rows": 3.0, "columns": 3.0})));
+    let int = grid(&mut s, "shape.rectangularGrid", with(&size, json!({"rows": 3, "columns": 3})));
+    assert_eq!(float.len(), int.len());
+    assert_eq!(float.len(), 7);
+    let float = grid(&mut s, "shape.polarGrid", with(&size, json!({"concentric": 2.0, "radial": 3.0})));
+    let int = grid(&mut s, "shape.polarGrid", with(&size, json!({"concentric": 2, "radial": 3})));
+    assert_eq!(float.len(), int.len());
+    let frac = grid(&mut s, "shape.rectangularGrid", with(&size, json!({"rows": 2.5, "columns": 2.5})));
+    assert_eq!(frac.len(), 11);
+}
+
 /// The grid options are checked: a divider count or a skew is a number and a switch true or false,
 /// or the command fails without an undo step.
 #[test]
