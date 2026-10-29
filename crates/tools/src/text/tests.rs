@@ -262,6 +262,219 @@ fn typing_is_one_coalesced_preview() {
     assert!(a4.contains(&Action::Begin("Typing".into())));
 }
 
+/// What the engine does around Edit › Undo or Redo (`what`) that puts the document back to `to`:
+/// it ends the typing session, runs the step, tells the tool, then lets it finish the command.
+fn history_step(tool: &mut TypeTool, to: &Document, id: NodeId, what: &str) {
+    let (mut sel, p) = (Selection::default(), paint());
+    sel.set([id]);
+    tool.set_option("endTyping", &json!(true));
+    tool.notify(&cx(to, &sel, &p), what);
+    assert_eq!(tool.after_command(&cx(to, &sel, &p)), vec![]);
+}
+
+fn type_in(tool: &mut TypeTool, d: &mut Document, s: &str) {
+    let (sel, p) = (Selection::default(), paint());
+    let snap = d.clone();
+    let acts = tool.text_input(&cx(d, &sel, &p), s);
+    apply(d, &snap, &acts);
+}
+
+fn plain_of(d: &Document, id: NodeId) -> String {
+    let NodeKind::Text(t) = &d.node(id).unwrap().kind else { panic!("text") };
+    t.plain_text()
+}
+
+/// Undo of typing puts the caret where the typed text began, and Redo puts it after the text.
+#[test]
+fn undo_and_redo_of_typing_put_the_caret_where_the_text_changed() {
+    let (mut d, id, mut tool) = editing("XYZ");
+    let before = d.clone();
+    type_in(&mut tool, &mut d, "abc");
+    assert_eq!((plain_of(&d, id).as_str(), tool.caret), ("abcXYZ", 3));
+    let after = d.clone();
+    history_step(&mut tool, &before, id, "edit.undo");
+    assert_eq!((tool.caret, tool.anchor), (0, 0));
+    history_step(&mut tool, &after, id, "edit.redo");
+    assert_eq!((tool.caret, tool.anchor), (3, 3));
+    // Typing in the middle of the text: Undo goes back to where the typing began.
+    tool.caret = 4;
+    tool.anchor = 4;
+    type_in(&mut tool, &mut d, "-");
+    assert_eq!(plain_of(&d, id), "abcX-YZ");
+    history_step(&mut tool, &after, id, "edit.undo");
+    assert_eq!((tool.caret, tool.anchor), (4, 4));
+}
+
+/// Undo of a deletion puts the caret after the text it puts back, and Redo where it was taken out.
+#[test]
+fn undo_of_a_deletion_puts_the_caret_after_the_restored_text() {
+    let (mut d, id, mut tool) = editing("Hello big world");
+    let before = d.clone();
+    let snap = d.clone();
+    tool.caret = 10;
+    tool.anchor = 10;
+    let acts = key(&mut tool, &d, ToolKey::Backspace, Mods { alt: true, ..Default::default() });
+    apply(&mut d, &snap, &acts);
+    assert_eq!((plain_of(&d, id).as_str(), tool.caret), ("Hello world", 6));
+    let after = d.clone();
+    // The caret moved away before the Undo.
+    key(&mut tool, &d, ToolKey::End, Mods::default());
+    history_step(&mut tool, &before, id, "edit.undo");
+    assert_eq!((tool.caret, tool.anchor), (10, 10));
+    history_step(&mut tool, &after, id, "edit.redo");
+    assert_eq!((tool.caret, tool.anchor), (6, 6));
+}
+
+/// A step that changes no characters (a formatting change) leaves the caret and the selection, and
+/// the Undo of the typing before it still puts the caret where the typing began.
+#[test]
+fn undo_of_formatting_leaves_the_caret_and_selection() {
+    let (mut d, id, mut tool) = editing("Hello world");
+    let before = d.clone();
+    tool.caret = 5;
+    tool.anchor = 5;
+    type_in(&mut tool, &mut d, ",");
+    let typed = d.clone();
+    // A panel makes the typed text larger (a command from outside the tool).
+    let mut large = d.clone();
+    let NodeKind::Text(t) = &mut large.node_mut(id).unwrap().kind else { panic!("text") };
+    edit::style_range(&mut t.runs, 0, 6, |s| s.size = 30.0);
+    let (mut sel, p) = (Selection::default(), paint());
+    sel.set([id]);
+    tool.set_option("endTyping", &json!(true));
+    tool.after_command(&cx(&large, &sel, &p));
+    tool.anchor = 2;
+    tool.caret = 8;
+    history_step(&mut tool, &typed, id, "edit.undo");
+    assert_eq!((tool.anchor, tool.caret), (2, 8));
+    history_step(&mut tool, &before, id, "edit.undo");
+    assert_eq!((tool.anchor, tool.caret), (5, 5));
+}
+
+/// The caret lands on character boundaries in multi-byte text.
+#[test]
+fn undo_and_redo_keep_the_caret_on_character_boundaries() {
+    let (mut d, id, mut tool) = editing("café 🙂 ok");
+    let before = d.clone();
+    tool.caret = "café 🙂".len();
+    tool.anchor = tool.caret;
+    type_in(&mut tool, &mut d, "é🙂");
+    assert_eq!(plain_of(&d, id), "café 🙂é🙂 ok");
+    let after = d.clone();
+    history_step(&mut tool, &before, id, "edit.undo");
+    assert_eq!(tool.caret, "café 🙂".len());
+    history_step(&mut tool, &after, id, "edit.redo");
+    assert_eq!(tool.caret, "café 🙂é🙂".len());
+}
+
+/// Typing or deleting the same characters as the text next to it: Undo and Redo put the caret where
+/// the tool made the change, not at the other end of the repeated characters.
+#[test]
+fn undo_and_redo_of_repeated_characters_find_the_tools_own_edit() {
+    for (text, at, typed, undone, redone) in [("aaa", 0, "a", 0, 1), ("éé", 2, "é", 2, 4), ("ab ab", 3, "ab ", 3, 6)] {
+        let (mut d, id, mut tool) = editing(text);
+        let before = d.clone();
+        tool.caret = at;
+        tool.anchor = at;
+        type_in(&mut tool, &mut d, typed);
+        let after = d.clone();
+        history_step(&mut tool, &before, id, "edit.undo");
+        assert_eq!((tool.caret, tool.anchor), (undone, undone), "{text}: undo");
+        history_step(&mut tool, &after, id, "edit.redo");
+        assert_eq!((tool.caret, tool.anchor), (redone, redone), "{text}: redo");
+    }
+    // A deleted character next to the same character comes back with the caret after it.
+    let (mut d, id, mut tool) = editing("aaa");
+    let before = d.clone();
+    tool.caret = 1;
+    tool.anchor = 1;
+    let snap = d.clone();
+    let acts = key(&mut tool, &d, ToolKey::Backspace, Mods::default());
+    apply(&mut d, &snap, &acts);
+    assert_eq!(plain_of(&d, id), "aa");
+    history_step(&mut tool, &before, id, "edit.undo");
+    assert_eq!(tool.caret, 1);
+    // Two steps whose texts are each other's: each Undo and Redo finds its own step.
+    let (mut d, id, mut tool) = editing("aaa");
+    let first = d.clone();
+    type_in(&mut tool, &mut d, "a");
+    let second = d.clone();
+    key(&mut tool, &d, ToolKey::End, Mods::default());
+    let snap = d.clone();
+    let acts = key(&mut tool, &d, ToolKey::Backspace, Mods::default());
+    apply(&mut d, &snap, &acts);
+    let third = d.clone();
+    assert_eq!(plain_of(&third, id), "aaa");
+    for (to, what, at) in [(&second, "edit.undo", 4), (&first, "edit.undo", 0), (&second, "edit.redo", 1), (&third, "edit.redo", 3)] {
+        history_step(&mut tool, to, id, what);
+        assert_eq!(tool.caret, at, "{what} to {}", plain_of(to, id));
+    }
+    // A step from outside the tool after an Undo drops the undone step from Redo: Redo of the
+    // outside step does not take the dropped step's place.
+    let (mut d, id, mut tool) = editing("aaa");
+    let first = d.clone();
+    type_in(&mut tool, &mut d, "a");
+    history_step(&mut tool, &first, id, "edit.undo");
+    assert_eq!(tool.caret, 0);
+    let mut appended = first.clone();
+    let NodeKind::Text(t) = &mut appended.node_mut(id).unwrap().kind else { panic!("text") };
+    edit::replace_range(&mut t.runs, 3, 3, "a");
+    let (mut sel, p) = (Selection::default(), paint());
+    sel.set([id]);
+    assert_eq!(tool.after_command(&cx(&appended, &sel, &p)), vec![]);
+    history_step(&mut tool, &first, id, "edit.undo");
+    history_step(&mut tool, &appended, id, "edit.redo");
+    assert_eq!(tool.caret, 4);
+    // A command from outside the tool that leaves the text as it is (a query) keeps the undone
+    // step for Redo.
+    let (mut d, id, mut tool) = editing("aaa");
+    let first = d.clone();
+    type_in(&mut tool, &mut d, "a");
+    let second = d.clone();
+    history_step(&mut tool, &first, id, "edit.undo");
+    let (mut sel, p) = (Selection::default(), paint());
+    sel.set([id]);
+    assert_eq!(tool.after_command(&cx(&first, &sel, &p)), vec![]);
+    history_step(&mut tool, &second, id, "edit.redo");
+    assert_eq!(tool.caret, 1);
+    // Commands from outside the tool that repeat the change of a step the tool made are steps of
+    // their own: Undo of the last one does not take back the tool's step.
+    let (mut d, id, mut tool) = editing("aaa");
+    let first = d.clone();
+    type_in(&mut tool, &mut d, "a");
+    let typed = d.clone();
+    let (mut sel, p) = (Selection::default(), paint());
+    sel.set([id]);
+    tool.set_option("endTyping", &json!(true));
+    let mut removed = typed.clone();
+    let NodeKind::Text(t) = &mut removed.node_mut(id).unwrap().kind else { panic!("text") };
+    edit::replace_range(&mut t.runs, 3, 4, "");
+    assert_eq!(tool.after_command(&cx(&removed, &sel, &p)), vec![]);
+    let mut appended = removed.clone();
+    let NodeKind::Text(t) = &mut appended.node_mut(id).unwrap().kind else { panic!("text") };
+    edit::replace_range(&mut t.runs, 3, 3, "a");
+    assert_eq!(tool.after_command(&cx(&appended, &sel, &p)), vec![]);
+    for (to, what, at) in [(&removed, "edit.undo", 3), (&typed, "edit.undo", 4), (&first, "edit.undo", 0), (&typed, "edit.redo", 1)] {
+        history_step(&mut tool, to, id, what);
+        assert_eq!(tool.caret, at, "{what} to {}", plain_of(to, id));
+    }
+    // A typing session that leaves the text as it was (a character typed and deleted again) does
+    // not stop Undo of the step before it from finding where that step typed.
+    let (mut d, id, mut tool) = editing("aaa");
+    let first = d.clone();
+    type_in(&mut tool, &mut d, "a");
+    key(&mut tool, &d, ToolKey::End, Mods::default());
+    // The session's previews each replace the text it started from.
+    let session = d.clone();
+    type_in(&mut tool, &mut d, "b");
+    let acts = key(&mut tool, &d, ToolKey::Backspace, Mods::default());
+    apply(&mut d, &session, &acts);
+    assert_eq!(plain_of(&d, id), "aaaa");
+    history_step(&mut tool, &d, id, "edit.undo");
+    history_step(&mut tool, &first, id, "edit.undo");
+    assert_eq!(tool.caret, 0);
+}
+
 #[test]
 fn shift_arrows_select_and_typing_replaces() {
     let (d, _, mut tool) = editing("Hello world");

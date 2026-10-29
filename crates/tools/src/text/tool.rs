@@ -456,6 +456,7 @@ impl Tool for TypeTool {
     /// goes before the paragraph's text.
     fn after_command(&mut self, cx: &ToolContext) -> Vec<Action> {
         self.after_typed_list(cx);
+        self.after_outside_command(cx);
         let Some(id) = self.editing else { return vec![] };
         let mut cur = Some(id).filter(|i| cx.doc.node(*i).is_some());
         while let Some(c) = cur {
@@ -466,12 +467,19 @@ impl Tool for TypeTool {
         }
         self.finish(cx)
     }
-    /// After `text.create` / `text.createInPath` the engine selects the new object; edit it.
+    /// After `text.create` / `text.createInPath` the engine selects the new object; edit it. After
+    /// `edit.undo` / `edit.redo` the caret goes to where the step changed the edited text. The
+    /// `batch.*` notices keep what a failed `command.batch` changed from staying ([`TypeTool::batch_notice`]).
     fn notify(&mut self, cx: &ToolContext, what: &str) {
-        if what == "text.editNew"
+        if matches!(what, "edit.undo" | "edit.redo") {
+            self.after_history_step(cx, what == "edit.undo");
+        } else if what.starts_with("batch.") {
+            self.batch_notice(what);
+        } else if what == "text.editNew"
             && let Some(id) = cx.selection.objects.first().copied()
         {
             self.start_editing(id, 0);
+            self.remember(cx);
             let t = Self::text(cx, id);
             self.fresh = t.filter(|t| matches!(t.kind, TextKind::Point)).map(|_| id);
             // Placeholder text comes selected: typing replaces it.
