@@ -2,6 +2,32 @@ use super::*;
 use vectorcraft_engine::Session;
 use vectorcraft_geom::Shape as _;
 
+#[test]
+fn subpixel_dock_layout_does_not_change_pointer_document_coordinates() {
+    let mut observed = Vec::new();
+    for width in [1324.0 + 29.0 / 32.0, 1324.875, 1325.875] {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 800, "height": 600, "created": 0})).unwrap();
+        let ctx = egui::Context::default();
+        ctx.set_pixels_per_point(2.0);
+        let raw = egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(1800.0, 900.0))),
+            max_texture_side: Some(8192),
+            ..Default::default()
+        };
+        let mut out = ctx.run_ui(raw, |ui| {
+            let area = egui::Rect::from_min_size(pos2(54.0, 72.0), vec2(width + SCROLL_BAR, 636.0 + SCROLL_BAR));
+            let mut child = ui.new_child(egui::UiBuilder::new().max_rect(area));
+            show(&mut app, &mut child);
+        });
+        out.textures_delta.clear();
+        let rect = app.canvas_rect.unwrap();
+        observed.push((rect, Xf::new(rect, app.view().unwrap()).to_doc(pos2(440.0, 330.0))));
+    }
+    assert_eq!(observed[0], observed[1], "the same physical canvas must map the same pointer identically");
+    assert_ne!(observed[0], observed[2], "a real device-pixel resize must still change the mapping");
+}
+
 /// A rendered raster becomes the image egui's own conversion makes of it, half-transparent
 /// edges and all; one whose bytes don't match its size becomes an empty image of that size.
 #[test]

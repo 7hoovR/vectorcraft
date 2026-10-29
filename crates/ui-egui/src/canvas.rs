@@ -1,6 +1,7 @@
 //! The document canvas: rendering, rulers, navigation, pointer routing to tools and on-canvas
 //! selection visuals (bounding box, anchors, handles, smart-guide style labels).
 
+use egui::emath::GuiRounding as _;
 use egui::{Color32, CornerRadius, Pos2, Sense, Shape, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
 use serde_json::json;
 use vectorcraft_doc::text::TextKind;
@@ -196,6 +197,9 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     let bars = app.ui.screen_mode < 2;
     let full = if bars { egui::Rect::from_min_max(full.min, full.max - vec2(SCROLL_BAR, SCROLL_BAR)) } else { full };
     let rect = if app.ui.view.rulers && app.ui.screen_mode < 3 { egui::Rect::from_min_max(full.min + vec2(RULER, RULER), full.max) } else { full };
+    // Dock layout can differ by fractions of a device pixel between fresh windows.
+    // Use one pixel-aligned rectangle for drawing, inspection and pointer transforms.
+    let rect = rect.round_to_pixels(ui.ctx().pixels_per_point());
     app.canvas_rect = Some(rect);
     let fitted = app.view().is_some_and(|v| v.fitted);
     if !fitted {
