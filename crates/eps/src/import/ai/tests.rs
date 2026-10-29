@@ -1266,7 +1266,51 @@ fn editing_data_past_256_mib_is_read() {
     assert!(raw.len() < 1 << 20, "zeros compress");
     let data = decode_private(&raw).unwrap();
     assert_eq!(data.len(), body.len());
-    assert!(too_large().contains("512 MB"));
+    assert_eq!(too_large(), format!("it decompresses to more than {} MB", max_data() >> 20));
+}
+
+/// The limit is an eighth of installed memory, never under the 512 MiB every 64-bit build read
+/// before and never over 2 GiB (#3510).
+#[cfg(target_pointer_width = "64")]
+#[test]
+fn the_editing_data_limit_follows_installed_memory() {
+    const GIB: u64 = 1 << 30;
+    assert_eq!(data_limit(None), 512 << 20, "unknown memory keeps the old limit");
+    assert_eq!(data_limit(Some(2 * GIB)), 512 << 20);
+    assert_eq!(data_limit(Some(4 * GIB)), 512 << 20);
+    assert_eq!(data_limit(Some(8 * GIB)), GIB);
+    assert_eq!(data_limit(Some(12 * GIB)), 3 * GIB / 2);
+    assert_eq!(data_limit(Some(16 * GIB)), 2 * GIB);
+    assert_eq!(data_limit(Some(256 * GIB)), 2 * GIB, "capped, so a tiny file can't take all of a big machine");
+    assert!((MIN_DATA..=MAX_DATA).contains(&max_data()));
+}
+
+/// On a machine with 8 GiB or more, editing data past the old 512 MiB limit opens with its layers
+/// (#3510, #4628): a layered file whose rasters unpack to 600 MiB.
+#[cfg(target_pointer_width = "64")]
+#[test]
+fn editing_data_past_512_mib_is_read_where_memory_allows() {
+    if max_data() < 601 << 20 {
+        return;
+    }
+    let mut body = stream(&format!("{}{}", layer(&rect_path(0.0, 0.0, 10.0, 10.0)), layer(&rect_path(20.0, 20.0, 30.0, 30.0)))).into_bytes();
+    let filler = vec![b'%'; (600 << 20) - body.len()];
+    let at = body.windows(14).position(|w| w == b"%%PageTrailer\n").unwrap();
+    body.splice(at..at, filler);
+    let raw = [&b"%AI12_CompressedData"[..], &crate::ps::deflate(&body)].concat();
+    let data = decode_private(&raw).unwrap();
+    assert_eq!(data.len(), body.len());
+    drop(body);
+    let r = read(&data).unwrap();
+    assert_eq!(r.doc.layers.len(), 2, "both layers are read");
+}
+
+/// Past the limit the data is still refused, so the file opens as its PDF part with a note.
+#[test]
+fn editing_data_past_the_limit_is_refused() {
+    let raw = [&b"%AI12_CompressedData"[..], &crate::ps::deflate(b"%%")].concat();
+    assert!(Codec::Zlib.decode(raw.get(20..).unwrap(), 1).is_err());
+    assert!(Codec::Zlib.decode(raw.get(20..).unwrap(), 2).is_ok());
 }
 
 #[test]

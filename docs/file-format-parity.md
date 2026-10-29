@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-26 · **Change:** minor (Affinity import: attached Recolor Adjustment (RcRA) layers are imported as color overlays, #4420) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-29 · **Change:** minor (`.ai` and Illustrator EPS import: the editing data is read up to an eighth of installed memory, 512 MiB to 2 GiB, #3510, #4628) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every format Illustrator opens, places, saves or exports, against VectorCraft's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/formats.rs`). Illustrator's list comes from its public
@@ -131,6 +131,7 @@ the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPri
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-29 | minor | `.ai` and Illustrator EPS import: the editing data is read up to an eighth of installed memory, from 512 MiB to 2 GiB on 64-bit builds (it was 512 MiB on every machine), so a layered file whose embedded rasters unpack past 512 MiB keeps its layers, groups and text on a machine with 8 GiB or more instead of opening as its page or PDF part (#3510, #4628). Measured: 1.1 GB of editing data peaked 1.1 GB above the start; data past the limit is still refused (a 2 MB file unpacking to 2.2 GB stops in under a second). 32-bit and web builds keep 256 MiB. Own-fixture tests `import::ai::tests::editing_data_past_512_mib_is_read_where_memory_allows`, `the_editing_data_limit_follows_installed_memory`; scores and hours unchanged |
 | 2026-10-29 | minor | Affinity import: attached Recolor Adjustment (RcRA) layers import as color overlays with HSL lightness (#4420); scores unchanged. |
 | 2026-10-26 | minor | EPS Save and Save As: an opened EPS saves back to its own path as EPS, keeping the chosen artboard's page frame and transparent margins and the complete editable VectorCraft document; Save's TIFF preview is capped at 1024 px (Export keeps 2048); partly read, preview-only or damaged-editing-data sources still need confirmation before they are overwritten; Save As leaves out the export-only crop and selection options. Synthetic regressions in `tests::save` (engine and UI) and `dialogs::save_options::tests`, listed under [EPS Save and source protection](#eps-save-and-source-protection); it does not write Illustrator's own editing data (#868), and G9's real-file import fidelity is unchanged; scores and hours unchanged |
 | 2026-10-25 | minor | `.ai` import: the editing data is read up to 512 MiB on 64-bit builds (the limit was 256 MiB), so a file whose embedded rasters unpack to 300 MiB or more keeps its layers, groups and text instead of opening as its PDF part (part of #3510); 32-bit and web builds keep 256 MiB. Own-fixture test `import::ai::tests::editing_data_past_256_mib_is_read`; scores and hours unchanged |

@@ -42,6 +42,15 @@ fn budget_for(memory: u64) -> usize {
     usize::try_from(memory / 8).unwrap_or(usize::MAX).min(IMAGE_CACHE_MAX)
 }
 
+/// Installed memory in bytes, `None` where it isn't known (the web, other systems). Other crates
+/// size their own budgets from it.
+pub fn installed_memory() -> Option<u64> {
+    #[cfg(target_arch = "wasm32")]
+    return None;
+    #[cfg(not(target_arch = "wasm32"))]
+    physical_memory()
+}
+
 /// Installed memory in bytes (`MemTotal` in `/proc/meminfo`).
 #[cfg(target_os = "linux")]
 fn physical_memory() -> Option<u64> {
