@@ -212,16 +212,11 @@ pub fn isolation_bar(app: &mut VectorcraftApp, ui: &mut Ui, area: egui::Rect) {
         if bresp.clicked() {
             pattern_cmd = pattern_cmd.or(pattern_edit.as_ref().map(|_| "object.pattern.done"));
             if pattern_cmd.is_none() {
-                if ancestry.len() > 1 {
-                    let parent_id = ancestry[ancestry.len() - 2];
-                    if st.doc.node(parent_id).is_some_and(|n| n.is_layer()) {
-                        nav_cmd = Some(("object.exitIsolation", json!({})));
-                    } else {
-                        nav_cmd = Some(("object.isolate", json!({ "id": parent_id.0 })));
-                    }
-                } else {
-                    nav_cmd = Some(("object.exitIsolation", json!({})));
-                }
+                // Up one level: the isolated object's parent, or out of isolation mode from a layer.
+                nav_cmd = Some(match ancestry.iter().rev().nth(1).filter(|p| st.doc.node(**p).is_some_and(|n| !n.is_layer())) {
+                    Some(parent) => ("object.isolate", json!({ "id": parent.0 })),
+                    None => ("object.exitIsolation", json!({})),
+                });
             }
         }
         if let Some((cmd, params)) = nav_cmd {
