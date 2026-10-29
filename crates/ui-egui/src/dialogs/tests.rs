@@ -1413,10 +1413,10 @@ fn zig_zag_has_sliders_and_radio_buttons() {
     assert!(!lines.contains(&"Ridges:"), "{lines:?}");
 }
 
-/// #4488: Roughen's dialog has Size and Detail sliders laid out as Zig Zag's, and Pucker & Bloat's
-/// its amount as a slider from Pucker to Bloat.
+/// #4488: Roughen's dialog has Size and Detail sliders laid out as Zig Zag's, Pucker & Bloat's its
+/// amount as a slider from Pucker to Bloat, and Tweak's Horizontal and Vertical sliders.
 #[test]
-fn roughen_and_pucker_bloat_have_sliders() {
+fn roughen_pucker_bloat_and_tweak_have_sliders() {
     use crate::widgets::accessibility_tests::{slider_value, tree};
     let mut app = app();
     app.run("shape.rectangle", json!({"x": 10, "y": 10, "width": 50, "height": 50})).unwrap();
@@ -1440,6 +1440,16 @@ fn roughen_and_pucker_bloat_have_sliders() {
     let shown = tree(|ui| show(&mut app, ui.ctx()));
     let (value, min, max, _) = slider_value(&shown, "Amount:");
     assert_eq!((value, min, max), (Some(-60.0), Some(-200.0), Some(200.0)));
+    // Tweak: Horizontal and Vertical sliders, Relative / Absolute, and the points it moves.
+    app.ui.dialog = None;
+    app.run("effect.dialog", json!({"effect": "distort.tweak"})).unwrap();
+    let text = crate::tests_labels::painted_text(&mut app, |app, ui| show(app, ui.ctx()));
+    let lines: Vec<&str> = text.lines().map(str::trim).collect();
+    for want in ["Horizontal:", "Vertical:", "Relative", "Absolute", "Anchor Points", "\"In\" Control Points", "\"Out\" Control Points"] {
+        assert!(lines.contains(&want), "no {want:?} in {lines:?}");
+    }
+    let shown = tree(|ui| show(&mut app, ui.ctx()));
+    assert_eq!(slider_value(&shown, "Horizontal:"), (Some(10.0), Some(0.0), Some(100.0), Some("10%".into())));
 }
 
 /// Screen readers get the number and text of the field beside each dialog slider, in the field's

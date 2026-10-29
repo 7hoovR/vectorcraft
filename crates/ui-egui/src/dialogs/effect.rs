@@ -168,6 +168,7 @@ fn body(app: &mut VectorcraftApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
         None if id == SCRIBBLE => scribble_fields(ui, d, app.session.general_unit()),
         None if id == ZIG_ZAG || id == ROUGHEN => size_fields(ui, d, &id, app.session.general_unit()),
         None if id == PUCKER_BLOAT => pucker_bloat_fields(ui, d),
+        None if id == TWEAK => tweak_fields(ui, d, app.session.general_unit()),
         None if id == DROP_SHADOW => drop_shadow_fields(ui, d, app.session.general_unit()),
         None if id == "artistic.filmGrain" => film_grain_fields(ui, d),
         None if id == free_distort::FREE_DISTORT => {
@@ -575,36 +576,50 @@ fn second_slider(effect: &str) -> (&'static str, &'static str, f64, &'static str
 /// Zig Zag's and Roughen's dialog (#1133, #4488): Size and Ridges per segment (Roughen: Detail) as
 /// sliders with their fields, Relative or Absolute and the Points as radio buttons. Returns
 /// whether the values differ from those last previewed.
-fn size_fields(ui: &mut egui::Ui, d: &mut Dialog, effect: &str, unit: vectorcraft_doc::Unit) -> bool {
-    const LABEL_W: f32 = 124.0;
-    const FIELD_W: f32 = 70.0;
+/// The label column and field width of [`relative_rows`] and the sliders under them.
+const DISTORT_LABEL_W: f32 = 124.0;
+const DISTORT_FIELD_W: f32 = 70.0;
+
+/// A slider with its field for each of `rows` (key, label, default), each a share of the object's
+/// size with Relative or a distance with Absolute, then the Relative and Absolute radio buttons.
+fn relative_rows(ui: &mut egui::Ui, d: &mut Dialog, rows: &[(&str, &str, f64)], unit: vectorcraft_doc::Unit) {
     let rail = Tokens::get(ui.ctx()).input_border;
     let track = move |_| rail;
     let relative = d.bool("relative");
-    let size = if effect == ROUGHEN { 5.0 } else { 10.0 };
-    widgets::subheader(ui, tl!("Options"));
-    // Size is a share of the object's size (Relative) or a distance (Absolute).
-    widgets::label_row(ui, tl!("Size:"), LABEL_W, |ui| {
-        let shown = if relative {
-            Some(widgets::SliderValue::field(d.f64("size", size).clamp(0.0, 100.0), 0.0..=100.0, "%", 0))
-        } else {
-            form::length_value(d, "size", unit, 0.0..=100.0)
-        };
-        form::slider_rail_valued(ui, d, "size", tl!("Size:"), 0.0..=100.0, shown, &track);
-        if !relative {
-            form::length(ui, d, "size", unit, FIELD_W);
-        } else if let Some(n) = widgets::range_field(ui, ("zz", "size"), d.f64("size", size), 0.0..=100.0, "%", 0, FIELD_W) {
-            d.fields.insert("size".into(), json!(n));
-        }
-    });
+    for &(key, label, default) in rows {
+        widgets::label_row(ui, tl!(label), DISTORT_LABEL_W, |ui| {
+            let shown = if relative {
+                Some(widgets::SliderValue::field(d.f64(key, default).clamp(0.0, 100.0), 0.0..=100.0, "%", 0))
+            } else {
+                form::length_value(d, key, unit, 0.0..=100.0)
+            };
+            form::slider_rail_valued(ui, d, key, tl!(label), 0.0..=100.0, shown, &track);
+            if !relative {
+                form::length(ui, d, key, unit, DISTORT_FIELD_W);
+            } else if let Some(n) = widgets::range_field(ui, ("zz", key), d.f64(key, default), 0.0..=100.0, "%", 0, DISTORT_FIELD_W) {
+                d.fields.insert(key.into(), json!(n));
+            }
+        });
+    }
     ui.horizontal(|ui| {
-        ui.add_space(LABEL_W + ui.spacing().item_spacing.x);
+        ui.add_space(DISTORT_LABEL_W + ui.spacing().item_spacing.x);
         for (label, on) in [(tl!("Relative"), true), (tl!("Absolute"), false)] {
             if widgets::radio(ui, label, relative == on, true) {
                 d.fields.insert("relative".into(), json!(on));
             }
         }
     });
+}
+
+fn size_fields(ui: &mut egui::Ui, d: &mut Dialog, effect: &str, unit: vectorcraft_doc::Unit) -> bool {
+    const LABEL_W: f32 = DISTORT_LABEL_W;
+    const FIELD_W: f32 = DISTORT_FIELD_W;
+    let rail = Tokens::get(ui.ctx()).input_border;
+    let track = move |_| rail;
+    let size = if effect == ROUGHEN { 5.0 } else { 10.0 };
+    widgets::subheader(ui, tl!("Options"));
+    // Size is a share of the object's size (Relative) or a distance (Absolute).
+    relative_rows(ui, d, &[("size", "Size:", size)], unit);
     let (key, label, default, suffix) = second_slider(effect);
     widgets::label_row(ui, tl!(label), LABEL_W, |ui| {
         form::slider_rail_named(ui, d, key, tl!(label), 0.0..=100.0, &track);
@@ -622,6 +637,23 @@ fn size_fields(ui: &mut egui::Ui, d: &mut Dialog, effect: &str, unit: vectorcraf
             }
         }
     });
+    values_changed(d)
+}
+
+/// The Tweak effect (Effect › Distort & Transform › Tweak…).
+const TWEAK: &str = "distort.tweak";
+
+/// Tweak's dialog (#4488): Horizontal and Vertical as sliders with their fields (a share of the
+/// object's size with Relative, a distance with Absolute), then which points it moves. Returns
+/// whether the values differ from those last previewed.
+fn tweak_fields(ui: &mut egui::Ui, d: &mut Dialog, unit: vectorcraft_doc::Unit) -> bool {
+    widgets::subheader(ui, tl!("Amount"));
+    relative_rows(ui, d, &[("h", "Horizontal:", 10.0), ("v", "Vertical:", 10.0)], unit);
+    ui.add_space(4.0);
+    widgets::subheader(ui, tl!("Modify"));
+    form::check(ui, d, "anchors", tl!("Anchor Points"));
+    form::check(ui, d, "in", tl!("\"In\" Control Points"));
+    form::check(ui, d, "out", tl!("\"Out\" Control Points"));
     values_changed(d)
 }
 

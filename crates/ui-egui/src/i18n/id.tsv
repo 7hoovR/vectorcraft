@@ -2163,6 +2163,8 @@ lighting	Light	Cahaya
 	Locate Selected Objects	Temukan objek terpilih
 	Thumbnails:	Miniatur:
 	Anchor Points	Titik jangkar
+	"In" Control Points	Titik kontrol "masuk"
+	"Out" Control Points	Titik kontrol "keluar"
 	Brush Affects:	Kuas memengaruhi:
 	Complexity:	Kompleksitas:
 	Detail:	Detail:

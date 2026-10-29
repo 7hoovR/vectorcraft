@@ -915,6 +915,8 @@ font-technology	Variable	가변
 	Anchor Point	앵커 포인트
 	Anchor Point Tool	앵커 포인트 도구
 	Anchor Points	앵커 포인트
+	"In" Control Points	"들어오는" 제어점
+	"Out" Control Points	"나가는" 제어점
 	Anchor Points, Handle, and Bounding Box Display	앵커 포인트, 핸들, 경계 상자 표시
 	Anchor/Path Labels	앵커/패스 레이블
 	Angle	각도

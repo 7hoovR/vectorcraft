@@ -2285,6 +2285,8 @@ lighting	Light	Światło
 	Locate Selected Objects	Znajdź zaznaczone obiekty
 	Thumbnails:	Miniatury:
 	Anchor Points	Punkty kontrolne
+	"In" Control Points	Punkty sterujące „wejściowe”
+	"Out" Control Points	Punkty sterujące „wyjściowe”
 	Brush Affects:	Pędzel wpływa na:
 	Complexity:	Złożoność:
 	Detail:	Szczegółowość:

@@ -260,6 +260,8 @@
 	Anchor Point	Horgonypont
 	Anchor Point Tool	Horgonypont
 	Anchor Points	Horgonypontok
+	"In" Control Points	„Bemenő” vezérlőpontok
+	"Out" Control Points	„Kimenő” vezérlőpontok
 	Anchor Points, Handle, and Bounding Box Display	Horgonypontok, fogantyúk és befoglaló keret megjelenítése
 	Anchor/Path Labels	Horgonypont- és útvonalcímkék
 	Anchors	Horgonypontok
