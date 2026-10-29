@@ -177,3 +177,6 @@ sync_github_name = false
 
 [people.krosk93]
 sync_github_name = true
+
+[people.ashokram-si]
+real_name = "Ashok Ram"
