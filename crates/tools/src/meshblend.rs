@@ -88,6 +88,11 @@ impl Tool for BlendTool {
             (t.first, t.chained) = (None, false);
             vec![Action::Dialog(BLEND_OPTIONS.into(), json!({}))]
         };
+        // A first pick whose object is no longer in the document (deleted, or undone away) is
+        // dropped, so the click picks the object it hits as the new first pick.
+        if self.first.is_some_and(|(a, _)| cx.doc.node(a).is_none()) {
+            (self.first, self.chained) = (None, false);
+        }
         match ev.kind {
             PointerKind::DoubleClick => options(self),
             PointerKind::Down if ev.mods.alt => options(self),
@@ -339,6 +344,33 @@ mod tests {
         assert_eq!(t.pointer(&c, &down(150.0, 150.0)), picks(a));
         // Other tools keep their state: the default does nothing.
         assert!(create("mesh").unwrap().chosen_again(&c).is_empty());
+    }
+
+    #[test]
+    fn blend_tool_picks_again_when_its_first_pick_is_gone() {
+        let (mut d, a) = doc_with_rect();
+        let l = d.layers[0].id;
+        let (b, e) = (d.alloc_id(), d.alloc_id());
+        for (id, y) in [(b, 100.0), (e, 300.0)] {
+            let r = vectorcraft_geom::shapes::rectangle(vectorcraft_geom::Rect::new(300.0, y, 350.0, y + 50.0));
+            d.insert(Some(l), 1, vectorcraft_doc::Node::path(id, r, vectorcraft_doc::Appearance::default_art())).unwrap();
+        }
+        let (s, p) = (Selection::default(), paint());
+        let mut t = BlendTool::default();
+        t.pointer(&cx(&d, &s, &p), &PointerEvent::new(PointerKind::Down, 150.0, 150.0));
+        // The first pick is deleted (or undone away) while the tool waits for the second click.
+        d.remove(a).unwrap();
+        let c = cx(&d, &s, &p);
+        let acts = t.pointer(&c, &PointerEvent::new(PointerKind::Down, 320.0, 120.0));
+        assert_eq!(acts, vec![Action::Exec("select.set".into(), json!({"ids": [b.0]}))], "the click picks b first");
+        let acts = t.pointer(&c, &PointerEvent::new(PointerKind::Down, 320.0, 320.0));
+        assert_eq!(acts, vec![Action::Exec("object.blend.make".into(), json!({"ids": [b.0, e.0]}))]);
+        // After a blend is made, a click while the selected blend is gone picks the object it hits.
+        let mut s = Selection::default();
+        s.set([NodeId(9999)]);
+        let mut t = BlendTool { first: None, chained: true };
+        let acts = t.pointer(&cx(&d, &s, &p), &PointerEvent::new(PointerKind::Down, 320.0, 120.0));
+        assert_eq!(acts, vec![Action::Exec("select.set".into(), json!({"ids": [b.0]}))]);
     }
 
     #[test]
