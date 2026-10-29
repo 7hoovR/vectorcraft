@@ -1218,6 +1218,7 @@ fn cmyk_mesh_highlight_lightens_in_cmyk() {
         assert!(m.points.iter().all(|p| matches!(p.color, Color::Cmyk { .. })), "{app}");
         let (fills, warnings) = pdf_fill_colours(&mut s);
         assert!(warnings.is_empty(), "{app}: no RGB to separate {warnings:?}");
+        assert!(!fills.is_empty(), "{app}: no PDF fills");
         for f in &fills {
             let [c, m, y, k] = f[..] else { panic!("{app}: not CMYK {f:?}") };
             // Every ink in proportion to C0 M40 Y60 K10, lightened by at most half.
