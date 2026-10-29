@@ -2183,7 +2183,8 @@ whatever the options are then.
 ```
 
 The Eyedropper: `appearance.copyFrom {source}` copies what the Eyedropper Options pick up and apply from `source` to the
-selection (`ids`); `reverse: true` copies the selection's attributes onto `source` (Alt-click) and `append: true` adds
+selection (`ids`); `reverse: true` copies the selection's attributes onto `source` (Alt-click), or with nothing selected
+what the last copy without `reverse` picked up (a copy made then, kept for the session), and `append: true` adds
 the source's fills and strokes on top of each target's stack (Shift+Alt-click). The options live in the preferences:
 `eyedropper.setOptions {sampleSize?, pickUp?, apply?}` (or `prefs.get`/`prefs.set` with key `eyedropper`) reads and
 sets them; a tree names flags under `appearance` (`transparency`, `fill` `{color, transparency, overprint}`, `stroke`
