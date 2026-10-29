@@ -465,6 +465,73 @@ fn blob_brush_merges_only_with_the_selection_and_keep_selected_off_deselects() {
     assert!(s.doc().unwrap().doc.node(all).is_some() && s.doc().unwrap().doc.node(other).is_some());
 }
 
+/// A Blob Brush stroke merges with the topmost matching path it touches and with the touched
+/// matching paths next to it in stacking order in the same group or layer; matching paths in other
+/// layers or groups, or below an object of another kind, are left alone.
+#[test]
+fn blob_brush_merges_with_the_topmost_match_and_its_neighbors() {
+    let blob = |s: &mut Session, x: f64| {
+        NodeId(s.execute("path.blob", &json!({"points": [[x, 60], [x, 140]], "size": 20})).unwrap()["id"].as_u64().unwrap())
+    };
+    let across = json!({"points": [[50, 100], [450, 100]], "size": 10});
+    let parent = |s: &Session, id: NodeId| s.doc().unwrap().doc.parent_of(id);
+
+    // Two layers: only the path on the upper layer merges.
+    let mut s = session();
+    let low = blob(&mut s, 100.0);
+    let upper = NodeId(s.execute("layer.new", &json!({})).unwrap()["id"].as_u64().unwrap());
+    let high = blob(&mut s, 200.0);
+    let area_low = area(&path(&s, low));
+    let id = NodeId(s.execute("path.blob", &across).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(id, high);
+    assert_eq!(parent(&s, high), Some(upper));
+    assert_eq!(paths(&s).len(), 2);
+    assert_eq!(area(&path(&s, low)), area_low, "the path on the lower layer is left as it was");
+
+    // A path of another color between two matches: only the upper one merges.
+    let mut s = session();
+    let below = blob(&mut s, 100.0);
+    s.execute("paint.setStroke", &json!({"color": "#ff0000"})).unwrap();
+    let red = NodeId(s.execute("path.blob", &json!({"points": [[100, 400], [200, 400]], "size": 10})).unwrap()["id"].as_u64().unwrap());
+    s.execute("paint.setStroke", &json!({"color": "#000000"})).unwrap();
+    let above = blob(&mut s, 200.0);
+    let (area_below, area_red) = (area(&path(&s, below)), area(&path(&s, red)));
+    let id = NodeId(s.execute("path.blob", &across).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(id, above);
+    assert_eq!(paths(&s).len(), 3);
+    assert_eq!(area(&path(&s, below)), area_below, "the path below the red one is left as it was");
+    assert_eq!(area(&path(&s, red)), area_red);
+
+    // A matching path the stroke does not touch, between two it touches: both touched ones merge,
+    // and the untouched one is left as it was.
+    let mut s = session();
+    let lower = blob(&mut s, 100.0);
+    let untouched = NodeId(s.execute("path.blob", &json!({"points": [[200, 300], [200, 380]], "size": 20})).unwrap()["id"].as_u64().unwrap());
+    let upper = blob(&mut s, 300.0);
+    let area_untouched = area(&path(&s, untouched));
+    let id = NodeId(s.execute("path.blob", &across).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(id, upper);
+    assert!(s.doc().unwrap().doc.node(lower).is_none(), "the lower path joined the upper one");
+    assert_eq!(area(&path(&s, untouched)), area_untouched);
+    assert_eq!(paths(&s).len(), 2);
+
+    // Two adjacent matches in a group both merge; a match outside the group is left alone.
+    let mut s = session();
+    let outside = blob(&mut s, 100.0);
+    let a = blob(&mut s, 200.0);
+    let b = blob(&mut s, 300.0);
+    s.execute("select.set", &json!({"ids": [a.0, b.0]})).unwrap();
+    let g = NodeId(s.execute("object.group", &json!({})).unwrap()["id"].as_u64().unwrap());
+    s.execute("select.none", &json!({})).unwrap();
+    let area_outside = area(&path(&s, outside));
+    let id = NodeId(s.execute("path.blob", &across).unwrap()["id"].as_u64().unwrap());
+    assert_eq!(id, b, "the topmost match keeps its id");
+    assert!(s.doc().unwrap().doc.node(a).is_none(), "a joined b");
+    assert_eq!(parent(&s, b), Some(g));
+    assert_eq!(paths(&s).len(), 2);
+    assert_eq!(area(&path(&s, outside)), area_outside, "the path outside the group is left as it was");
+}
+
 /// Three points already curve in the saved path: both ends carry a handle into the curve.
 #[test]
 fn path_curvature_with_three_points_saves_end_handles() {

@@ -128,7 +128,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Blob Brush",
             [],
             None,
-            "{points: [[x,y]…], size?: pt (10), merge?: true, mergeOnlySelection?: bool (false: merge with any touching same-color blob; true: only with selected ones), keepSelected?: bool (false: the drawn or merged path is not selected, and the rest of the selection stays; true: it is selected)} filled brush shape, merged with touching same-colour blobs → {id}",
+            "{points: [[x,y]…], size?: pt (10), merge?: true, mergeOnlySelection?: bool (false: merge with any touching same-color blob; true: only with selected ones), keepSelected?: bool (false: the drawn or merged path is not selected, and the rest of the selection stays; true: it is selected)} filled brush shape, merged with the topmost touching same-color blob and the touching ones next to it in stacking order in its group or layer → {id}",
             has_doc,
             blob
         ),
