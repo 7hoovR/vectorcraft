@@ -190,6 +190,8 @@ pub fn enabled(app: &VectorcraftApp, id: &str) -> bool {
         "file.cancelExport" | "file.exportInBackground" => app.background.jobs.iter().any(|j| j.progress.is_some() && !j.cancelled()),
         "plugin.cancelRuns" => crate::plugin_runs::any_running(app),
         "plugin.hideRuns" => crate::plugin_runs::any_shown(app),
+        "imageTrace.cancelRuns" => crate::trace_runs::any_running(app),
+        "imageTrace.hideRuns" => crate::trace_runs::any_shown(app),
         "file.place"
         | "file.export.svg"
         | "file.export.png"

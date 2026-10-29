@@ -827,6 +827,8 @@ fn run_ui_part13(app: &mut VectorcraftApp, id: &str, p: &Value) -> Option<Result
         "ui.installPlugin" => io::install_plugin(app, p),
         "plugin.cancelRuns" => Ok(crate::plugin_runs::cancel_all(app)),
         "plugin.hideRuns" => Ok(crate::plugin_runs::hide_all(app)),
+        "imageTrace.cancelRuns" => Ok(crate::trace_runs::cancel_all(app)),
+        "imageTrace.hideRuns" => Ok(crate::trace_runs::hide_all(app)),
         "ui.checkScript" => crate::dialogs::script_check::command(app, p),
         "ui.perspectiveGridDialog" => crate::dialogs::perspective_grid::open(app),
         "ui.perspectivePresetsDialog" => {
