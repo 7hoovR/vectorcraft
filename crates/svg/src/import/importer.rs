@@ -3,9 +3,10 @@ use super::layers::filter_names;
 use super::prepass::link;
 use super::{
     Affine, Appearance, AppearanceItem, Arc, BlendMode, Color, Dash, FillLayer, FillRule, Gradient, GradientGeom, GradientKind, GradientPaint,
-    GradientStop, ImageBlob, ImageObject, Importer, LineCap, LineJoin, Node, NodeKind, Paint, PathData, PatternDef, Point, Rect, Reuse, StrokeLayer,
-    Vec2, fnv1a, fx, shapes, spread, text, vector_effect,
+    GradientStop, ImageBlob, ImageObject, Importer, LineCap, LineJoin, Node, NodeId, NodeKind, Paint, PathData, PatternDef, Point, Rect, Reuse,
+    StrokeLayer, Vec2, fnv1a, fx, shapes, spread, text, vector_effect,
 };
+use crate::SvgError;
 
 /// How many clip paths deep (`<clipPath clip-path>`) an object's clip is read.
 const MAX_CLIP_NEST: usize = 16;
