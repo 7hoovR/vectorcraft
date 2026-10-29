@@ -3979,6 +3979,7 @@ axis	Both	И двете
 @msg	missing `id` (see plugin.list)	липсва `id` (вижте plugin.list)
 @msg	missing `name`	липсва `name`
 @msg	missing `tool`	липсва `tool`
+@msg	missing id	липсва id
 @msg	missing index	липсва индекс
 @msg	missing number `{key}`	липсва число `{key}`
 @msg	missing integer `{key}`	липсва цяло число `{key}`
@@ -4213,6 +4214,9 @@ axis	Both	И двете
 @msg	the layer or group is locked	слойът или групата са заключени
 @msg	the guide is on a hidden or locked layer	водачът е в скрит или заключен слой
 @msg	the target layer is locked or hidden	целевият слой е заключен или скрит
+@msg	the object is hidden or locked	обектът е скрит или заключен
+@msg	the object is outside the isolated group	обектът е извън изолираната група
+@msg	type objects can't be isolated	текстовите обекти не могат да бъдат изолирани
 @msg	the layer to flatten into is hidden	слоят, в който се сплесква, е скрит
 @msg	the object already has an opacity mask	обектите вече имат маска за непрозрачност
 @msg	the object has no geometry	обектът няма геометрия

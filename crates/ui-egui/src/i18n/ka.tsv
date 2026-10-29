@@ -3857,6 +3857,7 @@ font-technology	Variable	ცვლადი
 @msg	missing `id` (see plugin.list)	აკლია `id` (იხ. plugin.list)
 @msg	missing `name`	აკლია `name`
 @msg	missing `tool`	აკლია `tool`
+@msg	missing id	აკლია id
 @msg	missing index	ინდექსი აკლია
 @msg	New Window isn't available yet: a document opens in one window	ახალი ფანჯარა ჯერ მიუწვდომელია: დოკუმენტი ერთ ფანჯარაში იხსნება
 @msg	name the file	მიუთითეთ ფაილის სახელი
@@ -4078,6 +4079,9 @@ font-technology	Variable	ცვლადი
 @msg	the layer or group is locked	შრე ან ჯგუფი ჩაკეტილია
 @msg	the guide is on a hidden or locked layer	დამხმარე ხაზი დამალულ ან ჩაკეტილ შრეზეა
 @msg	the target layer is locked or hidden	სამიზნე შრე ჩაკეტილი ან დამალულია
+@msg	the object is hidden or locked	ობიექტი დამალული ან ჩაკეტილია
+@msg	the object is outside the isolated group	ობიექტი იზოლირებული ჯგუფის გარეთაა
+@msg	type objects can't be isolated	ტექსტური ობიექტების იზოლირება შეუძლებელია
 @msg	the layer to flatten into is hidden	შრე, რომელშიც უნდა გაბრტყელდეს, დამალულია
 @msg	the object already has an opacity mask	ობიექტს უკვე აქვს გაუმჭვირვალობის ნიღაბი
 @msg	the object has no geometry	ობიექტს გეომეტრია არ აქვს

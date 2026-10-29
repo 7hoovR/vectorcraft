@@ -4116,6 +4116,7 @@ axis	Both	Entrambi
 @msg	missing `id` (see plugin.list)	manca `id` (vedi plugin.list)
 @msg	missing `name`	manca `name`
 @msg	missing `tool`	manca `tool`
+@msg	missing id	manca id
 @msg	missing index	manca index
 @msg	missing number `{key}`	manca il numero `{key}`
 @msg	missing integer `{key}`	manca il numero intero `{key}`
@@ -4357,6 +4358,9 @@ axis	Both	Entrambi
 @msg	the layer or group is locked	il livello o il gruppo è bloccato
 @msg	the guide is on a hidden or locked layer	la guida si trova su un livello nascosto o bloccato
 @msg	the target layer is locked or hidden	il livello di destinazione è bloccato o nascosto
+@msg	the object is hidden or locked	l'oggetto è nascosto o bloccato
+@msg	the object is outside the isolated group	l'oggetto è fuori dal gruppo isolato
+@msg	type objects can't be isolated	gli oggetti di testo non possono essere isolati
 @msg	the layer to flatten into is hidden	il livello in cui appiattire è nascosto
 @msg	the object already has an opacity mask	l'oggetto ha già una maschera di opacità
 @msg	the object has no geometry	l'oggetto non ha geometria

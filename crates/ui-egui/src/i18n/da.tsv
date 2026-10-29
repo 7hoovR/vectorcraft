@@ -4091,6 +4091,7 @@ imageTrace	Outline	Kontur
 @msg	missing `id` (see plugin.list)	`id` mangler (se plugin.list)
 @msg	missing `name`	`name` mangler
 @msg	missing `tool`	`tool` mangler
+@msg	missing id	id mangler
 @msg	missing index	indeks mangler
 @msg	missing number `{key}`	tallet `{key}` mangler
 @msg	missing integer `{key}`	heltallet `{key}` mangler
@@ -4314,6 +4315,9 @@ imageTrace	Outline	Kontur
 @msg	the layer or group is locked	laget eller gruppen er låst
 @msg	the guide is on a hidden or locked layer	hjælpelinjen ligger på et skjult eller låst lag
 @msg	the target layer is locked or hidden	mållaget er låst eller skjult
+@msg	the object is hidden or locked	objektet er skjult eller låst
+@msg	the object is outside the isolated group	objektet er uden for den isolerede gruppe
+@msg	type objects can't be isolated	tekstobjekter kan ikke isoleres
 @msg	the layer to flatten into is hidden	laget, der skal flades ud i, er skjult
 @msg	the object already has an opacity mask	objektet har allerede en opacitetsmaske
 @msg	the object has no geometry	objektet har ingen geometri

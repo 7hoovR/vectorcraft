@@ -4073,6 +4073,7 @@ axis	Both	Les deux
 @msg	missing `id` (see plugin.list)	`id` manquant (voir plugin.list)
 @msg	missing `name`	`name` manquant
 @msg	missing `tool`	`tool` manquant
+@msg	missing id	id manquant
 @msg	missing index	index manquant
 @msg	missing number `{key}`	nombre `{key}` manquant
 @msg	missing integer `{key}`	nombre entier `{key}` manquant
@@ -4314,6 +4315,9 @@ axis	Both	Les deux
 @msg	the layer or group is locked	le calque ou le groupe est verrouillé
 @msg	the guide is on a hidden or locked layer	le repère se trouve sur un calque masqué ou verrouillé
 @msg	the target layer is locked or hidden	le calque cible est verrouillé ou masqué
+@msg	the object is hidden or locked	l’objet est masqué ou verrouillé
+@msg	the object is outside the isolated group	l’objet est en dehors du groupe isolé
+@msg	type objects can't be isolated	les objets texte ne peuvent pas être isolés
 @msg	the layer to flatten into is hidden	le calque de destination de l’aplatissement est masqué
 @msg	the object already has an opacity mask	l’objet a déjà un masque d’opacité
 @msg	the object has no geometry	l’objet n’a pas de géométrie

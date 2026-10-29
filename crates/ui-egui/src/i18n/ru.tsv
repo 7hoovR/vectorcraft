@@ -4112,6 +4112,7 @@ axis	Both	Оба
 @msg	missing `id` (see plugin.list)	отсутствует `id` (см. plugin.list)
 @msg	missing `name`	отсутствует `name`
 @msg	missing `tool`	отсутствует `tool`
+@msg	missing id	отсутствует id
 @msg	missing index	отсутствует index
 @msg	missing number `{key}`	отсутствует число `{key}`
 @msg	missing integer `{key}`	отсутствует целое число `{key}`
@@ -4353,6 +4354,9 @@ axis	Both	Оба
 @msg	the layer or group is locked	слой или группа заблокированы
 @msg	the guide is on a hidden or locked layer	направляющая находится на скрытом или заблокированном слое
 @msg	the target layer is locked or hidden	целевой слой заблокирован или скрыт
+@msg	the object is hidden or locked	объект скрыт или заблокирован
+@msg	the object is outside the isolated group	объект находится вне изолированной группы
+@msg	type objects can't be isolated	текстовые объекты нельзя изолировать
 @msg	the layer to flatten into is hidden	слой для объединения скрыт
 @msg	the object already has an opacity mask	у объекта уже есть непрозрачная маска
 @msg	the object has no geometry	у объекта нет геометрии

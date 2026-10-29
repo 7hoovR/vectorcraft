@@ -3816,6 +3816,9 @@ imageTrace	Outline	轮廓
 @msg	the layer or group is locked	该图层或编组已锁定
 @msg	the guide is on a hidden or locked layer	该参考线位于隐藏或锁定的图层上
 @msg	the target layer is locked or hidden	目标图层已锁定或隐藏
+@msg	the object is hidden or locked	该对象已隐藏或锁定
+@msg	the object is outside the isolated group	该对象在隔离的编组之外
+@msg	type objects can't be isolated	无法隔离文字对象
 @msg	the layer to flatten into is hidden	要拼合到的图层已隐藏
 @msg	there are no objects to release	没有可释放的对象
 @msg	no library `{id}`	没有库 `{id}`
@@ -4208,6 +4211,7 @@ imageTrace	Outline	轮廓
 @msg	lang must be one of {_1}	lang 必须是 {_1} 之一
 @msg	missing `name`	缺少 `name`
 @msg	missing `tool`	缺少 `tool`
+@msg	missing id	缺少 id
 @msg	missing index	缺少 index
 @msg	New Window isn't available yet: a document opens in one window	新建窗口尚不可用：文档在一个窗口中打开
 @msg	no PNG encoder	没有 PNG 编码器

@@ -3991,6 +3991,7 @@ axis	Both	Båda
 @msg	missing `id` (see plugin.list)	`id` saknas (se plugin.list)
 @msg	missing `name`	`name` saknas
 @msg	missing `tool`	`tool` saknas
+@msg	missing id	id saknas
 @msg	missing index	index saknas
 @msg	missing number `{key}`	talet `{key}` saknas
 @msg	missing integer `{key}`	heltalet `{key}` saknas
@@ -4226,6 +4227,9 @@ axis	Both	Båda
 @msg	the layer or group is locked	lagret eller gruppen är låst
 @msg	the guide is on a hidden or locked layer	stödlinjen ligger på ett dolt eller låst lager
 @msg	the target layer is locked or hidden	mållagret är låst eller dolt
+@msg	the object is hidden or locked	objektet är dolt eller låst
+@msg	the object is outside the isolated group	objektet ligger utanför den isolerade gruppen
+@msg	type objects can't be isolated	textobjekt kan inte isoleras
 @msg	the layer to flatten into is hidden	lagret som ska plattas till i är dolt
 @msg	the object already has an opacity mask	objektet har redan en opacitetsmask
 @msg	the object has no geometry	objektet saknar geometri
