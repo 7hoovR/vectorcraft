@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use vectorcraft_geom::{Point, Rect};
 
-use crate::{Document, MAX_COORD, Node, NodeKind};
+use crate::{Document, MAX_COORD, Node, NodeId, NodeKind};
 
 /// What [`Document::drop_beyond_canvas`] removed.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -87,11 +87,24 @@ fn clips_beyond(n: &Node) -> bool {
     clipping(n) == Some(true) && n.children().and_then(|c| c.first()).is_some_and(|c| reaches_beyond(c))
 }
 
+/// Add the ids of `n` and the layers in it, if it is a layer, to `layers`: their layer guides go
+/// with them.
+fn layers_in(n: &Node, layers: &mut Vec<NodeId>) {
+    if matches!(n.kind, NodeKind::Layer { .. }) {
+        layers.push(n.id);
+    }
+    if clipping(n).is_some() {
+        for c in n.children().into_iter().flatten() {
+            layers_in(c, layers);
+        }
+    }
+}
+
 /// Remove the objects in `node` that reach beyond the canvas: a layer or group keeps those of its
 /// objects within it, unless its clipping path reaches beyond (see [`clips_beyond`]); anything
 /// else goes whole. Only containers holding such an object are copied. Recursion follows the
-/// nesting, which [`Document::limit_depth`] bounds.
-fn drop_children_beyond(node: &mut Arc<Node>, dropped: &mut usize) {
+/// nesting, which [`Document::limit_depth`] bounds. The layers removed are added to `layers`.
+fn drop_children_beyond(node: &mut Arc<Node>, dropped: &mut usize, layers: &mut Vec<NodeId>) {
     if !node.children().is_some_and(|c| c.iter().any(|c| reaches_beyond(c))) {
         return;
     }
@@ -101,9 +114,10 @@ fn drop_children_beyond(node: &mut Arc<Node>, dropped: &mut usize) {
             return true;
         }
         if clipping(c).is_some() && !clips_beyond(c) {
-            drop_children_beyond(c, dropped);
+            drop_children_beyond(c, dropped, layers);
             return true;
         }
+        layers_in(c, layers);
         *dropped += 1;
         false
     });
@@ -113,22 +127,32 @@ impl Document {
     /// Remove what a read file has beyond the canvas ([`MAX_COORD`], or not finite): objects
     /// (see [`BeyondCanvas::objects`]; a top-level layer clipping by a path beyond it is emptied
     /// and stops clipping), artboards with their ruler origins and artboard guides (their ids
-    /// are retired, as deleting them does), and guides, and put a ruler origin beyond it back at
-    /// the origin. Run after [`Document::limit_depth`]. A document whose artboards were all
-    /// removed has none left.
+    /// are retired, as deleting them does), guides with the layer guides of the layers removed,
+    /// and put a ruler origin beyond it back at the origin. Saved selections, assets and variable
+    /// bindings then forget the objects removed. Run after [`Document::limit_depth`]. A document
+    /// whose artboards were all removed has none left.
     pub fn drop_beyond_canvas(&mut self) -> BeyondCanvas {
         let mut gone = BeyondCanvas::default();
+        let mut layers = vec![];
         for layer in &mut self.layers {
             if clips_beyond(layer) {
                 let layer = Arc::make_mut(layer);
                 if let NodeKind::Layer { children, clip, .. } = &mut layer.kind {
+                    for c in children.iter() {
+                        layers_in(c, &mut layers);
+                    }
                     gone.objects += children.len();
                     children.clear();
                     *clip = false;
                 }
             } else {
-                drop_children_beyond(layer, &mut gone.objects);
+                drop_children_beyond(layer, &mut gone.objects, &mut layers);
             }
+        }
+        if gone.objects > 0 {
+            self.tidy_saved_selections();
+            self.prune_assets();
+            self.prune_variable_bindings();
         }
         let removed: Vec<u32> = self.artboards.iter().filter(|a| !rect_in_range(a.rect)).map(|a| a.id).collect();
         self.artboards.retain(|a| rect_in_range(a.rect));
@@ -138,7 +162,7 @@ impl Document {
         }
         gone.artboards = removed.len();
         let guides = self.guides.len();
-        self.guides.retain(|g| in_range(g.pos) && g.artboard.is_none_or(|a| !removed.contains(&a)));
+        self.guides.retain(|g| in_range(g.pos) && g.artboard.is_none_or(|a| !removed.contains(&a)) && g.layer.is_none_or(|l| !layers.contains(&l)));
         gone.guides = guides - self.guides.len();
         if !(in_range(self.ruler_origin.x) && in_range(self.ruler_origin.y)) {
             self.ruler_origin = Point::ZERO;
@@ -151,7 +175,7 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Appearance, Artboard, Guide, NodeId};
+    use crate::{Appearance, Artboard, Guide};
     use vectorcraft_geom::shapes;
 
     fn rect(id: u64, y: f64) -> Arc<Node> {
@@ -279,5 +303,26 @@ mod tests {
         assert_eq!(d.drop_beyond_canvas().artboards, 1);
         assert_eq!(d.artboard_ruler_origins.keys().copied().collect::<Vec<_>>(), [kept]);
         assert!(d.next_artboard_id() > 9, "a new artboard doesn't take the removed one's id");
+    }
+
+    #[test]
+    fn what_names_a_removed_object_forgets_it() {
+        let probe = Document::new(1.0, 1.0);
+        let sub = sublayer(&probe, 40, vec![rect(41, 1e17), rect(42, 0.0)], true);
+        let mut d = doc(vec![rect(10, 0.0), rect(11, 1e17), sub]);
+        d.guides = vec![Guide { layer: Some(NodeId(40)), ..Guide::new(false, 5.0) }, Guide { layer: Some(d.layers[0].id), ..Guide::new(true, 5.0) }];
+        d.saved_selections = vec![crate::records::SavedSelection { name: "s".into(), objects: vec![NodeId(10), NodeId(11)] }].into();
+        d.assets = vec![
+            crate::assets::ExportAsset { id: 1, name: "far".into(), nodes: vec![NodeId(11)] },
+            crate::assets::ExportAsset { id: 2, name: "both".into(), nodes: vec![NodeId(10), NodeId(11)] },
+        ];
+        d.variables.bindings.insert(NodeId(11), ["v".to_string()].into());
+        d.variables.bindings.insert(NodeId(10), ["w".to_string()].into());
+        let gone = d.drop_beyond_canvas();
+        assert_eq!((gone.objects, gone.guides), (2, 1), "the far rectangle, the clipping sublayer and its layer guide");
+        assert_eq!(d.guides.len(), 1, "the guide of a layer that stays, stays");
+        assert_eq!(d.saved_selections[0].objects, [NodeId(10)]);
+        assert_eq!(d.assets.iter().map(|a| (a.id, a.nodes.clone())).collect::<Vec<_>>(), [(2, vec![NodeId(10)])]);
+        assert_eq!(d.variables.bindings.keys().copied().collect::<Vec<_>>(), [NodeId(10)]);
     }
 }
