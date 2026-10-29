@@ -36,6 +36,24 @@ impl Kind {
     }
 }
 
+/// A row dragged in the list: the style's kind and name. Dropped on Create New Style it is
+/// duplicated (`charStyle.duplicate`, `paraStyle.duplicate`); dropped on Delete it is deleted
+/// (`charStyle.delete`, `paraStyle.delete`) unless it is Normal. Each panel's buttons accept only rows of
+/// their own kind.
+#[derive(Clone)]
+struct RowDrag {
+    kind: Kind,
+    name: String,
+}
+
+/// The style row of `kind` released on `button` this frame, if any; `button` is outlined while one
+/// is held over it. `take`: whether a row with that name may be dropped there.
+fn row_dropped(ui: &Ui, button: &egui::Response, kind: Kind, take: impl Fn(&str) -> bool) -> Option<String> {
+    let held = button.dnd_hover_payload::<RowDrag>().filter(|d| d.kind == kind && take(&d.name))?;
+    ui.painter().rect_stroke(button.rect, 3.0, egui::Stroke::new(1.5, Tokens::get(ui.ctx()).accent), egui::StrokeKind::Inside);
+    button.dnd_release_payload::<RowDrag>().map(|_| held.name.clone())
+}
+
 /// (name, attrs, uses) for every style, Normal first.
 fn styles(app: &mut VectorcraftApp, kind: Kind) -> Vec<(String, Map<String, Value>, u64)> {
     let v = app.session.execute(&format!("{}.list", kind.prefix()), &json!({})).unwrap_or_default();
@@ -91,7 +109,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
             let is_cur = cur_name.as_deref() == Some(name.as_str());
             // Overrides: an attribute the style sets that the selection doesn't match.
             let overridden = is_cur && cur.as_ref().is_some_and(|(_, m)| attrs.iter().any(|(k, v)| m.get(k) != Some(v)));
-            let (r, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::click());
+            let (r, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::click_and_drag());
+            if resp.drag_started() {
+                egui::DragAndDrop::set_payload(ui.ctx(), RowDrag { kind, name: name.clone() });
+            }
             if is_cur || sel.as_deref() == Some(name.as_str()) {
                 ui.painter().rect_filled(r, 0.0, if is_cur { t.row_selected } else { t.hover });
             } else if resp.hovered() {
@@ -119,30 +140,37 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui, kind: Kind) {
     let deletable = sel.as_ref().is_some_and(|s| *s != normal);
     widgets::bottom_bar(ui, |ui| {
         ui.add_space((ui.available_width() - 2.0 * 28.0).max(0.0));
-        if widgets::icon_button_enabled(
+        let new = widgets::icon_button_enabled(
             ui,
             "dc-new-item",
             &crate::i18n::fmt(tl!("Create New {kind} Style"), &[("kind", kind.what_label())]),
             false,
             true,
             24.0,
-        )
-        .clicked()
-        {
+        );
+        if let Some(name) = row_dropped(ui, &new, kind, |_| true) {
+            if let Ok(r) = app.run(&format!("{}.duplicate", kind.prefix()), json!({ "name": name })) {
+                set_pstate(ui.ctx(), kind.key(), r["name"].as_str().map(str::to_string));
+            }
+        } else if new.clicked() {
             end_typing(app);
             if let Ok(r) = app.run(&format!("{}.new", kind.prefix()), target(app, kind, json!({}))) {
                 set_pstate(ui.ctx(), kind.key(), r["name"].as_str().map(str::to_string));
             }
         }
-        if widgets::icon_button_enabled(
+        let delete = widgets::icon_button_enabled(
             ui,
             "trash-2",
             &crate::i18n::fmt(tl!("Delete {kind} Style"), &[("kind", kind.what_label())]),
             false,
             deletable,
             24.0,
-        )
-        .clicked()
+        );
+        if let Some(name) = row_dropped(ui, &delete, kind, |n| n != normal) {
+            if app.run(&format!("{}.delete", kind.prefix()), json!({ "name": name })).is_ok() && sel.as_ref() == Some(&name) {
+                set_pstate::<Option<String>>(ui.ctx(), kind.key(), None);
+            }
+        } else if delete.clicked()
             && let Some(n) = &sel
             && app.run(&format!("{}.delete", kind.prefix()), json!({ "name": n })).is_ok()
         {
