@@ -1377,3 +1377,20 @@ fn soft_return_in_list_does_not_repeat_marker() {
     assert!(l0_glyphs.iter().any(|g| g.len == 0), "line 0 has bullet marker");
     assert!(!l1_glyphs.iter().any(|g| g.len == 0), "continuation line does not have bullet marker");
 }
+
+#[test]
+fn trailing_soft_return_creates_empty_continuation_line() {
+    let t = TextObject::point(Point::ZERO, "Line 1\u{2028}", style(12.0));
+    let lay = layout(db(), &t);
+    assert_eq!(lay.lines.len(), 2, "trailing soft return produces a second empty line");
+    assert_eq!(lay.line_of(t.plain_text().len()), 1, "caret at end sits on the new line");
+}
+
+#[test]
+fn soft_return_breaks_line_even_inside_no_break() {
+    let mut st = style(12.0);
+    st.no_break = true;
+    let t = area("First\u{2028}Second", st, Rect::new(0.0, 0.0, 300.0, 200.0), Justify::Left);
+    let lay = layout(db(), &t);
+    assert_eq!(lay.lines.len(), 2, "soft return honors line break despite no_break");
+}

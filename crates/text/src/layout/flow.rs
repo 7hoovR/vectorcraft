@@ -390,6 +390,7 @@ fn run_paragraph_lines(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, t: &TextObject, mut 
     let mut hyphen_run = 0;
     let mut line_in_paragraph = 0;
     let mut index = 0;
+    let mut emitted_empty_continuation = false;
     loop {
         let mut placement = PlacementContext {
             para: paragraph.para,
@@ -415,7 +416,13 @@ fn run_paragraph_lines(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, t: &TextObject, mut 
         line_in_paragraph += 1;
         index = geometry.position.end;
         if index >= n {
-            break;
+            if emitted_empty_continuation {
+                break;
+            }
+            emitted_empty_continuation = paragraph.sg.last().is_some_and(|g| g.ch == '\u{2028}');
+            if !emitted_empty_continuation {
+                break;
+            }
         }
     }
     pen.pending += paragraph.para.space_after;
@@ -794,7 +801,7 @@ fn emit_flow_line(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, paragraph: &ParagraphData
         } else {
             position.m.first_baseline(pen.fb, pen.fb_min)
         },
-        start: if index < sg.len() { sg[index].byte } else { paragraph.pr.start },
+        start: if index < sg.len() { sg[index].byte } else { paragraph.pr.end },
         end: if position.end >= sg.len() { paragraph.pr.end } else { sg[position.end].byte },
         glyph_start,
         glyph_end: cx.out.glyphs.len(),
@@ -802,8 +809,13 @@ fn emit_flow_line(cx: &mut Ctx<'_>, pen: &mut Pen<'_>, paragraph: &ParagraphData
         region: if paragraph.regions.is_some() { pen.ri } else { 0 },
     });
     pen.settled(position.baseline, position.m);
-    // Further spans of this line band share the settled baseline.
-    for queued in &mut pen.queued {
-        queued.0 = position.baseline;
+    let forced_break = position.end > index && sg.get(position.end - 1).is_some_and(|g| g.ch == '\u{2028}');
+    if forced_break {
+        pen.queued.clear();
+    } else {
+        // Further spans of this line band share the settled baseline.
+        for queued in &mut pen.queued {
+            queued.0 = position.baseline;
+        }
     }
 }

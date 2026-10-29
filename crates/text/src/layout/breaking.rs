@@ -169,7 +169,7 @@ impl Pen<'_> {
 pub(super) fn tab_advance<'t>(tabs: &'t [vectorcraft_doc::TabStop], origin: f64, x: f64, rest: &[SGlyph]) -> (f64, &'t str) {
     use vectorcraft_doc::TabAlign;
     let rel = x - origin;
-    let seg: Vec<&SGlyph> = rest.iter().take_while(|g| g.ch != '\t').collect();
+    let seg: Vec<&SGlyph> = rest.iter().take_while(|g| g.ch != '\t' && g.ch != '\u{2028}').collect();
     let width: f64 = seg.iter().map(|g| g.adv).sum();
     let target = |pos: f64, align: TabAlign, on: char| match align {
         TabAlign::Left => pos,
@@ -300,9 +300,9 @@ pub(super) fn break_line(
             cluster_end += 1;
         }
         // No Break: the marked characters stay on one line, including across a space inside the run.
-        if gl.no_break {
+        if gl.no_break && gl.ch != '\u{2028}' {
             while let Some(n) = g.get(cluster_end) {
-                if !n.no_break {
+                if !n.no_break || n.ch == '\u{2028}' {
                     break;
                 }
                 let b = n.byte;
