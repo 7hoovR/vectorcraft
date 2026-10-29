@@ -313,24 +313,26 @@ fn the_blob_brush_options_set_what_a_stroke_merges_with_and_selects() {
 
 /// Eraser Tool Options' Angle and Roundness shape the tip the next Eraser drag erases with,
 /// and the tool keeps them while another tool is chosen.
-/// The Blob Brush's Size is Fixed or Pressure (#4590), with the Variation Pressure adds and takes;
-/// OK sets both, and the Eraser has neither.
+/// The Blob Brush's and the Eraser's Size is Fixed or Pressure (#4590, #3961), with the Variation
+/// Pressure adds and takes; OK sets both, each tool keeping its own, and the Pencil has neither.
 #[test]
-fn the_blob_brush_size_can_follow_the_pen_pressure() {
+fn the_blob_brush_and_eraser_size_can_follow_the_pen_pressure() {
     let mut app = app();
-    app.run("tool.options", json!({"tool": "blobBrush"})).unwrap();
-    let text = painted(&mut app);
-    assert!(text.contains("Fixed") && text.contains("Variation:"), "{text}");
-    let d = app.ui.dialog.as_mut().unwrap();
-    assert_eq!((d.str("sizeMode"), d.f64("sizeVariation", -1.0)), ("fixed".to_string(), 0.0), "Fixed with no variation by default");
-    d.fields.insert("sizeMode".into(), json!("pressure"));
-    d.fields.insert("sizeVariation".into(), json!(6));
-    super::super::confirm(&mut app).unwrap();
-    let o = app.session.tool_options_of("blobBrush");
-    assert_eq!((o["sizeMode"].clone(), o["sizeVariation"].as_f64()), (json!("pressure"), Some(6.0)));
-    app.run("tool.options", json!({"tool": "blobBrush"})).unwrap();
-    assert!(painted(&mut app).contains("Pressure"));
-    app.run("tool.options", json!({"tool": "eraser"})).unwrap();
+    for (tool, variation) in [("blobBrush", 6.0), ("eraser", 4.0)] {
+        app.run("tool.options", json!({"tool": tool})).unwrap();
+        let text = painted(&mut app);
+        assert!(text.contains("Fixed") && text.contains("Variation:"), "{tool}: {text}");
+        let d = app.ui.dialog.as_mut().unwrap();
+        assert_eq!((d.str("sizeMode"), d.f64("sizeVariation", -1.0)), ("fixed".to_string(), 0.0), "{tool}: Fixed with no variation by default");
+        d.fields.insert("sizeMode".into(), json!("pressure"));
+        d.fields.insert("sizeVariation".into(), json!(variation));
+        super::super::confirm(&mut app).unwrap();
+        let o = app.session.tool_options_of(tool);
+        assert_eq!((o["sizeMode"].clone(), o["sizeVariation"].as_f64()), (json!("pressure"), Some(variation)), "{tool}");
+        app.run("tool.options", json!({"tool": tool})).unwrap();
+        assert!(painted(&mut app).contains("Pressure"), "{tool}");
+    }
+    app.run("tool.options", json!({"tool": "pencil"})).unwrap();
     let text = painted(&mut app);
     assert!(!text.contains("Variation:") && !text.contains("Fixed"), "{text}");
 }

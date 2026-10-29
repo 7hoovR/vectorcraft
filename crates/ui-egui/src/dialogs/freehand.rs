@@ -8,9 +8,9 @@
 //! Brush), `closeWithin` and `editWithin` (screen pixels, 0 turns it off; Pencil and Paintbrush),
 //! `angle` (degrees) and `roundness` (percent; Eraser), `livePreview` (Pencil: the stroke shows
 //! with its fill and stroke while it is drawn, or as a thin line until the release), `size`
-//! (points; Blob Brush and Eraser), and `sizeMode` (`fixed` or `pressure`) and `sizeVariation` (points;
-//! Blob Brush: with Pressure the brush is Size − Variation wide at the lightest pen pressure and Size +
-//! Variation at the heaviest).
+//! (points; Blob Brush and Eraser), and `sizeMode` (`fixed` or `pressure`) and `sizeVariation`
+//! (points; Blob Brush and Eraser: with Pressure the tip is Size − Variation wide at the lightest
+//! pen pressure and Size + Variation at the heaviest).
 
 use serde_json::{Map, Value, json};
 
@@ -138,11 +138,11 @@ fn number(ui: &mut egui::Ui, d: &mut Dialog, (key, label): (&str, &str), suffix:
     });
 }
 
-/// Width of the Blob Brush's Size mode menu.
+/// Width of the Blob Brush's and the Eraser's Size mode menu.
 const MODE_W: f32 = 96.0;
 
-/// The Blob Brush's Size rows: Size with its Fixed or Pressure menu before the field, then the
-/// Variation that Pressure adds and takes (greyed while Size is Fixed).
+/// The Blob Brush's and the Eraser's Size rows: Size with its Fixed or Pressure menu before the
+/// field, then the Variation that Pressure adds and takes (greyed while Size is Fixed).
 fn blob_size(ui: &mut egui::Ui, d: &mut Dialog) {
     const MODES: [&str; 2] = ["fixed", "pressure"];
     let pressure = d.str("sizeMode") == "pressure";

@@ -1,13 +1,12 @@
 use super::common::{
-    brush_region, path_kind, path_mut, path_of, poly_bounds, samples_param, stroke_paint, stroke_pressure, subpath_len, target_paths,
-    within_input_bound,
+    brush_region, path_kind, path_mut, path_of, poly_bounds, pressure_region, samples_param, size_pressure, stroke_paint, stroke_pressure,
+    subpath_len, target_paths, within_input_bound,
 };
 use super::{
     Anchor, Appearance, BTreeSet, BoolOp, Cap, Color, Document, EngineError, FillRule, Join, NewArt, Node, NodeId, NodeKind, Paint, PathData, Point,
     PressureProfile, Result, Selection, Session, SimplifyOptions, SubPath, Value, bad, id_param, insert_look, json, number_or, po, remove_each,
     str_param, switch_or,
 };
-use vectorcraft_doc::{LineCap, LineJoin, StrokeLayer, WidthProfile};
 
 // ---------- Pencil / Paintbrush ----------
 
@@ -367,18 +366,6 @@ fn adjacent_to_topmost(doc: &Document, touched: &[NodeId], paint: &Paint) -> Vec
     out
 }
 
-/// The area a Blob Brush stroke along `spine` covers with Size set to Pressure: as wide at each
-/// point as [`vectorcraft_tools::draw2::blob_pressure_size`] gives for the pressure `prof` records
-/// there, with round ends and joins, its overlaps united into one outline.
-fn pressure_region(spine: &PathData, size: f64, variation: f64, prof: &PressureProfile) -> Result<PathData> {
-    let widest = size + variation;
-    let width = |t: f64| vectorcraft_tools::draw2::blob_pressure_size(size, variation, prof.at(t)) / widest;
-    let profile = WidthProfile { points: prof.points.iter().map(|&(t, _)| (t, width(t), width(t))).collect() };
-    let round = StrokeLayer { cap: LineCap::Round, join: LineJoin::Round, ..StrokeLayer::new(Paint::None, widest) };
-    let outline = PathData::from_bezpath(&vectorcraft_render::width_outline(&spine.to_bezpath(), widest, &profile, &round, 0.05));
-    po::try_unite_all(&[(&outline, FillRule::NonZero)]).map_err(|e| EngineError::Other(e.to_string()))
-}
-
 pub(super) fn blob(s: &mut Session, p: &Value) -> Result<Value> {
     const C: &str = "path.blob";
     let samples = samples_param(p, "points", C)?;
@@ -386,20 +373,7 @@ pub(super) fn blob(s: &mut Session, p: &Value) -> Result<Value> {
     if !(size.is_finite() && size > 0.0) {
         return Err(bad(C, "size must be positive"));
     }
-    // Size set to Pressure: the width follows the pen from size − sizeVariation to size +
-    // sizeVariation. A stroke without pressure (a mouse) keeps the size.
-    let pressure = match p.get("sizeMode").filter(|v| !v.is_null()).map(|v| v.as_str().ok_or(v)) {
-        None | Some(Ok("fixed")) => None,
-        Some(Ok("pressure")) => {
-            let variation = number_or(p, "sizeVariation", 0.0, C)?;
-            if !(variation.is_finite() && variation >= 0.0) {
-                return Err(bad(C, "sizeVariation must be 0 or more"));
-            }
-            stroke_pressure(&samples).filter(|_| variation > 0.0).map(|prof| (prof, variation))
-        }
-        Some(Ok(other)) => return Err(bad(C, format!("sizeMode is \"fixed\" or \"pressure\", not `{other}`"))),
-        Some(Err(other)) => return Err(bad(C, format!("sizeMode is \"fixed\" or \"pressure\", not {other}"))),
-    };
+    let pressure = size_pressure(p, &samples, C)?;
     let pts: Vec<Point> = samples.into_iter().map(|(pt, _)| pt).collect();
     // The widest the brush gets: the area merges look in.
     let reach = pressure.as_ref().map_or(size, |(_, v)| size + v);
@@ -426,7 +400,7 @@ pub(super) fn blob(s: &mut Session, p: &Value) -> Result<Value> {
             }
         }
         // A click: one dab as wide as the pen pressed.
-        (Some((prof, variation)), false) => brush_region(&pts, vectorcraft_tools::draw2::blob_pressure_size(size, *variation, prof.at(0.0))),
+        (Some((prof, variation)), false) => brush_region(&pts, vectorcraft_tools::draw2::pressure_size(size, *variation, prof.at(0.0))),
         (None, _) => {
             let fitted = fidelity
                 .filter(|_| pts.len() > 1)
