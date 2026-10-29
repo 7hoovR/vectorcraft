@@ -6067,6 +6067,121 @@ fn a_pen_tap_within_one_frame_clicks_where_it_tapped() {
     assert_eq!(doc.doc.art_bounds(), before, "the tap moved nothing");
 }
 
+/// The Contextual Task Bar shows a Stroke chip beside the Fill chip, drawn with the selection's
+/// stroke paint. A click on it brings the Stroke proxy forward and opens Swatches, as a click on
+/// the Fill chip does for the Fill proxy.
+#[test]
+fn the_task_bar_shows_a_stroke_chip_beside_fill() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+    let id = app.session.execute("shape.rectangle", &json!({"x": 180, "y": 130, "width": 40, "height": 40})).unwrap()["id"].clone();
+    app.session.execute("paint.setFill", &json!({"ids": [id], "color": "#cc3322"})).unwrap();
+    app.session.execute("paint.setStroke", &json!({"ids": [id], "color": "#2244cc"})).unwrap();
+    app.select_tool("selection");
+    let ctx = egui::Context::default();
+    // Past the bar's fade-in, so its chips draw at full opacity.
+    for _ in 0..30 {
+        frame(&mut app, &ctx, vec![]);
+    }
+    let raw = egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0))), ..Default::default() };
+    let mut out = ctx.run_ui(raw, |ui| show(&mut app, ui));
+    out.textures_delta.clear();
+    let bar = task_bar_rect(&ctx).expect("the task bar shows");
+    // Right to left: the frame's margin, More Options, Lock, Recolor, then Stroke and Fill.
+    let stroke_x = bar.right() - 8.0 - 3.0 * (30.0 + 6.0) - 13.0;
+    let fill_x = stroke_x - 26.0 - 6.0;
+    let blue = Color32::from_rgb(0x22, 0x44, 0xcc);
+    let chip_with = |x: f32| {
+        out.shapes.iter().any(|c| match &c.shape {
+            egui::Shape::Rect(r) => r.fill == blue && bar.contains(r.rect.center()) && (r.rect.center().x - x).abs() < 4.0,
+            _ => false,
+        })
+    };
+    assert!(chip_with(stroke_x), "the Stroke chip is drawn with the stroke color");
+    assert!(!chip_with(fill_x), "the Fill chip is not");
+
+    let click = |app: &mut VectorcraftApp, x: f32| {
+        let at = pos2(x, bar.center().y);
+        let button = |pressed| egui::Event::PointerButton { pos: at, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+        frame(app, &ctx, vec![egui::Event::PointerMoved(at)]);
+        frame(app, &ctx, vec![button(true)]);
+        frame(app, &ctx, vec![button(false)]);
+    };
+    app.session.fill_active = true;
+    click(&mut app, stroke_x);
+    assert!(!app.session.fill_active, "the Stroke proxy is in front");
+    assert_eq!(app.ui.open_panel.as_deref(), Some("swatches"));
+    app.ui.open_panel = None;
+    click(&mut app, fill_x);
+    assert!(app.session.fill_active, "the Fill proxy is in front");
+    assert_eq!(app.ui.open_panel.as_deref(), Some("swatches"));
+}
+
+/// The Contextual Task Bar's Fill and Stroke chips show the paints the proxies show: a group's
+/// painted art, and "?" when the selected objects' paints differ. A click on a chip shows the
+/// Swatches panel wherever it is, closed included.
+#[test]
+fn the_task_bar_chips_follow_the_proxies_and_show_swatches_anywhere() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+    let mut square = |x: f64, stroke: &str| {
+        let id = app.session.execute("shape.rectangle", &json!({"x": x, "y": 130, "width": 40, "height": 40})).unwrap()["id"].clone();
+        app.session.execute("paint.setFill", &json!({"ids": [id], "color": "#cc3322"})).unwrap();
+        app.session.execute("paint.setStroke", &json!({"ids": [id], "color": stroke})).unwrap();
+        id
+    };
+    square(160.0, "#2244cc");
+    let second = square(220.0, "#22cc44");
+    app.select_tool("selection");
+    app.session.execute("select.all", &json!({})).unwrap();
+    let ctx = egui::Context::default();
+    let shapes = |app: &mut VectorcraftApp| {
+        for _ in 0..30 {
+            frame(app, &ctx, vec![]);
+        }
+        let raw = egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0))), ..Default::default() };
+        let mut out = ctx.run_ui(raw, |ui| show(app, ui));
+        out.textures_delta.clear();
+        out.shapes
+    };
+    // Right to left: the frame's margin, More Options, Lock, Recolor, then Stroke and Fill.
+    let stroke_x = |bar: egui::Rect| bar.right() - 8.0 - 3.0 * (30.0 + 6.0) - 13.0;
+    let chip_with = |shapes: &[egui::epaint::ClippedShape], bar: egui::Rect, x: f32, color: Color32| {
+        shapes.iter().any(|c| match &c.shape {
+            egui::Shape::Rect(r) => r.fill == color && bar.contains(r.rect.center()) && (r.rect.center().x - x).abs() < 4.0,
+            _ => false,
+        })
+    };
+    let (blue, green) = (Color32::from_rgb(0x22, 0x44, 0xcc), Color32::from_rgb(0x22, 0xcc, 0x44));
+
+    // Two strokes that differ: "?" on white, as the proxy shows them.
+    let out = shapes(&mut app);
+    let bar = task_bar_rect(&ctx).expect("the task bar shows");
+    assert!(chip_with(&out, bar, stroke_x(bar), Color32::WHITE), "the Stroke chip shows the strokes differ");
+    assert!(!chip_with(&out, bar, stroke_x(bar), blue), "the Stroke chip does not show the first object's stroke");
+
+    // A group shows its painted art's stroke, as the proxy does.
+    app.session.execute("paint.setStroke", &json!({"ids": [second], "color": "#2244cc"})).unwrap();
+    app.session.execute("select.all", &json!({})).unwrap();
+    app.session.execute("object.group", &json!({})).unwrap();
+    let out = shapes(&mut app);
+    let bar = task_bar_rect(&ctx).expect("the task bar shows");
+    assert!(chip_with(&out, bar, stroke_x(bar), blue), "the Stroke chip shows the group's art's stroke");
+    assert!(!chip_with(&out, bar, stroke_x(bar), green));
+
+    // Swatches closed: a click on the Stroke chip shows it.
+    app.run("window.panel.close", json!({"panel": "swatches"})).unwrap();
+    assert!(!crate::panel_docking::showing(&app.ui, "swatches"));
+    let at = pos2(stroke_x(bar), bar.center().y);
+    let button = |pressed| egui::Event::PointerButton { pos: at, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+    frame(&mut app, &ctx, vec![egui::Event::PointerMoved(at)]);
+    frame(&mut app, &ctx, vec![button(true)]);
+    frame(&mut app, &ctx, vec![button(false)]);
+    frame(&mut app, &ctx, vec![]);
+    assert!(!app.session.fill_active, "the Stroke proxy is in front");
+    assert!(crate::panel_docking::showing(&app.ui, "swatches"), "the Swatches panel shows");
+}
+
 /// The Contextual Task Bar shows Recolor Artwork (a palette) when the selection has colours,
 /// and it opens the Recolor Artwork dialog; art painted with None has no button.
 #[test]
@@ -6328,7 +6443,7 @@ fn the_task_bar_is_dragged_by_its_handle_pinned_and_reset() {
     app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
     let mut square =
         |x: f64, y: f64| app.session.execute("shape.rectangle", &json!({"x": x, "y": y, "width": 40, "height": 40})).unwrap()["id"].clone();
-    let (a, b) = (square(120.0, 40.0), square(160.0, 150.0));
+    let (a, b) = (square(140.0, 40.0), square(160.0, 150.0));
     app.select_tool("selection");
     let ctx = egui::Context::default();
     let bar = || task_bar_rect(&ctx).expect("the task bar shows");
