@@ -116,7 +116,9 @@ pub fn hit_test_visible(doc: &Document, p: Point, opt: HitOptions) -> Option<Hit
 /// art instead of starting a marquee: an image in a mask, picked in the Layers panel, can be
 /// dragged by its hidden part, whose frame shows while it is selected. An object that a click
 /// can't hit anyway doesn't count: hidden, locked, a template, a guide while guides are locked
-/// or hidden, outside the isolated container (`opt.scope`) or on a locked artboard.
+/// or hidden, in a Shaper group's part a click can't reach, outside the isolated container
+/// (`opt.scope`) or on a locked artboard. On a layer whose Preview is off it counts by its
+/// outline, as a click there hits it.
 pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &[NodeId]) -> Option<NodeId> {
     let symbols = doc.symbol_boxes();
     let locks = doc.locked_artboards();
@@ -130,6 +132,8 @@ pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &
         {
             return false;
         }
+        // How a click reaches it, if one does.
+        let Some(opt) = path_options(&nodes, &chain, opt) else { return false };
         // Hidden by a mask: one of the containers around it clips, and not to `p`.
         let masked = nodes
             .iter()
@@ -144,6 +148,26 @@ pub fn selected_hidden_at(doc: &Document, p: Point, opt: HitOptions, selected: &
             parent.children().and_then(|c| c.iter().position(|c| c.id == id)).is_some_and(|i| may_hit(parent, i, n, p, opt, &symbols, true));
         masked && reachable && object_hit(n, p, opt, &symbols, true)
     })
+}
+
+/// The options a click goes down `nodes` (an object's ancestry, `chain`, the layer first) with, as
+/// [`hit_test`] goes: from the isolated container (`opt.scope`), else from the layer, in outline
+/// below a layer whose Preview is off. `None` when a Shaper group's part it can't reach lies on
+/// the way ([`shaper_hides`]).
+fn path_options(nodes: &[&Node], chain: &[NodeId], opt: HitOptions) -> Option<HitOptions> {
+    let scope_at = opt.scope.and_then(|s| chain.iter().position(|a| *a == s));
+    let child_index = |parent: &Node, child: &Node| parent.children().and_then(|c| c.iter().position(|c| c.id == child.id));
+    let hidden = nodes.windows(2).skip(scope_at.unwrap_or(0)).any(|w| match w {
+        [parent, child] => child_index(parent, child).is_some_and(|i| shaper_hides(parent, i, opt.scope)),
+        _ => false,
+    });
+    if hidden {
+        return None;
+    }
+    // The isolated container's own Preview doesn't count: a click starts inside it.
+    let below = scope_at.map_or(0, |i| i + 1);
+    let outline = nodes.iter().skip(below).any(|n| matches!(n.kind, NodeKind::Layer { preview: false, .. }));
+    Some(if outline { HitOptions { outline: true, ..opt } } else { opt })
 }
 
 /// The objects under `p` that [`Hit::top_object`] picks in `scope` (isolation mode), topmost

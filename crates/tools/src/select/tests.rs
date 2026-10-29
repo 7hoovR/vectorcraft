@@ -117,6 +117,13 @@ fn a_press_where_a_mask_hides_a_selected_object_drags_it() {
     let mut t = SelectionTool::default();
     t.pointer(&c, &shift(PointerKind::Down, 370.0, 450.0));
     assert!(!t.pointer(&c, &shift(PointerKind::Drag, 390.0, 470.0)).iter().any(|a| matches!(a, Action::Begin(_))));
+    // An object a click hits there wins: a press on a square over that point selects it.
+    let mut d = d;
+    let (front, l) = (d.alloc_id(), d.layers[0].id);
+    let square = vectorcraft_geom::shapes::rectangle(Rect::new(350.0, 430.0, 390.0, 470.0));
+    d.insert(Some(l), 2, vectorcraft_doc::Node::path(front, square, vectorcraft_doc::Appearance::default_art())).unwrap();
+    let a = SelectionTool::default().pointer(&cx(&d, &picked, &p), &ev(PointerKind::Down, 370.0, 450.0));
+    assert!(a.iter().any(|a| matches!(a, Action::Exec(c, v) if c == "select.set" && v["ids"] == json!([front.0]))), "{a:?}");
 }
 
 /// #955: grabbed by an anchor and dropped near another object's anchor, the anchor lands
