@@ -522,7 +522,8 @@ pub fn load(bytes: &[u8]) -> Result<Document, FormatError> {
 pub struct NativeFile {
     pub doc: Document,
     /// What was done to bring the document within the nesting caps
-    /// ([`Document::limit_depth_noting`]: a file saved before them, or a damaged one).
+    /// ([`Document::limit_depth_noting`]: a file saved before them, or a damaged one) and within
+    /// the canvas ([`Document::drop_beyond_canvas`]: a damaged or hand-made file).
     pub depth_notes: Vec<String>,
     pub info: FileInfo,
     /// ICC files by profile name (saved with Embed ICC Profiles; undecodable ones are left out).
@@ -617,6 +618,17 @@ fn load_file_within(bytes: &[u8], max_nodes: usize, max_values: usize) -> Result
     doc.raster_effects.add_around = doc.raster_effects.add_around.clamp(0.0, vectorcraft_doc::rastersettings::MAX_ADD_AROUND);
     let mut depth_notes = vec![];
     doc.limit_depth_noting(&mut depth_notes);
+    // Untrusted: nothing beyond the canvas, where no edit may leave anything (after the depth
+    // limit: the walk recurses). A file whose artboards all lie there has no page to show (#3575).
+    let had_artboards = !doc.artboards.is_empty();
+    let beyond = doc.drop_beyond_canvas();
+    if had_artboards && doc.artboards.is_empty() {
+        return Err(FormatError::NotVectorcraft(format!(
+            "its artboards all lie beyond the canvas (more than {} pt from the origin)",
+            vectorcraft_doc::MAX_COORD
+        )));
+    }
+    depth_notes.extend(beyond.note());
     // Untrusted: the type's sizes, leading, baseline shifts and scales, its indents and paragraph
     // spacing, and its tab stops, each within its range (after the depth limit: the walk recurses).
     doc.keep_type_values_in_range();
