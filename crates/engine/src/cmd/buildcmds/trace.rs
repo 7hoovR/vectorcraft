@@ -1,3 +1,5 @@
+use vectorcraft_color::Swatch;
+
 use super::{
     Appearance, AppearanceItem, Arc, Beside, Color, Document, EngineError, LineCap, LineJoin, LiveShape, Node, NodeId, NodeKind, Paint, Point,
     Result, Session, StrokeLayer, TRACE_NAME, TraceView, Value, bad, fill_only, ids_json, json, root_ids, shape_node, str_param, switch_or, tr,
@@ -58,41 +60,59 @@ fn trace_params(c: &str, p: &Value) -> Result<tr::TraceParams> {
     Ok(params)
 }
 
+/// Document swatch `w`'s solid color with the paint a trace fills with it: a global or spot color,
+/// or a tint of one, linked to its swatch as `swatch_solid` (paint.rs) links it; any other color
+/// unlinked. The color is the one the paint shows (a Lab spot color's CMYK equivalent when the Spot
+/// Colors options use CMYK values).
+fn trace_swatch_paint(d: &Document, w: &Swatch) -> Option<(Color, Paint)> {
+    let linked = d.swatch_link(&w.name).and_then(|(base, tint)| d.tint_paint(&base, tint));
+    let color = linked.as_ref().and_then(Paint::color).or_else(|| w.paint.color())?;
+    Some((color, linked.unwrap_or_else(|| Paint::solid(color))))
+}
+
 /// Document Library with `colorGroup`: the solid colors of the active document's color group
-/// `name` (so named exactly, else ignoring case). Errors name command `c`.
-/// ([`trace_params`] has checked that the library is the document's swatches.)
-fn trace_group_colors(c: &str, s: &Session, name: &str) -> Result<Vec<Color>> {
-    let groups = &s.doc()?.doc.swatch_groups;
+/// `name` (so named exactly, else ignoring case), each with its paint ([`trace_swatch_paint`]).
+/// Errors name command `c`. ([`trace_params`] has checked that the library is the document's
+/// swatches.)
+fn trace_group_colors(c: &str, s: &Session, name: &str) -> Result<Vec<(Color, Paint)>> {
+    let d = &s.doc()?.doc;
+    let groups = &d.swatch_groups;
     let lower = name.to_lowercase();
     let group = groups
         .iter()
         .find(|g| g.name == name)
         .or_else(|| groups.iter().find(|g| g.name.to_lowercase() == lower))
         .ok_or_else(|| bad(c, format!("no color group `{name}` in the document (see swatch.list)")))?;
-    Ok(group.swatches.iter().filter_map(|w| w.paint.color()).collect())
+    Ok(group.swatches.iter().filter_map(|w| trace_swatch_paint(d, w)).collect())
 }
 
 /// Document Library in Color mode: look the library's colors (or its color group's) up into
-/// `params.swatches` → each one as traced (sRGB) with the color to fill with. Errors name command `c`.
-fn trace_library(c: &str, s: &Session, params: &mut tr::TraceParams) -> Result<Vec<([u8; 3], Color)>> {
+/// `params.swatches` → each one as traced (sRGB) with the paint to fill with. The document's
+/// global and spot colors fill linked to their swatches ([`trace_swatch_paint`]); a swatch
+/// library's colors fill unlinked. Errors name command `c`.
+fn trace_library(c: &str, s: &Session, params: &mut tr::TraceParams) -> Result<Vec<([u8; 3], Paint)>> {
     if params.mode != tr::Mode::Color || params.palette != tr::Palette::DocumentLibrary {
         return Ok(vec![]);
     }
     let group = params.color_group.as_deref().filter(|g| !g.is_empty());
     let key = group.unwrap_or(params.library.as_str());
-    let colors = match group {
+    let missing = || bad(c, format!("no swatch library `{key}` (see swatch.library.list; \"document\": the document's swatches)"));
+    let colors: Vec<(Color, Paint)> = match group {
         Some(name) => trace_group_colors(c, s, name)?,
-        None => crate::cmd::swatchlib::library_colors(s, key)
-            .ok_or_else(|| bad(c, format!("no swatch library `{key}` (see swatch.library.list; \"document\": the document's swatches)")))?,
+        None if key == crate::cmd::swatchlib::DOCUMENT_SWATCHES => {
+            let d = &s.active().ok_or_else(missing)?.doc;
+            d.swatches_iter().filter_map(|w| trace_swatch_paint(d, w)).collect()
+        }
+        None => crate::cmd::swatchlib::library_colors(s, key).ok_or_else(missing)?.into_iter().map(|c| (c, Paint::solid(c))).collect(),
     };
     if colors.is_empty() {
         return Err(bad(c, format!("`{key}` has no colours")));
     }
-    let library: Vec<([u8; 3], Color)> = colors
+    let library: Vec<([u8; 3], Paint)> = colors
         .into_iter()
-        .map(|c| {
+        .map(|(c, paint)| {
             let [r, g, b, _] = c.to_rgba8(1.0);
-            ([r, g, b], c)
+            ([r, g, b], paint)
         })
         .collect();
     params.swatches = library.iter().map(|l| l.0).collect();
@@ -260,10 +280,14 @@ pub(super) fn trace_make(s: &mut Session, p: &Value, expand: bool) -> Result<Val
                 *path = shape.to_path();
                 *live = Some(Box::new(shape));
             }
-            // A library colour fills with the swatch's own colour (its model kept).
-            let color = library.iter().find(|(rgb, _)| *rgb == tp.color).map_or_else(|| Color::rgb8(tp.color[0], tp.color[1], tp.color[2]), |l| l.1);
+            // A library color fills with the swatch's own color (its model kept), linked to a
+            // global or spot swatch of the document.
+            let solid = library
+                .iter()
+                .find(|(rgb, _)| *rgb == tp.color)
+                .map_or_else(|| Paint::solid(Color::rgb8(tp.color[0], tp.color[1], tp.color[2])), |l| l.1.clone());
             // Gradients: a path the tracer found to be a linear gradient is filled with it.
-            let paint = tp.gradient.as_ref().map_or_else(|| Paint::solid(color), |g| traced_gradient(g, xf));
+            let paint = tp.gradient.as_ref().map_or(solid, |g| traced_gradient(g, xf));
             n.appearance = match tp.stroke {
                 // Traced lines: round corners, and ends round or square as the tracer found them.
                 Some(width) => Appearance {

@@ -3048,6 +3048,124 @@ fn image_trace_document_library_uses_a_color_group() {
 }
 
 #[test]
+fn image_trace_document_library_links_fills_to_global_swatches() {
+    let mut s = session();
+    // A global color, a tint of another global color and a process color.
+    s.execute("swatch.new", &json!({"name": "Ink", "color": "#c82828", "global": true})).unwrap();
+    s.execute("swatch.new", &json!({"name": "Sky", "color": "#2846c8", "global": true})).unwrap();
+    s.execute("swatch.new", &json!({"swatch": "Sky", "tint": 50})).unwrap();
+    s.execute("swatch.new", &json!({"name": "Leaf", "color": "#28a03c"})).unwrap();
+    let hex_of = |s: &mut Session, name: &str| {
+        let list = s.execute("swatch.list", &json!({})).unwrap();
+        list["swatches"].as_array().unwrap().iter().find(|w| w["name"] == name).unwrap()["hex"].as_str().unwrap().to_lowercase()
+    };
+    let tint = hex_of(&mut s, "Sky 50%");
+    let [tr, tg, tb] = [1, 3, 5].map(|i| u8::from_str_radix(&tint[i..i + 2], 16).unwrap());
+    let r = vectorcraft_trace::Raster::from_fn(60, 60, |x, y| match (x < 30, y < 30) {
+        (true, _) => [200, 40, 40, 255],
+        (false, true) => [40, 160, 60, 255],
+        (false, false) => [tr, tg, tb, 255],
+    });
+    let img = add_image(&mut s, &r, Affine::IDENTITY);
+    let params = json!({"mode": "color", "palette": "documentLibrary", "library": "document", "colors": 3});
+    // Each fill as (its color, the swatch it links to, its tint), one per color.
+    let fills = |s: &Session, id: &Value| {
+        let mut v: Vec<(String, Option<String>, f32)> = node(s, NodeId(id.as_u64().unwrap()))
+            .children()
+            .unwrap()
+            .iter()
+            .filter_map(|n| match n.appearance.fill_paint() {
+                Paint::Solid { color, swatch, tint } => {
+                    let [r, g, b, _] = color.to_rgba8(1.0);
+                    Some((format!("#{r:02x}{g:02x}{b:02x}"), swatch, tint))
+                }
+                _ => None,
+            })
+            .collect();
+        v.sort_by(|a, b| a.0.cmp(&b.0));
+        v.dedup();
+        v
+    };
+    let fill = |hex: &str, swatch: Option<&str>, tint: f32| (hex.to_string(), swatch.map(String::from), tint);
+    let res = s.execute("imageTrace.makeAndExpand", &json!({"params": params})).unwrap();
+    let got = fills(&s, &res["id"]);
+    assert_eq!(got.len(), 3, "{got:?}");
+    assert!(got.contains(&fill("#c82828", Some("Ink"), 1.0)), "{got:?}");
+    assert!(got.contains(&fill(&tint, Some("Sky"), 0.5)), "{got:?}");
+    assert!(got.contains(&fill("#28a03c", None, 1.0)), "{got:?}");
+    // Editing the global swatches recolors the trace: the tint at its own tint.
+    s.execute("swatch.edit", &json!({"name": "Ink", "color": "#ff8800"})).unwrap();
+    s.execute("swatch.edit", &json!({"name": "Sky", "color": "#000000"})).unwrap();
+    let tint = hex_of(&mut s, "Sky 50%");
+    let got = fills(&s, &res["id"]);
+    assert!(got.contains(&fill("#ff8800", Some("Ink"), 1.0)), "{got:?}");
+    assert!(got.contains(&fill(&tint, Some("Sky"), 0.5)), "{got:?}");
+    assert!(got.contains(&fill("#28a03c", None, 1.0)), "{got:?}");
+    for _ in 0..3 {
+        s.execute("edit.undo", &json!({})).unwrap();
+    }
+    // A color group's global swatches link too.
+    s.execute("swatch.newGroup", &json!({"name": "Brand", "swatches": ["Ink", "Leaf"]})).unwrap();
+    let mut group = params.clone();
+    group["colorGroup"] = json!("Brand");
+    let res = s.execute("imageTrace.makeAndExpand", &json!({"id": img.0, "params": group})).unwrap();
+    let got = fills(&s, &res["id"]);
+    assert!(got.contains(&fill("#c82828", Some("Ink"), 1.0)) && got.contains(&fill("#28a03c", None, 1.0)), "{got:?}");
+    s.execute("edit.undo", &json!({})).unwrap();
+    // A swatch library's colors stay unlinked.
+    let mut web = params.clone();
+    web["library"] = json!("web-safe-216");
+    let res = s.execute("imageTrace.makeAndExpand", &json!({"id": img.0, "params": web})).unwrap();
+    let got = fills(&s, &res["id"]);
+    assert!(!got.is_empty() && got.iter().all(|f| f.1.is_none()), "{got:?}");
+}
+
+#[test]
+fn image_trace_document_library_matches_a_lab_spot_by_its_cmyk_equivalent() {
+    let _g = crate::tests_colormgmt::GLOBAL.lock().unwrap_or_else(|e| e.into_inner());
+    let mut s = session();
+    // A Lab color outside the CMYK gamut, whose CMYK equivalent shows another color.
+    let rgb = |c: Color| {
+        let [r, g, b, _] = c.to_rgba8(1.0);
+        [r, g, b]
+    };
+    let cms = vectorcraft_color::cms::active();
+    let off = |lab: Color| {
+        let cmyk = cms.convert(&lab, vectorcraft_color::cms::Model::Cmyk, cms.settings().intent);
+        rgb(lab).iter().zip(rgb(cmyk)).map(|(a, b)| u32::from(a.abs_diff(b))).sum::<u32>()
+    };
+    let lab = [(30.0, 60.0, -100.0), (60.0, -80.0, 60.0), (55.0, 60.0, 40.0), (90.0, -40.0, 100.0)]
+        .map(|(l, a, b)| Color::Lab { l, a, b })
+        .into_iter()
+        .max_by_key(|c| off(*c))
+        .unwrap();
+    assert!(off(lab) >= 30, "{lab:?} is off by {}", off(lab));
+    let Color::Lab { l, a, b } = lab else { panic!("{lab:?}") };
+    // A spot color of it shown by its CMYK equivalent (Spot Colors options with CMYK values).
+    s.execute("swatch.new", &json!({"name": "Lab Ink", "color": {"l": l, "a": a, "b": b}, "spot": true})).unwrap();
+    s.execute("swatch.spotOptions", &json!({"useLab": false})).unwrap();
+    let shown = s.doc().unwrap().doc.global_color("Lab Ink").unwrap();
+    let [kr, kg, kb] = rgb(shown);
+    let [lr, lg, lb] = rgb(lab);
+    // A process color between the two, nearer the color the spot shows.
+    let near = |k: u8, l: u8| (f32::from(k) + (f32::from(l) - f32::from(k)) * 0.3).round() as u8;
+    let [pr, pg, pb] = [near(kr, lr), near(kg, lg), near(kb, lb)];
+    s.execute("swatch.new", &json!({"name": "Near", "color": format!("#{pr:02x}{pg:02x}{pb:02x}")})).unwrap();
+    let process = Color::rgb8(pr, pg, pb);
+    s.execute("swatch.new", &json!({"name": "Leaf", "color": "#28a03c"})).unwrap();
+    // Art in the color the spot shows traces to the spot.
+    let r = vectorcraft_trace::Raster::from_fn(60, 60, |x, _| if x < 30 { [kr, kg, kb, 255] } else { [40, 160, 60, 255] });
+    add_image(&mut s, &r, Affine::IDENTITY);
+    let params = json!({"mode": "color", "palette": "documentLibrary", "library": "document", "colors": 3});
+    let res = s.execute("imageTrace.makeAndExpand", &json!({"params": params})).unwrap();
+    let g = node(&s, NodeId(res["id"].as_u64().unwrap()));
+    let got: Vec<Paint> = g.children().unwrap().iter().map(|n| n.appearance.fill_paint()).collect();
+    let spot = Paint::Solid { color: shown, swatch: Some("Lab Ink".into()), tint: 1.0 };
+    assert!(got.contains(&spot), "{got:?}");
+    assert!(!got.iter().any(|p| p.color() == Some(process)), "{got:?}");
+}
+
+#[test]
 fn image_trace_create_strokes_makes_stroked_centre_lines() {
     let mut s = session();
     // A 3 px wide horizontal line from x = 10 to 90 at y = 50, placed at 2× from (100, 100).
