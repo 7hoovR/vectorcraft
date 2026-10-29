@@ -3829,6 +3829,7 @@ imageTrace	Outline	轮廓
 @msg	clipboard is empty	剪贴板为空
 @msg	no anchor points selected	未选择锚点
 @msg	select at least two objects	请至少选择两个对象
+@msg	exit isolation mode first	请先退出隔离模式
 @msg	no saved presets	没有已保存的预设
 @msg	compound paths can only contain paths	复合路径只能包含路径
 @msg	no bounds	没有边界

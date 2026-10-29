@@ -4168,6 +4168,7 @@ axis	Both	Båda
 @msg	select an object in perspective	markera ett objekt i perspektiv
 @msg	select artwork (or a colour group) to recolor	markera grafik (eller en färggrupp) att färga om
 @msg	select at least two objects	markera minst två objekt
+@msg	exit isolation mode first	avsluta isoleringsläget först
 @msg	select objects, not layers	markera objekt, inte lager
 @msg	select one path, or give its `id`	markera en bana eller ange dess `id`
 @msg	select paths to join	markera banor att foga samman

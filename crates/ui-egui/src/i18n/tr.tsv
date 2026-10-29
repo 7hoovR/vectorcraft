@@ -4024,6 +4024,7 @@ axis	Both	Her İkisi
 @msg	select an object in perspective	perspektifte bir nesne seç
 @msg	select artwork (or a colour group) to recolor	yeniden renklendirilecek resmi (veya bir renk grubunu) seçin
 @msg	select at least two objects	en az iki nesne seç
+@msg	exit isolation mode first	önce izolasyon modundan çık
 @msg	select objects, not layers	katmanları değil nesneleri seçin
 @msg	select one path, or give its `id`	bir yol seçin veya "kimliğini" verin
 @msg	select paths to join	katılmak için yolları seçin

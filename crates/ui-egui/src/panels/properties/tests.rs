@@ -1286,6 +1286,27 @@ fn blend_options_is_a_quick_action_for_one_blend_with_the_blend_tool() {
     assert!(!shows(&tall(&mut app, &ctx, vec![]), "Blend Options"), "a rectangle");
 }
 
+/// Quick Actions have no Lock in isolation mode, where Object › Lock › Selection is off. Outside
+/// isolation mode Lock is there and locks the selection.
+#[test]
+fn lock_is_a_quick_action_outside_isolation_mode_only() {
+    let mut app = new_app();
+    let (a, b) = (rect(&mut app, 20.0, 20.0, 40.0, 40.0), rect(&mut app, 200.0, 20.0, 40.0, 40.0));
+    app.run("select.set", json!({"ids": [a.clone(), b]})).unwrap();
+    let g = app.run("object.group", json!({})).unwrap()["id"].clone();
+    app.run("object.isolate", json!({"id": g.clone()})).unwrap();
+    app.run("select.set", json!({"ids": [a]})).unwrap();
+    let ctx = egui::Context::default();
+    let texts = tall(&mut app, &ctx, vec![]);
+    assert!(shows(&texts, "Offset Path") && !shows(&texts, "Lock"), "no Lock in isolation mode: {texts:?}");
+    app.run("object.exitIsolation", json!({})).unwrap();
+    app.run("select.set", json!({"ids": [g.clone()]})).unwrap();
+    let texts = tall(&mut app, &ctx, vec![]);
+    press(&mut app, &ctx, text_at(&texts, "Lock").center());
+    let locked = app.session.doc().unwrap().doc.node(vectorcraft_doc::NodeId(g.as_u64().unwrap())).unwrap().locked;
+    assert!(locked, "Lock locks the group");
+}
+
 /// A Live Paint group selected with a path has Merge Live Paint in Quick Actions, which adds
 /// the path to the group in one undo step. Not for the group alone, nor for plain paths, nor
 /// with type selected, which Live Paint refuses.

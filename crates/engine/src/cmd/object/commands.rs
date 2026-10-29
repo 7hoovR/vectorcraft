@@ -6,6 +6,7 @@ use super::props::set_props;
 use super::shape::{expand_shape, set_live_shape};
 use super::transform::{move_cmd, nudge, reflect, rotate, scale, shear, transform, transform_again};
 use super::{CommandSpec, cmd, has_doc, has_multi, has_selection, has_selection_or_guides};
+use crate::cmd::{has_selection_outside_isolation, outside_isolation};
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
@@ -150,20 +151,20 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Object", "Lock"],
             Some("Cmd+2"),
             "{ids?: [id…] (selected first; default: the selection)}",
-            has_selection,
+            has_selection_outside_isolation,
             lock
         ),
-        cmd!("object.unlockAll", "Unlock All", ["Object"], Some("Cmd+Alt+2"), "{}", has_doc, unlock_all),
+        cmd!("object.unlockAll", "Unlock All", ["Object"], Some("Cmd+Alt+2"), "{}", outside_isolation, unlock_all),
         cmd!(
             "object.hide",
             "Selection",
             ["Object", "Hide"],
             Some("Cmd+3"),
             "{ids?: [id…] (selected first; default: the selection)}",
-            has_selection,
+            has_selection_outside_isolation,
             hide
         ),
-        cmd!("object.showAll", "Show All", ["Object"], Some("Cmd+Alt+3"), "{}", has_doc, show_all),
+        cmd!("object.showAll", "Show All", ["Object"], Some("Cmd+Alt+3"), "{}", outside_isolation, show_all),
         cmd!(
             "object.compoundPath.make",
             "Make",

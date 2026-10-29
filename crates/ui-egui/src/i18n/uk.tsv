@@ -4283,6 +4283,7 @@ axis	Both	Обидві
 @msg	select an object in perspective	виділіть об’єкт у перспективі
 @msg	select artwork (or a colour group) to recolor	виділіть малюнок (або колірну групу) для перефарбовування
 @msg	select at least two objects	виділіть як мінімум два об’єкти
+@msg	exit isolation mode first	спочатку вийдіть з режиму ізоляції
 @msg	select objects, not layers	виділіть об’єкти, а не шари
 @msg	select one path, or give its `id`	виділіть один контур або вкажіть його `id`
 @msg	select paths to join	виділіть контури для з’єднання

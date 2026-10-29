@@ -4388,6 +4388,7 @@ imageTrace	Outline	Kontur
 @msg	select an object in perspective	zaznacz obiekt w perspektywie
 @msg	select artwork (or a colour group) to recolor	zaznacz kompozycję (lub grupę kolorów), aby zmienić kolory
 @msg	select at least two objects	zaznacz co najmniej dwa obiekty
+@msg	exit isolation mode first	najpierw wyjdź z trybu izolacji
 @msg	select objects, not layers	zaznacz obiekty, nie warstwy
 @msg	select one path, or give its `id`	zaznacz jedną ścieżkę lub podaj jej `id`
 @msg	select paths to join	zaznacz ścieżki do połączenia

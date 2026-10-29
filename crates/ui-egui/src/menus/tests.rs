@@ -655,6 +655,53 @@ fn expand_appearance_is_an_object_menu_item_only() {
     assert_eq!(paths, [vec!["Object".to_string()]]);
 }
 
+/// In isolation mode, every item of Object › Lock and Object › Hide, Unlock All and Show All are
+/// greyed out, while Group stays on. After Exit Isolation Mode they are on again.
+#[test]
+fn lock_and_hide_menus_are_greyed_out_in_isolation_mode() {
+    let mut app = VectorcraftApp::new(vectorcraft_engine::Session::new(), crate::Services::default());
+    app.run("file.new", json!({})).unwrap();
+    let a = app.run("shape.rectangle", json!({"x": 10, "y": 10, "width": 50, "height": 50})).unwrap()["id"].clone();
+    let b = app.run("shape.rectangle", json!({"x": 80, "y": 10, "width": 50, "height": 50})).unwrap()["id"].clone();
+    app.run("select.set", json!({"ids": [a, b.clone()]})).unwrap();
+    let g = app.run("object.group", json!({})).unwrap()["id"].clone();
+    let lock_and_hide: Vec<String> = menu_entries(&app)
+        .into_iter()
+        .filter(|e| {
+            let path: Vec<&str> = e.path.iter().map(String::as_str).collect();
+            matches!(path[..], ["Object", "Lock" | "Hide"]) || path == ["Object"] && matches!(e.label.as_str(), "Unlock All" | "Show All")
+        })
+        .filter_map(|e| e.command)
+        .collect();
+    assert_eq!(
+        lock_and_hide,
+        [
+            "object.lock",
+            "object.lock.above",
+            "object.lock.otherLayers",
+            "object.unlockAll",
+            "object.hide",
+            "object.hide.above",
+            "object.hide.otherLayers",
+            "object.showAll"
+        ]
+    );
+    let shown = |app: &VectorcraftApp| -> Vec<bool> {
+        let entries = menu_entries(app);
+        lock_and_hide
+            .iter()
+            .chain([&"object.group".to_string()])
+            .map(|id| entries.iter().any(|e| e.command.as_ref() == Some(id) && e.enabled))
+            .collect()
+    };
+    app.run("object.isolate", json!({"id": g.clone()})).unwrap();
+    app.run("select.set", json!({"ids": [b]})).unwrap();
+    assert_eq!(shown(&app), [false, false, false, false, false, false, false, false, true], "in isolation mode");
+    app.run("object.exitIsolation", json!({})).unwrap();
+    app.run("select.set", json!({"ids": [g]})).unwrap();
+    assert_eq!(shown(&app), [true; 9], "after Exit Isolation Mode");
+}
+
 #[test]
 fn menus_are_as_wide_as_their_items() {
     // Items size the popup to the widest label and shortcut instead of the widest a menu may be.

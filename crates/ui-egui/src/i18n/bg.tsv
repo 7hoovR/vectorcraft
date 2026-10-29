@@ -4155,6 +4155,7 @@ axis	Both	И двете
 @msg	select an object in perspective	изберете обект в перспектива
 @msg	select artwork (or a colour group) to recolor	изберете графика (или цветова група) за преоцветяване
 @msg	select at least two objects	изберете поне два обекта
+@msg	exit isolation mode first	първо излезте от режима на изолация
 @msg	select objects, not layers	изберете обекти, а не слоеве
 @msg	select one path, or give its `id`	изберете един път или задайте неговия `id`
 @msg	select paths to join	изберете пътища за обединяване

@@ -4258,6 +4258,7 @@ imageTrace	Outline	Kontur
 @msg	select an object in perspective	pilih objek dalam perspektif
 @msg	select artwork (or a colour group) to recolor	pilih karya seni (atau grup warna) untuk diwarnai ulang
 @msg	select at least two objects	pilih setidaknya dua objek
+@msg	exit isolation mode first	keluar dari mode isolasi terlebih dahulu
 @msg	select objects, not layers	pilih objek, bukan lapisan
 @msg	select one path, or give its `id`	pilih satu jalur, atau berikan `id`-nya
 @msg	select paths to join	pilih jalur yang akan digabungkan

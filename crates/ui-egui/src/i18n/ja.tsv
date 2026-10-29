@@ -4092,6 +4092,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	clipboard is empty	クリップボードが空です
 @msg	no anchor points selected	アンカーポイントが選択されていません
 @msg	select at least two objects	オブジェクトを 2 つ以上選択してください
+@msg	exit isolation mode first	先に分離モードを終了してください
 @msg	no saved presets	保存したプリセットはありません
 @msg	compound paths can only contain paths	複合パスに含められるのはパスだけです
 @msg	no bounds	境界がありません

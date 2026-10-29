@@ -3831,6 +3831,7 @@ axis	Both	Ambos
 @msg	select an object in perspective	selecione um objeto em perspectiva
 @msg	select artwork (or a colour group) to recolor	selecione uma arte-final (ou um grupo de cores) para recolorir
 @msg	select at least two objects	selecione pelo menos dois objetos
+@msg	exit isolation mode first	saia do modo de isolamento primeiro
 @msg	select objects, not layers	selecione objetos, não camadas
 @msg	select one path, or give its `id`	selecione um traçado ou informe seu `id`
 @msg	select paths to join	selecione traçados para unir

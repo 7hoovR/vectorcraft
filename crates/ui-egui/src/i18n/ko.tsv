@@ -4024,6 +4024,7 @@ theme	Appearance	외관
 @msg	clipboard is empty	클립보드가 비어 있습니다
 @msg	no anchor points selected	선택한 앵커 포인트가 없습니다
 @msg	select at least two objects	개체를 두 개 이상 선택하세요
+@msg	exit isolation mode first	먼저 격리 모드를 종료하세요
 @msg	no saved presets	저장된 프리셋이 없습니다
 @msg	compound paths can only contain paths	컴파운드 패스에는 패스만 넣을 수 있습니다
 @msg	no bounds	경계가 없습니다

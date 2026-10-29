@@ -4270,6 +4270,7 @@ imageTrace	Outline	Contour
 @msg	select an object in perspective	selecteer een object in perspectief
 @msg	select artwork (or a colour group) to recolor	selecteer een illustratie (of een kleurgroep) om te herkleuren
 @msg	select at least two objects	selecteer minstens twee objecten
+@msg	exit isolation mode first	verlaat eerst de isolatiemodus
 @msg	select objects, not layers	selecteer objecten, geen lagen
 @msg	select one path, or give its `id`	selecteer één pad, of geef het `id`
 @msg	select paths to join	selecteer paden om te verbinden

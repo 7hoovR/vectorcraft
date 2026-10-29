@@ -4621,6 +4621,7 @@ theme	Appearance	Giao diện
 @msg	select an object in perspective	hãy chọn đối tượng trong phối cảnh
 @msg	select artwork (or a colour group) to recolor	hãy chọn tác phẩm (hoặc nhóm màu) để tô lại
 @msg	select at least two objects	hãy chọn ít nhất hai đối tượng
+@msg	exit isolation mode first	hãy thoát chế độ cô lập trước
 @msg	select objects, not layers	hãy chọn đối tượng, không phải lớp
 @msg	select one path, or give its `id`	hãy chọn một đường dẫn hoặc cung cấp `id` của nó
 @msg	select paths or anchor points	chọn đường dẫn hoặc điểm neo
