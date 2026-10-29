@@ -269,22 +269,34 @@ pub(super) fn isolate(s: &mut Session, p: &Value) -> Result<Value> {
         .or_else(|| s.active().and_then(|d| d.selection.objects.first().copied()))
         .ok_or_else(|| bad("object.isolate", "missing id"))?;
     let guides_locked = s.menu.guides_locked;
+    let (isolation, prev) = {
+        let st = s.doc_mut()?;
+        // Groups, layers and single objects (a path, a compound path, an image…); type isn't
+        // isolated: a double-click on it edits its text.
+        if matches!(st.doc.node(id).ok_or(EngineError::NoNode(id))?.kind, NodeKind::Text(_)) {
+            return Err(bad("object.isolate", "type objects can't be isolated"));
+        }
+        let isolation =
+            st.doc.node(id).filter(|n| n.extras().shaper.is_some()).and_then(|n| n.children()).and_then(|c| c.first()).map_or(id, |n| n.id);
+        // A hidden or locked object, one in a hidden or locked group or layer, and a guide path while
+        // Lock Guides is on aren't isolated either: a click with the Selection tool doesn't select them.
+        // A Shaper Group isolates its source group, so that group is the one checked.
+        if !st.doc.is_editable(isolation) {
+            return Err(bad("object.isolate", "the object is hidden or locked"));
+        }
+        if guides_locked && crate::is_guide_path(&st.doc, isolation) {
+            return Err(EngineError::Other("guides are locked".into()));
+        }
+        (isolation, st.isolation)
+    };
+    if let Some(prev) = prev
+        && prev != isolation
+    {
+        crate::cmd::settle_interaction(s)?;
+        let st = s.doc_mut()?;
+        crate::cmd::distortcmds::finish_edit_text(st, prev);
+    }
     let st = s.doc_mut()?;
-    // Groups, layers and single objects (a path, a compound path, an image…); type isn't
-    // isolated: a double-click on it edits its text.
-    if matches!(st.doc.node(id).ok_or(EngineError::NoNode(id))?.kind, NodeKind::Text(_)) {
-        return Err(bad("object.isolate", "type objects can't be isolated"));
-    }
-    let isolation = st.doc.node(id).filter(|n| n.extras().shaper.is_some()).and_then(|n| n.children()).and_then(|c| c.first()).map_or(id, |n| n.id);
-    // A hidden or locked object, one in a hidden or locked group or layer, and a guide path while
-    // Lock Guides is on aren't isolated either: a click with the Selection tool doesn't select them.
-    // A Shaper Group isolates its source group, so that group is the one checked.
-    if !st.doc.is_editable(isolation) {
-        return Err(bad("object.isolate", "the object is hidden or locked"));
-    }
-    if guides_locked && crate::is_guide_path(&st.doc, isolation) {
-        return Err(EngineError::Other("guides are locked".into()));
-    }
     st.isolation = Some(isolation);
     st.selection.clear();
     // New art on a locked artboard, now deselected, is protected.
@@ -312,8 +324,11 @@ pub(super) fn exit_isolation(s: &mut Session, p: &Value) -> Result<Value> {
         return ok();
     }
     let menu = s.menu.clone();
-    let st = s.doc_mut()?;
-    if let Some(i) = st.isolation.take() {
+    let prev = s.active().and_then(|d| d.isolation);
+    if let Some(i) = prev {
+        crate::cmd::settle_interaction(s)?;
+        let st = s.doc_mut()?;
+        st.isolation = None;
         crate::cmd::distortcmds::finish_edit_text(st, i);
         let target = st.doc.parent_of(i).filter(|p| st.doc.node(*p).is_some_and(|n| n.extras().shaper.is_some())).unwrap_or(i);
         st.selection.set([target]);
@@ -322,6 +337,7 @@ pub(super) fn exit_isolation(s: &mut Session, p: &Value) -> Result<Value> {
         // The art on a locked artboard can't be selected.
         st.protect_locked_artboards(&[], &Default::default(), None);
     }
+    let st = s.doc_mut()?;
     st.revision += 1;
     ok()
 }
