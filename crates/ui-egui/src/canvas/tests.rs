@@ -7338,11 +7338,14 @@ fn a_panel_or_dialog_over_the_canvas_hides_the_pointer_from_it() {
     run(&mut app, vec![], None);
     assert!(app.hover_doc.is_some(), "over the canvas");
     for cover in [Cover::Panel(egui::Rect::from_center_size(over, vec2(120.0, 120.0))), Cover::Dialog] {
-        run(&mut app, vec![], Some(cover));
-        run(&mut app, vec![], Some(cover));
+        // A new window takes a sizing pass before it covers anything, as in the test above.
+        for _ in 0..3 {
+            run(&mut app, vec![], Some(cover));
+        }
         assert_eq!(app.hover_doc, None, "under it");
-        run(&mut app, vec![], None);
-        run(&mut app, vec![], None);
+        for _ in 0..3 {
+            run(&mut app, vec![], None);
+        }
         assert!(app.hover_doc.is_some(), "back once it closes");
     }
 }
