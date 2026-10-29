@@ -4551,6 +4551,9 @@ theme	Appearance	Εμφάνιση
 @msg	not a PSD file	δεν είναι αρχείο PSD
 @msg	the PSD file has an unknown colour mode ({m})	το αρχείο PSD χρησιμοποιεί άγνωστη λειτουργία χρώματος ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	τα δεδομένα εικόνας PSD χρησιμοποιούν άγνωστη συμπίεση ({m})
+@msg	the PCX file is cut short	το αρχείο PCX είναι περικομμένο
+@msg	the PCX file's header is damaged	η κεφαλίδα του αρχείου PCX είναι κατεστραμμένη
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	τα αρχεία PCX με εικονοστοιχεία {bits} bit σε {planes} επίπεδα δεν διαβάζονται
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	η εικόνα PSD είναι πολύ μεγάλη για ανάγνωση ({_1} × {_2} εικονοστοιχεία)
 @msg	zipped 32-bit PSD image data with prediction can't be read	τα συμπιεσμένα δεδομένα εικόνας PSD 32 bit με πρόβλεψη δεν διαβάζονται
 @msg	{depth}-bit PSD files in this colour mode can't be read	τα αρχεία PSD {depth} bit δεν διαβάζονται σε αυτήν τη λειτουργία χρώματος

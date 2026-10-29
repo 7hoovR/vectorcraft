@@ -4352,6 +4352,9 @@ axis	Both	Her İkisi
 @msg	not a PSD file	PSD dosyası değil
 @msg	the PSD file has an unknown colour mode ({m})	PSD dosyasında bilinmeyen bir renk modu var ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	PSD dosyasının görüntü verileri bilinmeyen bir sıkıştırma kullanıyor ({m})
+@msg	the PCX file is cut short	PCX dosyası kısa kesildi
+@msg	the PCX file's header is damaged	PCX dosyasının başlığı bozuk
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	{planes} düzlemde {bits}-bit pikseller içeren PCX dosyaları okunamaz
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	PSD görüntüsü okunamayacak kadar büyük ({_1} × {_2} piksel)
 @msg	zipped 32-bit PSD image data with prediction can't be read	Tahmin içeren sıkıştırılmış 32 bit PSD görüntü verileri okunamıyor
 @msg	{depth}-bit PSD files in this colour mode can't be read	Bu renk modunda {depth}-bit PSD dosyaları okunamaz

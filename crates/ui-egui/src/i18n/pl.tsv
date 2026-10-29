@@ -4697,6 +4697,9 @@ imageTrace	Outline	Kontur
 @msg	not a PSD file	to nie jest plik PSD
 @msg	the PSD file has an unknown colour mode ({m})	plik PSD ma nieznany tryb koloru ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	dane obrazu pliku PSD używają nieznanej kompresji ({m})
+@msg	the PCX file is cut short	plik PCX jest ucięty
+@msg	the PCX file's header is damaged	nagłówek pliku PCX jest uszkodzony
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	nie można odczytać plików PCX z {bits}-bitowymi pikselami w {planes} płaszczyznach
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	obraz PSD jest zbyt duży, aby go odczytać ({_1} × {_2} pikseli)
 @msg	zipped 32-bit PSD image data with prediction can't be read	nie można odczytać spakowanych 32-bitowych danych obrazu PSD z predykcją
 @msg	{depth}-bit PSD files in this colour mode can't be read	nie można odczytać {depth}-bitowych plików PSD w tym trybie koloru

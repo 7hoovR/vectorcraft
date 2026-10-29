@@ -4615,6 +4615,9 @@ axis	Both	Обидві
 @msg	not a PSD file	це не документ PSD
 @msg	the PSD file has an unknown colour mode ({m})	файл PSD має невідомий колірний режим ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	дані зображення файлу PSD використовують невідоме стиснення ({m})
+@msg	the PCX file is cut short	файл PCX обрізаний
+@msg	the PCX file's header is damaged	заголовок файлу PCX пошкоджений
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	файли PCX з {bits}-бітними пікселями в {planes} площинах не читаються
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	зображення PSD завелике для читання ({_1} × {_2} пікс.)
 @msg	zipped 32-bit PSD image data with prediction can't be read	32-бітні дані зображення PSD зі стисненням ZIP із передбаченням не читаються
 @msg	{depth}-bit PSD files in this colour mode can't be read	{depth}-бітні файли PSD у цьому колірному режимі не читаються

@@ -4508,6 +4508,9 @@ axis	Both	Båda
 @msg	not a PSD file	inte en PSD-fil
 @msg	the PSD file has an unknown colour mode ({m})	PSD-filen har ett okänt färgläge ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	PSD-filens bilddata använder en okänd komprimering ({m})
+@msg	the PCX file is cut short	PCX-filen är avkortad
+@msg	the PCX file's header is damaged	PCX-filens huvud är skadat
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	PCX-filer med {bits}-bitars pixlar i {planes} plan kan inte läsas
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	PSD-bilden är för stor för att läsas ({_1} × {_2} pixlar)
 @msg	zipped 32-bit PSD image data with prediction can't be read	zippad 32-bitars PSD-bilddata med prediktion kan inte läsas
 @msg	{depth}-bit PSD files in this colour mode can't be read	{depth}-bitars PSD-filer i det här färgläget kan inte läsas

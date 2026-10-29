@@ -4602,6 +4602,9 @@ axis	Both	Les deux
 @msg	not a PSD file	ce n'est pas un document PSD
 @msg	the PSD file has an unknown colour mode ({m})	le fichier PSD a un mode colorimétrique inconnu ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	les données d'image du fichier PSD utilisent une compression inconnue ({m})
+@msg	the PCX file is cut short	le fichier PCX est tronqué
+@msg	the PCX file's header is damaged	l'en-tête du fichier PCX est endommagé
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	les fichiers PCX à pixels de {bits} bits sur {planes} plans ne peuvent pas être lus
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	l'image PSD est trop grande pour être lue ({_1} × {_2} pixels)
 @msg	zipped 32-bit PSD image data with prediction can't be read	les données d'image PSD 32 bits compressées en ZIP avec prédiction ne peuvent pas être lues
 @msg	{depth}-bit PSD files in this colour mode can't be read	les fichiers PSD {depth} bits dans ce mode colorimétrique ne peuvent pas être lus
