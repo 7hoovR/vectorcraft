@@ -1,8 +1,8 @@
-use super::envelope::{EnvelopeOptions, expand_envelope};
+use super::envelope::{EnvelopeOptions, PreserveShape, expand_envelope};
 use super::mesh::GradientMesh;
 use super::warp::map_nonlinear;
 use super::{
-    Affine, Appearance, AppearanceItem, Arc, FillLayer, ImageObject, Node, NodeId, NodeKind, Paint, PathData, Point, Rect, SubPath, Vec2,
+    Affine, Appearance, AppearanceItem, Arc, Color, FillLayer, ImageObject, Node, NodeId, NodeKind, Paint, PathData, Point, Rect, SubPath, Vec2,
     blend_expand,
 };
 
