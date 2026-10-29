@@ -31,13 +31,15 @@ impl Session {
         }) {
             Ok(v) => match cmd::shaper::refresh(&before, Arc::make_mut(&mut st.doc)) {
                 Err(e) => Err(e),
-                Ok(()) => {
+                Ok(shaper_changed) => {
                     // Attached Shaper groups whose art was rebuilt go back on their path.
-                    cmd::objects_on_path::refresh(&before, Arc::make_mut(&mut st.doc));
+                    if shaper_changed {
+                        cmd::objects_on_path::refresh(&before, Arc::make_mut(&mut st.doc));
+                    }
                     // Inline graphics in text follow their symbols.
                     cmd::inline::refresh(&before, Arc::make_mut(&mut st.doc));
                     // Text Wrap: area type follows its wrap objects; then threads re-flow.
-                    cmd::textwrap::refresh(Arc::make_mut(&mut st.doc));
+                    cmd::textwrap::refresh(&before, Arc::make_mut(&mut st.doc));
                     // Type in no thread numbers its list paragraphs from 1 (before the mask copies
                     // its editing layer's art).
                     cmd::threads::restart_unthreaded_counts(&mut st.doc);
