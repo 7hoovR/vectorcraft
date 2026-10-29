@@ -1,4 +1,5 @@
 use super::{Affine, Arc, BezPath, Ink, Node, Pixmap, Shape, images, ink, paint};
+use vectorcraft_doc::{AppearanceItem, NodeKind};
 
 /// `key`'s pixels in the shared image store; `touch` marks them used.
 pub(crate) fn lookup(key: &images::ImageKey, touch: bool) -> Option<Arc<Pixmap>> {

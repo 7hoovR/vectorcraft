@@ -1,8 +1,8 @@
 use super::{
     Affine, Arc, BezPath, ClipEntry, ClipPaintEntry, Compose, Composite, Document, FillRule, Frame, GeomEntry, ISOLATION_DIM, Ink, MAX_GUIDE_DASHES,
     Node, NodeId, NodeKind, Rect, RenderContext, RenderOptions, Renderer, Shape, SymbolBoxes, TraceView, blend_mode, brush_fx, effects, fx, group,
-    holds_instance, holds_plugin_effect, kurbo, lru, mask_value, painted_items, plain_image, polygon_length, rects_overlap, single_plain_fill,
-    text_geom_snapped,
+    holds_instance, holds_plugin_effect, kurbo, lru, mask_value, painted_items, plain_image, polygon_length, rects_overlap, shape_masked_image,
+    single_plain_fill, text_geom_snapped, white_shape_mask,
 };
 
 impl Renderer {
