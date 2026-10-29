@@ -30,6 +30,15 @@ pub fn fields() -> Value {
     json!({"layout": "gridByRow", "order": "leftToRight", "columns": 2, "spacing": 20, "moveArtwork": true})
 }
 
+/// The fields the menu item opens with, retaining the spacing from its last confirmation.
+pub fn open_fields(app: &VectorcraftApp) -> Value {
+    let mut fields = fields();
+    if let Some(spacing) = app.ui.rearrange_artboards_spacing.as_f64() {
+        fields["spacing"] = json!(spacing);
+    }
+    fields
+}
+
 /// A layout's toggle: its tooltip and its artboards' cells (column, row) in their order, left to
 /// right.
 fn layout_glyph(l: ArtboardLayout) -> (&'static str, &'static [(u8, u8)]) {
@@ -110,7 +119,9 @@ fn body(app: &mut VectorcraftApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
 }
 
 fn confirm(app: &mut VectorcraftApp, d: &Dialog) -> Result<Value, String> {
-    run_and_close(app, CMD, params(d))
+    let result = run_and_close(app, CMD, params(d))?;
+    app.ui.rearrange_artboards_spacing = json!(d.f64("spacing", 20.0));
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -170,6 +181,18 @@ mod tests {
     }
 
     /// Clicking the layout and order toggles sets the fields (the toggles' rects from the frame).
+    #[test]
+    fn keeps_spacing_when_reopening_after_rearranging() {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.run("file.new", json!({"width": 100, "height": 50, "artboards": 3})).unwrap();
+        app.run("ui.menuDialog", json!({"command": CMD})).unwrap();
+        app.ui.dialog.as_mut().unwrap().fields.insert("spacing".into(), json!(37));
+        crate::dialogs::confirm(&mut app).unwrap();
+
+        app.run("ui.menuDialog", json!({"command": CMD})).unwrap();
+        assert_eq!(app.ui.dialog.as_ref().unwrap().f64("spacing", 20.0), 37.0);
+    }
+
     #[test]
     fn the_toggles_set_layout_and_order() {
         let mut app = VectorcraftApp::new(Session::new(), Default::default());
