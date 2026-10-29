@@ -450,11 +450,13 @@ mod tests {
         use std::io::BufRead as _;
 
         use zbus::zvariant::OwnedObjectPath;
-        let mut daemon = std::process::Command::new("dbus-daemon")
+        let spawning = crate::spawning();
+        let daemon = std::process::Command::new("dbus-daemon")
             .args(["--session", "--nofork", "--print-address=1"])
             .stdout(std::process::Stdio::piped())
-            .spawn()
-            .ok()?;
+            .spawn();
+        drop(spawning);
+        let mut daemon = daemon.ok()?;
         let mut address = String::new();
         std::io::BufReader::new(daemon.stdout.take()?).read_line(&mut address).ok()?;
         let address = address.trim().to_string();
