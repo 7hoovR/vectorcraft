@@ -178,6 +178,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 - **Unconfirmed (2026-10-14):** Tool cursors are painted into the window on Wayland (#1652; not run on Linux, #1645 stays open until confirmed). On Windows the custom title bar's window stays truly borderless, so the pointer lines up with what is drawn on systems where the hidden caption offset it (#1791, #1758; awaiting the reporter's confirmation).
 - **Done:** RPM required dependencies use 64-bit library capabilities and declare glibc 2.35, libm and libgcc_s (#1275); generated metadata and isolated synthetic-provider checks cover x86_64/aarch64. Real-distribution install/start-up QA is still missing.
+- **Done (2026-10-29):** the Linux Flatpak on GNOME no longer reconnects to the compositor and logs a warning every 250 ms when arboard has neither data-control nor X11 (267k warnings in 18 h filled the 16 MB log in 3 h): a clipboard that can't be opened is retried with a wait growing to a minute and logged once. Copy and Paste with other apps there are still missing.
 - **Missing:** the app not starting or staying in the background on some Windows 11 machines (#858, #964 fixed
   2026-10-10, #620, #818), slow pointer on a Linux AppImage (#575), macOS paste from other apps (#954), a
   web-free crash/hang reporter, a field record.
@@ -646,6 +647,7 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-29 | minor | G10: the Linux Flatpak on GNOME stops the clipboard retry storm (retried with a growing wait, logged once). Estimate unchanged. |
 | 2026-10-29 | minor | G12: Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act. No entry closed, estimates unchanged. |
 | 2026-10-29 | minor | G8: a blend makes at most 100,000 steps in all, the steps of blends nested in its keys and steps included; past it each pair of keys keeps the same share of its steps (#3579). No entry closed, estimates unchanged. |
 | 2026-10-26 | minor | G9: EPS save-back: an opened EPS saves back to its own path as EPS, keeping the chosen artboard's page frame and transparent margins and the complete editable VectorCraft document; Save's TIFF preview is capped at 1024 px (Export keeps 2048); partly read, preview-only or damaged-editing-data sources still need confirmation before they are overwritten. This narrows G9's save-back workflow only; its import-fidelity items (layer and group structure, guides, open speed, live objects) and estimate are unchanged, and writing Illustrator's own editing data stays out of scope (#868) |
