@@ -1094,7 +1094,7 @@ fn svg_export_expands_live_objects() {
     let s = live_doc();
     let svg = vectorcraft_svg::export(&s.doc().unwrap().doc, &Default::default());
     // 4 blend objects + envelope content + 4 patches × 64 mesh pieces.
-    let paths = svg.matches("<path").count();
+    let paths = vectorcraft_testkit::svg_shapes(&svg);
     assert!(paths >= 4 + 1 + 256, "{paths}");
     assert!(vectorcraft_svg::import(&svg).is_ok());
 }
