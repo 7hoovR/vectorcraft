@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Spinners: a held arrow repeats after a pause (#4267); scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Artwork Cleanup add-on: its panel and Object › Plug-ins submenu; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -321,6 +321,7 @@ next unit in the order a right-click on a ruler lists them, from Feet back to Po
 | Preferences › General › Constrain Angle | done | arrow keys and Shift drags along the turned axes; the Rectangle, Rounded Rectangle, Ellipse and grid tools, point and area type and the shape size dialogs draw along them with the bounding box turned; Shift-drawn polygons and stars keep the turned base orientation; the Line Segment tool's Shift steps count from it (#394, <https://helpx.adobe.com/illustrator/desktop/manage-objects/arrange-objects/rotate-objects-by-specific-angles.html>); arcs, spirals, flares and Pen paths are not turned |
 | Tabs panel: a stop drags from where the press landed, a stop just added included | done | #1458 |
 | Outline view keeps template layers in Preview, dimmed | done | #1486; a picture placed to be traced stays visible under the outlines |
+| Artwork Cleanup add-on (VectorCraft addition): Object › Plug-ins › Artwork Cleanup opens its panel, which checks the selection or the document for 16 kinds of issue, lists them with counts, and shows or fixes the picked rows or all of them, each fix one undo step; Simplify Anchors (Keep Shape), Rejoin Path Pieces and Deep Ungroup open their options first | done | `addon.cleanup.*`, `crates/ui-egui/src/addons/cleanup.rs` and its tests; not an Illustrator feature, so it is not scored |
 
 ## Look and feel
 
@@ -361,6 +362,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | Artwork Cleanup add-on (a VectorCraft addition): its panel and Object › Plug-ins › Artwork Cleanup; scores and estimates unchanged |
 | 2026-10-30 | minor | Spinners: a held arrow repeats after a pause (#4267); scores and estimates unchanged |
 | 2026-10-30 | minor | Control bar: a Replace menu swaps the selected symbol instances' symbol (#4121); scores and estimates unchanged |
 | 2026-10-30 | minor | Color Mixer popover: the Color panel's menu with its color modes (#4249); scores and estimates unchanged |
