@@ -79,8 +79,18 @@ pub(super) fn build_from(
         let page_rect = visible.artboards.first().map(|a| a.rect).ok_or("it has no page")?;
         // The layers' art in the document's terms: a Large Canvas editing copy is written at 1/N
         // scale, which `to_doc` carries, so its art and the page reach the same size (#2031).
-        let rect = to_doc.transform_rect_bbox(art_box);
-        if (rect.width() - page_rect.width()).abs() > 0.5 || (rect.height() - page_rect.height()).abs() > 0.5 {
+        let fits = |r: &Rect| (r.width() - page_rect.width()).abs() <= 0.5 && (r.height() - page_rect.height()).abs() <= 0.5;
+        let mut rect = to_doc.transform_rect_bbox(art_box);
+        // A `.ai` whose PDF part's pages are cropped to its art (each page the box of all of it,
+        // the editing data's bounding box) rather than to its artboards: the layers are compared
+        // with the page on that box, and keep their artboards.
+        if matches!(page, Page::Artboard)
+            && !fits(&rect)
+            && let Some(art) = bbox.map(|[a, b, c, d]| to_doc.transform_rect_bbox(Rect::new(a, b, c, d))).filter(fits)
+        {
+            rect = art;
+        }
+        if !fits(&rect) {
             // Both sizes in points as the fields show them, and the editing data's page to the
             // file's as a scale (1:10 is a tenth of its size) when its sides are in proportion and
             // the scale doesn't round to 1:1.
