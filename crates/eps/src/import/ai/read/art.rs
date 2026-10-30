@@ -504,7 +504,9 @@ pub(super) fn elements<'o>(o: &'o Obj, name: &'o str) -> impl Iterator<Item = &'
 /// a space), then `h` rows of `rowBytes` bytes, premultiplied ARGB. `None` when it isn't that, is
 /// larger than [`MAX_PIXELS`] or is cut short.
 pub(super) fn preview_png(data: &[u8]) -> Option<(Vec<u8>, u32, u32)> {
-    let mut rest = data.trim_ascii_start();
+    // A placed file's copy on `%_` lines has its header on one too: `%_512 256 2048 32 17 `.
+    let data = data.trim_ascii_start();
+    let mut rest = data.strip_prefix(b"%_").unwrap_or(data);
     let mut head = [0usize; 5];
     for v in &mut head {
         let n = rest.iter().position(|b| *b == b' ')?;
