@@ -557,6 +557,26 @@ fn an_ai_file_whose_pdf_part_is_cropped_to_its_art_opens_from_its_layers() {
 }
 
 #[test]
+fn an_ai_file_whose_pdf_part_draws_nothing_opens_from_its_editing_data() {
+    // A PDF-compatible `.ai` whose PDF part is a page with nothing on it (no notice text either),
+    // with or without the boxes that say where its art is: its editing data is the art.
+    for boxed in ["", "/ArtBox [0 0 200 100] /TrimBox [0 0 200 100]"] {
+        let mut s = Session::new();
+        let r = open(&mut s, "blank.ai", &ai::ai_with(&compressed(&ai::sample_data()), "", boxed), json!({})).unwrap();
+        assert_eq!(r["warnings"], json!([]), "{boxed:?}: {r}");
+        check_sample(&s);
+        // The PDF part alone, as asked: its empty page.
+        open(&mut s, "blank.ai", &ai::ai_with(&compressed(&ai::sample_data()), "", boxed), json!({"editingData": false})).unwrap();
+        let layers = &s.doc().unwrap().doc.layers;
+        assert!(layers.iter().all(|l| l.children().is_none_or(|c| c.is_empty())), "{boxed:?}");
+    }
+    // Editing data that can't be read leaves the empty page, as before.
+    let mut s = Session::new();
+    open(&mut s, "blank.ai", &ai::ai(b"%AI24_ZStandard_Data\0\0\0\0\0\0\0\0", ""), json!({})).unwrap();
+    assert_ne!(names(&s.doc().unwrap().doc.layers), ["Art", "Hidden"]);
+}
+
+#[test]
 fn editing_data_false_opens_only_what_the_page_prints() {
     let mut s = Session::new();
     for (name, file) in [("art.eps", ai::eps(&ai::sample_data(), ai::page_ps())), ("art.ai", ai::ai(&compressed(&ai::sample_data()), ai::page_pdf()))]
