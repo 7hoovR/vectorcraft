@@ -57,7 +57,7 @@ pub(super) fn build_from(
     trust: bool,
     unit: f64,
 ) -> Result<(Document, Vec<String>), String> {
-    let Structure { mut doc, to_doc, bbox, artboard, template, hidden_unread, slot_names, restyled, warnings } = structure;
+    let Structure { mut doc, to_doc, bbox, artboard, template, hidden_unread, slot_names, restyled, placed_elsewhere, warnings } = structure;
     // Editing data in the units of the page's user space ([`in_units`]) is compared with the page
     // scaled down to those units, and the document read from it is scaled up by `unit`.
     let board = artboard.map(|a| to_doc.transform_rect_bbox(a));
@@ -225,8 +225,15 @@ pub(super) fn build_from(
             }
             match compare(&frame, &mut view, &doc) {
                 Ok(note) => notes.extend(note),
-                Err(why) if trust => notes.push(format!("{why}: they come from its editing data all the same")),
-                Err(why) => return Err(why),
+                // Placed files at the other point their data gives, where that draws as the page.
+                Err(why) => match elsewhere(&doc, &placed_elsewhere).map(|other| (compare(&frame, &mut view, &other), other)) {
+                    Some((Ok(note), other)) => {
+                        doc = other;
+                        notes.extend(note);
+                    }
+                    _ if trust => notes.push(format!("{why}: they come from its editing data all the same")),
+                    _ => return Err(why),
+                },
             }
         }
         None => unmark(&mut doc.layers, true, true, &mut vec![]),
@@ -236,6 +243,22 @@ pub(super) fn build_from(
         scale_document(&mut doc, unit);
     }
     Ok((doc, notes))
+}
+
+/// `doc` with the placed files `placed` lists at their other placement (see
+/// [`ai::Structure::placed_elsewhere`]): each image's transform followed by its move. `None` when
+/// none is listed.
+fn elsewhere(doc: &Document, placed: &[(NodeId, Affine)]) -> Option<Document> {
+    if placed.is_empty() {
+        return None;
+    }
+    let mut doc = doc.clone();
+    for (id, shift) in placed {
+        if let Some(NodeKind::Image(im)) = doc.node_mut(*id).map(|n| &mut n.kind) {
+            im.xf *= *shift;
+        }
+    }
+    Some(doc)
 }
 
 /// Does the editing data's first artboard `board` (in the document read from it: art space through
