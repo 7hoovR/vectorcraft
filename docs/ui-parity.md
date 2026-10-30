@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Control bar: a Replace menu swaps the selected symbol instances' symbol (#4121); scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Spinners: a held arrow repeats after a pause (#4267); scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -361,6 +361,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | Spinners: a held arrow repeats after a pause (#4267); scores and estimates unchanged |
 | 2026-10-30 | minor | Control bar: a Replace menu swaps the selected symbol instances' symbol (#4121); scores and estimates unchanged |
 | 2026-10-30 | minor | Color Mixer popover: the Color panel's menu with its color modes (#4249); scores and estimates unchanged |
 | 2026-10-30 | minor | Object › Path › Average & Join… (`path.averageJoin`, Cmd+Alt+Shift+J) moves two open path ends to their midpoint and joins them there, the joined anchor a corner or a smooth point as its dialog's Points choice asks, in one undo step; one row done; scores and estimates unchanged. |
