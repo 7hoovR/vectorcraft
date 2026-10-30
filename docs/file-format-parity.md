@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (SVG export: simple shapes as SVG basic shapes) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (`.ai` import: placed files at their box's corner where that draws as the page) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every format Illustrator opens, places, saves or exports, against VectorCraft's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/formats.rs`). Illustrator's list comes from its public
@@ -132,6 +132,7 @@ the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPri
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | `.ai` import: a placed (linked) file is put where its matrix takes the canvas point of art space's origin, and, when the layers then don't draw as the page, at the corner of the box it is written with, which many files use; six files of a user's set whose photos landed off their artboards now open from their layers. Own-fixture test in `import::tests_native`; scores unchanged |
 | 2026-10-30 | minor | SVG export: axis-aligned rectangles are written as `<rect>`, circles and ellipses drawn with four standard arcs as `<circle>`/`<ellipse>`, straight lines as `<line>` and other straight-segment paths as `<polygon>`/`<polyline>`, at the written precision; a rectangle or ellipse with a dashed stroke, turned ellipses, curves and compound paths stay `<path>` (#4652); scores unchanged |
 | 2026-10-30 | minor | `.ai` import: a placed (linked) file written as an object's copy on `%_` lines is read: its `%AI5_BeginPlace` and `%AI5_EndPlace` markers there were dropped, so the `~` that ends it was an unknown operator and the whole file came in as its PDF part; its preview's header, on a `%_` line too, is read. Own-fixture test in `import::ai::tests`; scores unchanged |
 | 2026-10-30 | minor | PDF export: an opaque gradient mesh is written as one PDF Type 6 (Coons patch) shading (ISO 32000-1, 8.7.4.5.7) filling its outline, so viewers blend its colours smoothly instead of showing the bands and seams of the 8 × 8 flat quads a patch it was cut into; a file of 65,558 small meshes exports in 14 s instead of 56 s, at half the size. A mesh with see-through points is still written as quads. Own-fixture tests in `tests::mesh_export`; scores unchanged |
