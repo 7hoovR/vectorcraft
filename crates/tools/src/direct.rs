@@ -543,7 +543,7 @@ fn crossed_segments(path: &PathData, r: Rect) -> Vec<AnchorRef> {
             if r.contains(a.p) || r.contains(b.p) {
                 continue;
             }
-            let piece = PathData::single(vectorcraft_geom::SubPath::new(vec![a.clone(), b.clone()], false));
+            let piece = PathData::single(vectorcraft_geom::SubPath::new(vec![*a, *b], false));
             if vectorcraft_geom::hit::intersects_rect(&piece, r) {
                 out.push((si, seg));
             }
