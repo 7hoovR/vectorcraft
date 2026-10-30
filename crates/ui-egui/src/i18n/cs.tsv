@@ -5747,3 +5747,20 @@ anchor	Points:	Body:
 	Simplify Anchors (Keep Shape)	Zjednodušit kotevní body (zachovat tvar)
 	Deep Ungroup	Oddělit všechny úrovně
 	Rejoin Path Pieces	Znovu spojit části cest
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Barevné efekty
+	Color Effects Panel	Panel Barevné efekty
+	Exposure	Expozice
+	Exposure…	Expozice…
+	Desaturate	Odbarvit
+	Adjustment	Úprava
+	Add as Effect	Přidat jako efekt
+	Apply as Filter	Použít jako filtr
+	Select objects to adjust their colors.	Vyberte objekty, jejichž barvy chcete upravit.
+	Brightness/Contrast	Jas/kontrast
+	Hue/Saturation	Odstín/sytost
+	Temperature/Tint	Teplota/nádech
+@msg	`{id}` is not a colour adjustment	`{id}` není úprava barev
+@msg	missing `effect`	chybí `effect`
+@msg	`params` must be an object	`params` musí být objekt

@@ -5652,3 +5652,20 @@ anchor	Points:	Titik:
 	Simplify Anchors (Keep Shape)	Sederhanakan titik jangkar (pertahankan bentuk)
 	Deep Ungroup	Buka grup di semua tingkat
 	Rejoin Path Pieces	Sambungkan kembali potongan jalur
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Efek Warna
+	Color Effects Panel	Panel Efek Warna
+	Exposure	Eksposur
+	Exposure…	Eksposur…
+	Desaturate	Hilangkan Saturasi
+	Adjustment	Penyesuaian
+	Add as Effect	Tambahkan sebagai Efek
+	Apply as Filter	Terapkan sebagai Filter
+	Select objects to adjust their colors.	Pilih objek untuk menyesuaikan warnanya.
+	Brightness/Contrast	Kecerahan/kontras
+	Hue/Saturation	Rona/saturasi
+	Temperature/Tint	Suhu/tint
+@msg	`{id}` is not a colour adjustment	`{id}` bukan penyesuaian warna
+@msg	missing `effect`	`effect` tidak ada
+@msg	`params` must be an object	`params` harus berupa objek

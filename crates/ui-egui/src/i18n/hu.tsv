@@ -5733,3 +5733,20 @@ anchor	Points:	Pontok:
 	Simplify Anchors (Keep Shape)	Horgonypontok egyszerűsítése (alak megtartása)
 	Deep Ungroup	Csoportbontás minden szinten
 	Rejoin Path Pieces	Útvonaldarabok újraegyesítése
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Színeffektusok
+	Color Effects Panel	Színeffektusok panel
+	Exposure	Expozíció
+	Exposure…	Expozíció…
+	Desaturate	Telítettség csökkentése
+	Adjustment	Korrekció
+	Add as Effect	Hozzáadás effektusként
+	Apply as Filter	Alkalmazás szűrőként
+	Select objects to adjust their colors.	Jelöljön ki objektumokat a színeik módosításához.
+	Brightness/Contrast	Fényesség/kontraszt
+	Hue/Saturation	Színárnyalat/telítettség
+	Temperature/Tint	Színhőmérséklet/tónus
+@msg	`{id}` is not a colour adjustment	`{id}` nem színkorrekció
+@msg	missing `effect`	hiányzik: `effect`
+@msg	`params` must be an object	`params`: objektum kell

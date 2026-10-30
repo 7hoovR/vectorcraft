@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Artwork Cleanup add-on: its panel and Object › Plug-ins submenu; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (Color Effects add-on: its effects, panel and Object › Plug-ins submenu; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -322,6 +322,7 @@ next unit in the order a right-click on a ruler lists them, from Feet back to Po
 | Tabs panel: a stop drags from where the press landed, a stop just added included | done | #1458 |
 | Outline view keeps template layers in Preview, dimmed | done | #1486; a picture placed to be traced stays visible under the outlines |
 | Artwork Cleanup add-on (VectorCraft addition): Object › Plug-ins › Artwork Cleanup opens its panel, which checks the selection or the document for 16 kinds of issue, lists them with counts, and shows or fixes the picked rows or all of them, each fix one undo step; Simplify Anchors (Keep Shape), Rejoin Path Pieces and Deep Ungroup open their options first | done | `addon.cleanup.*`, `crates/ui-egui/src/addons/cleanup.rs` and its tests; not an Illustrator feature, so it is not scored |
+| Color Effects add-on (VectorCraft addition): live Exposure, Desaturate and Invert Colors in Effect › Color Effects and Object › Plug-ins › Color Effects; its panel picks a colour adjustment and its values and adds it as a live effect or applies it as a filter, into the colours, as one undo step | done | `addon.color.*`, `crates/ui-egui/src/addons/color.rs` and its tests; not an Illustrator feature, so it is not scored |
 
 ## Look and feel
 
@@ -362,6 +363,7 @@ separate. Scores and hours unchanged. [Behavior and command details](development
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | Color Effects add-on: its effects, panel and Object › Plug-ins submenu; scores and estimates unchanged |
 | 2026-10-30 | minor | Artwork Cleanup add-on (a VectorCraft addition): its panel and Object › Plug-ins › Artwork Cleanup; scores and estimates unchanged |
 | 2026-10-30 | minor | Spinners: a held arrow repeats after a pause (#4267); scores and estimates unchanged |
 | 2026-10-30 | minor | Control bar: a Replace menu swaps the selected symbol instances' symbol (#4121); scores and estimates unchanged |

@@ -5343,3 +5343,20 @@ anchor	Points:	Точки:
 	Simplify Anchors (Keep Shape)	Спростити опорні точки (зберегти форму)
 	Deep Ungroup	Розгрупувати всі рівні
 	Rejoin Path Pieces	З’єднати частини контурів
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Колірні ефекти
+	Color Effects Panel	Панель «Колірні ефекти»
+	Exposure	Експозиція
+	Exposure…	Експозиція…
+	Desaturate	Знебарвити
+	Adjustment	Корекція
+	Add as Effect	Додати як ефект
+	Apply as Filter	Застосувати як фільтр
+	Select objects to adjust their colors.	Виділіть об’єкти, щоб налаштувати їхні кольори.
+	Brightness/Contrast	Яскравість/контраст
+	Hue/Saturation	Відтінок/насиченість
+	Temperature/Tint	Температура/відтінок
+@msg	`{id}` is not a colour adjustment	`{id}` не є корекцією кольору
+@msg	missing `effect`	відсутня `effect`
+@msg	`params` must be an object	`params` має бути об’єктом

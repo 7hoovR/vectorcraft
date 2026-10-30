@@ -5637,3 +5637,20 @@ anchor	Points:	Точки:
 	Simplify Anchors (Keep Shape)	Опростяване на опорните точки (запазване на формата)
 	Deep Ungroup	Разгрупиране на всички нива
 	Rejoin Path Pieces	Повторно свързване на части от пътища
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Цветови ефекти
+	Color Effects Panel	Панел „Цветови ефекти“
+	Exposure	Експонация
+	Exposure…	Експонация…
+	Desaturate	Обезцветяване
+	Adjustment	Корекция
+	Add as Effect	Добавяне като ефект
+	Apply as Filter	Прилагане като филтър
+	Select objects to adjust their colors.	Изберете обекти, за да коригирате цветовете им.
+	Brightness/Contrast	Яркост/Контраст
+	Hue/Saturation	Оттенък/Наситеност
+	Temperature/Tint	Температура/Нюанс
+@msg	`{id}` is not a colour adjustment	`{id}` не е цветова корекция
+@msg	missing `effect`	липсва `effect`
+@msg	`params` must be an object	`params` трябва да бъде обект

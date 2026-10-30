@@ -5432,3 +5432,20 @@ anchor	Points:	ポイント:
 	Simplify Anchors (Keep Shape)	アンカーポイントを単純化（形状を維持）
 	Deep Ungroup	すべての階層のグループ解除
 	Rejoin Path Pieces	パスの断片を再連結
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	カラー効果
+	Color Effects Panel	カラー効果パネル
+	Exposure	露光量
+	Exposure…	露光量…
+	Desaturate	彩度を下げる
+	Adjustment	補正
+	Add as Effect	効果として追加
+	Apply as Filter	フィルターとして適用
+	Select objects to adjust their colors.	カラーを補正するオブジェクトを選択してください。
+	Brightness/Contrast	明るさ・コントラスト
+	Hue/Saturation	色相・彩度
+	Temperature/Tint	色温度・色かぶり
+@msg	`{id}` is not a colour adjustment	`{id}` はカラー補正ではありません
+@msg	missing `effect`	`effect` が指定されていません
+@msg	`params` must be an object	`params` にはオブジェクトを指定してください

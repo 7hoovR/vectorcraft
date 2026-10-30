@@ -5736,3 +5736,20 @@ anchor	Points:	წერტილები:
 	Simplify Anchors (Keep Shape)	საყრდენი წერტილების გამარტივება (ფორმის შენარჩუნებით)
 	Deep Ungroup	დაჯგუფების მოხსნა ყველა დონეზე
 	Rejoin Path Pieces	ტრაექტორიის ნაწილების ხელახლა შეერთება
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	ფერის ეფექტები
+	Color Effects Panel	ფერის ეფექტების პანელი
+	Exposure	ექსპოზიცია
+	Exposure…	ექსპოზიცია…
+	Desaturate	გაუფერულება
+	Adjustment	კორექცია
+	Add as Effect	ეფექტად დამატება
+	Apply as Filter	ფილტრად გამოყენება
+	Select objects to adjust their colors.	აირჩიეთ ობიექტები მათი ფერების დასარეგულირებლად.
+	Brightness/Contrast	სიკაშკაშე/კონტრასტი
+	Hue/Saturation	ფერის ტონი/გაჯერება
+	Temperature/Tint	ტემპერატურა/ტონირება
+@msg	`{id}` is not a colour adjustment	`{id}` ფერის კორექცია არ არის
+@msg	missing `effect`	აკლია `effect`
+@msg	`params` must be an object	`params` უნდა იყოს ობიექტი

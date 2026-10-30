@@ -5725,3 +5725,20 @@ anchor	Points:	Точки:
 	Simplify Anchors (Keep Shape)	Упростить опорные точки (сохранить форму)
 	Deep Ungroup	Разгруппировать все уровни
 	Rejoin Path Pieces	Соединить части контуров
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Цветовые эффекты
+	Color Effects Panel	Панель «Цветовые эффекты»
+	Exposure	Экспозиция
+	Exposure…	Экспозиция…
+	Desaturate	Обесцветить
+	Adjustment	Коррекция
+	Add as Effect	Добавить как эффект
+	Apply as Filter	Применить как фильтр
+	Select objects to adjust their colors.	Выделите объекты, чтобы настроить их цвета.
+	Brightness/Contrast	Яркость/контраст
+	Hue/Saturation	Оттенок/насыщенность
+	Temperature/Tint	Температура/оттенок
+@msg	`{id}` is not a colour adjustment	`{id}` не является цветокоррекцией
+@msg	missing `effect`	отсутствует `effect`
+@msg	`params` must be an object	`params` должно быть объектом
