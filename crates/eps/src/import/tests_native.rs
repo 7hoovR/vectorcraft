@@ -381,11 +381,18 @@ fn an_ai_file_that_cant_be_read_through_its_editing_data_keeps_its_pdf_part() {
     let (d, w, read) = crate::layered_ai(b"nothing", pdf.clone(), vec![], false, false, 1.0);
     assert_eq!(d.layers.len(), pdf.layers.len());
     assert!(w.is_empty() && !read);
-    // Editing data that isn't for this page.
-    let other = native(&layer("Jig", true, &square(10, 10))).replace("%AI3_Cropmarks: 0 0 100 100", "%AI3_Cropmarks: 0 0 50 50");
+    // Editing data that isn't for this page: neither its artboard nor its art's box is the page.
+    let other = native(&layer("Jig", true, &square(10, 10))).replace(" 0 0 100 100", " 0 0 50 50");
     let (d, w, _) = crate::layered_ai(&private(&other), pdf.clone(), vec![], false, false, 1.0);
     assert_eq!(names(&d), names(&pdf));
     assert!(w.iter().any(|w| w.contains("for a 50 × 50 pt page, the file's 100 × 100 pt page at 1:2")), "{w:?}");
+    // A page cropped to the art's box, not the artboard, is that art's page: the layers are read,
+    // with their artboard.
+    let cropped = native(&layer("Jig", true, &square(10, 10))).replace("%AI3_Cropmarks: 0 0 100 100", "%AI3_Cropmarks: 0 0 50 50");
+    let (d, w, read) = crate::layered_ai(&private(&cropped), pdf.clone(), vec![], false, false, 1.0);
+    assert!(read, "{w:?}");
+    assert_eq!(names(&d), ["Jig"]);
+    assert_eq!(d.artboards[0].rect.size(), vectorcraft_geom::Size::new(50.0, 50.0));
 }
 
 /// #2034: editing data for a page of another size gives both sizes in points, in an EPS's note and
