@@ -5345,3 +5345,20 @@ anchor	Points:	Điểm:
 	Simplify Anchors (Keep Shape)	Đơn giản hóa điểm neo (giữ hình dạng)
 	Deep Ungroup	Bỏ nhóm mọi cấp
 	Rejoin Path Pieces	Nối lại các mảnh đường dẫn
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Hiệu ứng màu
+	Color Effects Panel	Bảng Hiệu ứng màu
+	Exposure	Phơi sáng
+	Exposure…	Phơi sáng…
+	Desaturate	Khử bão hòa
+	Adjustment	Điều chỉnh
+	Add as Effect	Thêm làm hiệu ứng
+	Apply as Filter	Áp dụng làm bộ lọc
+	Select objects to adjust their colors.	Chọn đối tượng để điều chỉnh màu của chúng.
+	Brightness/Contrast	Độ sáng/Tương phản
+	Hue/Saturation	Sắc độ/Độ bão hòa
+	Temperature/Tint	Nhiệt độ màu/Tông
+@msg	`{id}` is not a colour adjustment	`{id}` không phải là điều chỉnh màu
+@msg	missing `effect`	thiếu `effect`
+@msg	`params` must be an object	`params` phải là một đối tượng

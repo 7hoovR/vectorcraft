@@ -5696,3 +5696,20 @@ anchor	Points:	Punten:
 	Simplify Anchors (Keep Shape)	Ankerpunten vereenvoudigen (vorm behouden)
 	Deep Ungroup	Alle groeperingsniveaus opheffen
 	Rejoin Path Pieces	Padstukken opnieuw verbinden
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Kleureffecten
+	Color Effects Panel	Deelvenster Kleureffecten
+	Exposure	Belichting
+	Exposure…	Belichting…
+	Desaturate	Desatureren
+	Adjustment	Aanpassing
+	Add as Effect	Toevoegen als effect
+	Apply as Filter	Toepassen als filter
+	Select objects to adjust their colors.	Selecteer objecten om hun kleuren aan te passen.
+	Brightness/Contrast	Helderheid/contrast
+	Hue/Saturation	Kleurtoon/verzadiging
+	Temperature/Tint	Temperatuur/tint
+@msg	`{id}` is not a colour adjustment	`{id}` is geen kleuraanpassing
+@msg	missing `effect`	`effect` ontbreekt
+@msg	`params` must be an object	`params` moet een object zijn

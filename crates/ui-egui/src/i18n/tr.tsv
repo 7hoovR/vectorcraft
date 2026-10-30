@@ -5705,3 +5705,20 @@ anchor	Points:	Noktalar:
 	Simplify Anchors (Keep Shape)	Bağlantı Noktalarını Basitleştir (Şekli Koru)
 	Deep Ungroup	Tüm Düzeylerde Grubu Çöz
 	Rejoin Path Pieces	Yol Parçalarını Yeniden Birleştir
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Renk Efektleri
+	Color Effects Panel	Renk Efektleri Paneli
+	Exposure	Pozlama
+	Exposure…	Pozlama…
+	Desaturate	Doygunluğu Kaldır
+	Adjustment	Ayar
+	Add as Effect	Efekt Olarak Ekle
+	Apply as Filter	Filtre Olarak Uygula
+	Select objects to adjust their colors.	Renklerini ayarlamak için nesneleri seçin.
+	Brightness/Contrast	Parlaklık/Kontrast
+	Hue/Saturation	Ton/Doygunluk
+	Temperature/Tint	Sıcaklık/Renk Tonu
+@msg	`{id}` is not a colour adjustment	`{id}` bir renk ayarı değil
+@msg	missing `effect`	"isim" eksik
+@msg	`params` must be an object	"gradyan" bir nesne olmalıdır

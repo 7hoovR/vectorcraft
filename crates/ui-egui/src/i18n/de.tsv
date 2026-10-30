@@ -5329,3 +5329,20 @@ anchor	Points:	Punkte:
 	Simplify Anchors (Keep Shape)	Ankerpunkte vereinfachen (Form erhalten)
 	Deep Ungroup	Alle Gruppierungsebenen aufheben
 	Rejoin Path Pieces	Pfadstücke wieder zusammenfügen
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Farbeffekte
+	Color Effects Panel	Farbeffekte-Bedienfeld
+	Exposure	Belichtung
+	Exposure…	Belichtung…
+	Desaturate	Sättigung verringern
+	Adjustment	Korrektur
+	Add as Effect	Als Effekt hinzufügen
+	Apply as Filter	Als Filter anwenden
+	Select objects to adjust their colors.	Wählen Sie Objekte aus, um ihre Farben anzupassen.
+	Brightness/Contrast	Helligkeit/Kontrast
+	Hue/Saturation	Farbton/Sättigung
+	Temperature/Tint	Temperatur/Farbstich
+@msg	`{id}` is not a colour adjustment	`{id}` ist keine Farbkorrektur
+@msg	missing `effect`	`effect` fehlt
+@msg	`params` must be an object	`params` muss ein Objekt sein

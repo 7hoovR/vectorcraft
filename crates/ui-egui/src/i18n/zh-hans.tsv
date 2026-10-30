@@ -5586,3 +5586,20 @@ anchor	Points:	点：
 	Simplify Anchors (Keep Shape)	简化锚点（保持形状）
 	Deep Ungroup	取消所有层级编组
 	Rejoin Path Pieces	重新连接路径片段
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	颜色效果
+	Color Effects Panel	颜色效果面板
+	Exposure	曝光度
+	Exposure…	曝光度…
+	Desaturate	去色
+	Adjustment	调整
+	Add as Effect	添加为效果
+	Apply as Filter	作为滤镜应用
+	Select objects to adjust their colors.	选择对象以调整其颜色。
+	Brightness/Contrast	亮度/对比
+	Hue/Saturation	色相/饱和度
+	Temperature/Tint	色温/色调
+@msg	`{id}` is not a colour adjustment	`{id}` 不是颜色调整
+@msg	missing `effect`	缺少 `effect`
+@msg	`params` must be an object	`params` 必须是对象

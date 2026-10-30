@@ -5652,3 +5652,20 @@ anchor	Points:	Punkter:
 	Simplify Anchors (Keep Shape)	Forenkl ankerpunkter (bevar form)
 	Deep Ungroup	Afgruppér alle niveauer
 	Rejoin Path Pieces	Forbind kurvestykker igen
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Farveeffekter
+	Color Effects Panel	Panelet Farveeffekter
+	Exposure	Eksponering
+	Exposure…	Eksponering…
+	Desaturate	Afmæt
+	Adjustment	Justering
+	Add as Effect	Tilføj som effekt
+	Apply as Filter	Anvend som filter
+	Select objects to adjust their colors.	Markér objekter for at justere deres farver.
+	Brightness/Contrast	Lysstyrke/kontrast
+	Hue/Saturation	Farvetone/mætning
+	Temperature/Tint	Temperatur/toning
+@msg	`{id}` is not a colour adjustment	`{id}` er ikke en farvejustering
+@msg	missing `effect`	`effect` mangler
+@msg	`params` must be an object	`params` skal være et objekt

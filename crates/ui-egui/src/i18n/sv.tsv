@@ -5771,3 +5771,20 @@ anchor	Points:	Punkter:
 	Simplify Anchors (Keep Shape)	Förenkla ankarpunkter (behåll formen)
 	Deep Ungroup	Dela upp grupper på alla nivåer
 	Rejoin Path Pieces	Foga samman banbitar igen
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Färgeffekter
+	Color Effects Panel	Panelen Färgeffekter
+	Exposure	Exponering
+	Exposure…	Exponering…
+	Desaturate	Avmätta
+	Adjustment	Justering
+	Add as Effect	Lägg till som effekt
+	Apply as Filter	Använd som filter
+	Select objects to adjust their colors.	Markera objekt för att justera deras färger.
+	Brightness/Contrast	Ljusstyrka/kontrast
+	Hue/Saturation	Nyans/mättnad
+	Temperature/Tint	Temperatur/färgton
+@msg	`{id}` is not a colour adjustment	`{id}` är ingen färgjustering
+@msg	missing `effect`	`effect` saknas
+@msg	`params` must be an object	`params` måste vara ett objekt

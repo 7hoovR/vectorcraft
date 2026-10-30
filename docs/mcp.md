@@ -5708,3 +5708,31 @@ topmost piece.
 {"name":"run_command","arguments":{"command":"addon.cleanup.fix","params":{"kinds":["strayPoints","needlessGroups"]}}}
 {"name":"run_command","arguments":{"command":"addon.cleanup.simplify","params":{"tolerance":40,"protectCorners":true}}}
 ```
+
+## Color Effects add-on
+
+Color Effects is a built-in add-on: its effects are colour adjustments in Effect › Color Effects, its command is
+`addon.color.filter`, and in the desktop app it also lives in Object › Plug-ins › Color Effects and in its panel
+(`window.panel {panel: "colorEffects"}`).
+
+Its live effects go on through `effect.apply` like any other and recolour what the object paints, in stack order with
+the other colour adjustments (Effect › Color Adjustments); each colour keeps its colour model:
+
+| Effect | Parameters | Does |
+|---|---|---|
+| `addon.color.exposure` (Exposure…) | `exposure` stops −20…20 (0), `offset` −0.5…0.5 (0), `gamma` 0.1…10 (1) | Scales the light in linear light (each stop doubles or halves it, mostly in the highlights), adds the offset (shadows and midtones) and applies the gamma |
+| `addon.color.desaturate` (Desaturate) | none | Turns every colour to the grey of its lightness |
+| `addon.color.invert` (Invert Colors) | none | Turns every colour to its RGB inverse |
+
+`addon.color.filter {effect, params?, fill?, stroke?, includeImages?, includePatterns?, ids?}` applies any colour
+adjustment, the add-on's or one of Effect › Color Adjustments', to the colours themselves instead of as a live effect:
+fills, strokes, type, gradient meshes, embedded images and pattern tiles, as `edit.colors.invert` reaches them, as one
+undo step. Missing `params` take the effect's dialog defaults; the objects' own effects stay as they are.
+
+```json
+{"name":"run_command","arguments":{"command":"effect.apply","params":{"effect":"addon.color.exposure","params":{"exposure":1.5}}}}
+{"name":"run_command","arguments":{"command":"addon.color.filter","params":{"effect":"adjust.hueSaturation","params":{"hue":120}}}}
+```
+
+The panel picks an adjustment (Brightness/Contrast, Hue/Saturation, Levels, Temperature/Tint, Exposure, Desaturate or
+Invert Colors), sets its values, and then Add as Effect (`effect.apply`) or Apply as Filter (`addon.color.filter`).

@@ -5778,3 +5778,20 @@ anchor	Points:	Pisteet:
 	Simplify Anchors (Keep Shape)	Yksinkertaista ankkuripisteet (säilytä muoto)
 	Deep Ungroup	Pura kaikki ryhmitystasot
 	Rejoin Path Pieces	Yhdistä polun palat uudelleen
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	Väritehosteet
+	Color Effects Panel	Väritehosteet-paneeli
+	Exposure	Valotus
+	Exposure…	Valotus…
+	Desaturate	Poista värikylläisyys
+	Adjustment	Säätö
+	Add as Effect	Lisää tehosteena
+	Apply as Filter	Käytä suodattimena
+	Select objects to adjust their colors.	Valitse objektit, joiden värejä haluat säätää.
+	Brightness/Contrast	Kirkkaus/kontrasti
+	Hue/Saturation	Sävy/kylläisyys
+	Temperature/Tint	Lämpötila/sävy
+@msg	`{id}` is not a colour adjustment	`{id}` ei ole värisäätö
+@msg	missing `effect`	`effect` puuttuu
+@msg	`params` must be an object	`params` on oltava objekti

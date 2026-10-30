@@ -5326,3 +5326,20 @@ anchor	Points:	포인트:
 	Simplify Anchors (Keep Shape)	앵커 포인트 단순화(모양 유지)
 	Deep Ungroup	모든 단계 그룹 해제
 	Rejoin Path Pieces	패스 조각 다시 연결
+
+# Color Effects add-on (Object › Plug-ins › Color Effects, Effect › Color Effects): its effects, panel and messages.
+	Color Effects	색상 효과
+	Color Effects Panel	색상 효과 패널
+	Exposure	노출
+	Exposure…	노출…
+	Desaturate	채도 감소
+	Adjustment	조정
+	Add as Effect	효과로 추가
+	Apply as Filter	필터로 적용
+	Select objects to adjust their colors.	색상을 조정할 개체를 선택하십시오.
+	Brightness/Contrast	밝기/대비
+	Hue/Saturation	색조/채도
+	Temperature/Tint	색온도/색조
+@msg	`{id}` is not a colour adjustment	`{id}`은(는) 색상 조정이 아닙니다
+@msg	missing `effect`	`effect`이 없습니다
+@msg	`params` must be an object	`params`는 개체여야 합니다
