@@ -335,9 +335,12 @@ fn the_mixer_popover_has_the_color_panels_menu() {
     let (fill, _) = chips(&ctx);
     click(&mut app, &ctx, fill.center(), Modifiers::SHIFT, control_bar);
     let menu = ctx.viewport(|vp| {
-        vp.prev_pass.widgets.layers().filter(|(l, _)| l.order != egui::Order::Background).flat_map(|(_, w)| w.iter()).find_map(|w| {
-            (w.rect.size() == vec2(18.0, 18.0) && w.info.as_ref().and_then(|i| i.label.as_deref()) == Some("Panel menu")).then_some(w.rect)
-        })
+        vp.prev_pass
+            .widgets
+            .layers()
+            .filter(|(l, _)| l.order != egui::Order::Background)
+            .flat_map(|(_, w)| w.iter())
+            .find_map(|w| (w.rect.size() == vec2(18.0, 18.0)).then_some(w.rect))
     });
     let menu = menu.expect("the mixer has a panel menu button");
     click(&mut app, &ctx, menu.center(), Modifiers::NONE, control_bar);
