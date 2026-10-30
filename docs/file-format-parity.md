@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (PDF export: opaque gradient meshes as smooth Type 6 patch shadings) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (`.ai` import: placed files on `%_` lines no longer send the file to its PDF part) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every format Illustrator opens, places, saves or exports, against VectorCraft's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/formats.rs`). Illustrator's list comes from its public
@@ -132,6 +132,7 @@ the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPri
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | `.ai` import: a placed (linked) file written as an object's copy on `%_` lines is read: its `%AI5_BeginPlace` and `%AI5_EndPlace` markers there were dropped, so the `~` that ends it was an unknown operator and the whole file came in as its PDF part; its preview's header, on a `%_` line too, is read. Own-fixture test in `import::ai::tests`; scores unchanged |
 | 2026-10-30 | minor | PDF export: an opaque gradient mesh is written as one PDF Type 6 (Coons patch) shading (ISO 32000-1, 8.7.4.5.7) filling its outline, so viewers blend its colours smoothly instead of showing the bands and seams of the 8 × 8 flat quads a patch it was cut into; a file of 65,558 small meshes exports in 14 s instead of 56 s, at half the size. A mesh with see-through points is still written as quads. Own-fixture tests in `tests::mesh_export`; scores unchanged |
 | 2026-10-30 | minor | `.ai` import: a file whose PDF part is an empty page opens from its editing data where that reads, instead of opening blank; scores unchanged |
 | 2026-10-30 | minor | `.ai` import: a file whose PDF part's pages are cropped to its art rather than its artboards no longer comes in as that PDF part (each page a copy of all the art) but from its layers, with its artboards, where they draw as the page does; own-fixture test in `tests_aiimport`; scores unchanged |
