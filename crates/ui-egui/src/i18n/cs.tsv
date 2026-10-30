@@ -5694,3 +5694,8 @@ axis	Y Axis	osa Y
 	Glyph Bounds	Hranice glyfů
 	Proximity Guides	Vodítka blízkosti
 	Angular Guides	Úhlová vodítka
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Zprůměrovat a spojit…
+	Average & Join	Zprůměrovat a spojit
+anchor	Points:	Body:
+@msg	select two open path ends, or two open paths, to average and join	vyberte dva konce otevřených cest nebo dvě otevřené cesty ke zprůměrování a spojení

@@ -5599,3 +5599,8 @@ axis	Y Axis	Y-akse
 	Glyph Bounds	Glyfafgrænsning
 	Proximity Guides	Nærhedshjælpelinjer
 	Angular Guides	Vinkelhjælpelinjer
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Gennemsnit og forbind…
+	Average & Join	Gennemsnit og forbind
+anchor	Points:	Punkter:
+@msg	select two open path ends, or two open paths, to average and join	markér to ender af åbne stier eller to åbne stier, der skal udlignes til gennemsnit og forbindes

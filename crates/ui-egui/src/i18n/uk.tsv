@@ -5290,3 +5290,8 @@ axis	Y Axis	Вісь Y
 	Glyph Bounds	Межі гліфа
 	Proximity Guides	Напрямні близькості
 	Angular Guides	Кутові напрямні
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усереднити і з’єднати…
+	Average & Join	Усереднити і з’єднати
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	виділіть два кінці відкритих контурів або два відкриті контури для усереднення і з’єднання

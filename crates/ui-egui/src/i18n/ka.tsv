@@ -5683,3 +5683,8 @@ swatch	Bright Violet	კაშკაშა იისფერი
 	Glyph Bounds	გლიფის საზღვრები
 	Proximity Guides	სიახლოვის დამხმარე ხაზები
 	Angular Guides	კუთხური დამხმარე ხაზები
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	საშუალო და შეერთება…
+	Average & Join	საშუალო და შეერთება
+anchor	Points:	წერტილები:
+@msg	select two open path ends, or two open paths, to average and join	მონიშნეთ ღია ტრაექტორიების ორი ბოლო ან ორი ღია ტრაექტორია საშუალოსა და შეერთებისთვის

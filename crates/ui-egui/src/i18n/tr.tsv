@@ -5652,3 +5652,8 @@ axis	Y Axis	Y ekseni
 	Glyph Bounds	Glif Sınırları
 	Proximity Guides	Yakınlık Kılavuzları
 	Angular Guides	Açısal Kılavuzlar
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Ortalama ve katıl…
+	Average & Join	Ortalama ve katıl
+anchor	Points:	Noktalar:
+@msg	select two open path ends, or two open paths, to average and join	ortalaması alınıp katılmak için iki açık yol ucu veya iki açık yol seçin

@@ -5636,3 +5636,8 @@ axis	Y Axis	Eje Y
 	Glyph Bounds	Límites del glifo
 	Proximity Guides	Guías de proximidad
 	Angular Guides	Guías angulares
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Promediar y unir…
+	Average & Join	Promediar y unir
+anchor	Points:	Puntos:
+@msg	select two open path ends, or two open paths, to average and join	selecciona dos extremos de trazados abiertos, o dos trazados abiertos, para promediarlos y unirlos

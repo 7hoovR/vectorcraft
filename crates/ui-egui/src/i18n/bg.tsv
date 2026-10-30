@@ -5584,3 +5584,8 @@ axis	Y Axis	Y ос
 	Glyph Bounds	Граници на глифа
 	Proximity Guides	Водачи за близост
 	Angular Guides	Ъглови водачи
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усредняване и свързване…
+	Average & Join	Усредняване и свързване
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	изберете два края на отворени пътища или два отворени пътя за усредняване и свързване

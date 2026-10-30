@@ -5672,3 +5672,8 @@ theme	Appearance	Оформление
 	Glyph Bounds	Границы глифа
 	Proximity Guides	Направляющие близости
 	Angular Guides	Угловые направляющие
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усреднить и соединить…
+	Average & Join	Усреднить и соединить
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	выделите два конца открытых контуров или два открытых контура для усреднения и соединения

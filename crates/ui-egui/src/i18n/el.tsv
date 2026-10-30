@@ -5646,3 +5646,8 @@ axis	Y Axis	Άξονας Y
 	Glyph Bounds	Όρια γλυφής
 	Proximity Guides	Οδηγοί εγγύτητας
 	Angular Guides	Γωνιακοί οδηγοί
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Μέσος όρος και ένωση…
+	Average & Join	Μέσος όρος και ένωση
+anchor	Points:	Σημεία:
+@msg	select two open path ends, or two open paths, to average and join	επιλέξτε δύο άκρα ανοιχτών διαδρομών ή δύο ανοιχτές διαδρομές για μέσο όρο και ένωση

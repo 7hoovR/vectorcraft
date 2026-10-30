@@ -5292,3 +5292,8 @@ axis	Y Axis	Trục Y
 	Glyph Bounds	Giới hạn glyph
 	Proximity Guides	Đường căn lân cận
 	Angular Guides	Đường căn góc
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Trung bình và nối…
+	Average & Join	Trung bình và nối
+anchor	Points:	Điểm:
+@msg	select two open path ends, or two open paths, to average and join	hãy chọn hai đầu của đường dẫn mở, hoặc hai đường dẫn mở, để lấy trung bình và nối

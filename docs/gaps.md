@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (G12: Preferences audit (#394): 5 options are stored but not acted on (Open Documents As Tabs, Units › East Asian Type, Hyphenation › Default Language, Scratch Disks, Legacy vector clipboard), each waiting on a subsystem; Highlight Alternate Glyphs, Real-time Drawing and the Devices options act; estimate unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-30 · **Change:** minor (G1: Average & Join with a corner or smooth choice, Cmd+Alt+Shift+J, done; estimate unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -131,7 +131,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Done (#1251):** Eyedropper source reads are independent of locks and isolation, including Shift/Shift+Alt and gradient stops. Source and selection preservation, unchanged Alt reverse/selection restrictions, hidden art and Undo/Redo have regression coverage. This addresses the reported behavior, with no new full-parity measurement.
 - **Done (#1253):** adding paint to an unpainted zero-width stroke restores the existing 1 pt default, including new-art defaults and Swap Fill/Stroke. The real Eyedropper inheritance sequence, targeted appearance items, preserved widths and Undo/Redo have regression coverage.
 - **Done:** a busy cursor while a file opens off the UI thread or a labelled background save or export runs (`Cursor::Busy` in `crates/tools/src/cursors.toml`). Heavy synchronous effect previews remain open.
-- **Missing:** Average and Join in one step, with a corner or smooth choice for the joined anchor. `path.average` and `path.join` are separate commands and Join has no such choice (coinciding anchors merge into one since #1533). [ui-parity.md](ui-parity.md) listed "Join with corner/smooth choice" as done until 2026-10-13. About 1–2 h (estimated), inside the estimate below.
+- **Done:** Average and Join in one step, with a corner or smooth choice for the joined anchor: Object › Path › Average & Join… (`path.averageJoin {to: "corner"|"smooth"}`, Cmd+Alt+Shift+J, Ctrl+Alt+Shift+J on Windows) moves the two direct-selected open path ends, or the nearest ends of two selected open paths (both ends of one, closing it), to their midpoint and joins them there in one undo step. The public [Default keyboard shortcuts](https://helpx.adobe.com/illustrator/using/default-keyboard-shortcuts.html) page lists the shortcut as "Create corner or smooth join" ("Select the paths" on Windows, "Select the anchor point" on macOS). The dialog (Points: Corner / Smooth) opens on Corner and then on the choice confirmed last in the session: VectorCraft's reading, as the page doesn't say. Inside the estimate below.
 - **Implemented (#1760):** Effect › Warp has a shared style selector with original previews, orientation buttons and percent sliders. Existing effects retain their stack slot and target. Focused checks passed and original captures were reviewed; optional Properties integration and remembered defaults remain outside this change.
 - **Done (#2120):** Smart Guides line extension: dragging the end of a straight segment with Direct Selection or Curvature, the point snaps to the segment's own direction at any angle and the guide runs along it from the other end. Inside the estimate below.
 - **Done (#1692):** Tab in the Color Picker moves through one color model's fields before the next. Completed upstream before the layout change (#2008).
@@ -653,6 +653,7 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-30 | minor | G1: Object › Path › Average & Join… (`path.averageJoin`, Cmd+Alt+Shift+J) moves two open path ends to their midpoint and joins them there, the joined anchor a corner or a smooth point as its dialog's Points choice asks, in one undo step; the "Average and Join in one step" entry is done. Estimate unchanged |
 | 2026-10-30 | minor | G12: Preferences audit (#394): 5 options are stored but not acted on (Open Documents As Tabs, Units › East Asian Type, Hyphenation › Default Language, Scratch Disks, Legacy vector clipboard), each waiting on a subsystem; Highlight Alternate Glyphs, Real-time Drawing and the Devices options act. Estimate unchanged. |
 | 2026-10-29 | minor | G10: the Linux Flatpak on GNOME stops the clipboard retry storm (retried with a growing wait, logged once). Estimate unchanged. |
 | 2026-10-29 | minor | G12: Pathfinder: live compound shapes (#4522): the panel menu's Make, Release and Expand Compound Shape, Alt-clicking a Shape Mode, a selected member's Shape Mode and the Expand button act. No entry closed, estimates unchanged. |
