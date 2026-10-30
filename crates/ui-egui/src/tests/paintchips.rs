@@ -345,7 +345,9 @@ fn the_mixer_popover_has_the_color_panels_menu() {
     let menu = menu.expect("the mixer has a panel menu button");
     click(&mut app, &ctx, menu.center(), Modifiers::NONE, control_bar);
     let shapes = frame(&mut app, &ctx, vec![], Modifiers::NONE, control_bar);
-    for mode in ["Grayscale", "RGB", "HSB", "Web Safe RGB", "Invert", "Complement"] {
+    // The fill is RGB, so RGB is checked.
+    assert!(menu_item_rect(&shapes, "✓ RGB").is_some(), "RGB is the checked mode");
+    for mode in ["Grayscale", "HSB", "Web Safe RGB", "Invert", "Complement"] {
         assert!(menu_item_rect(&shapes, mode).is_some(), "{mode} in the mixer's menu");
     }
     let cmyk = menu_item_rect(&shapes, "CMYK").expect("CMYK in the mixer's menu");
